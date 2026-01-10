@@ -32,11 +32,12 @@ export default function PersonalSection() {
           <div className="image-placeholder">
             <Image
               src="/pictures/portrait.jpg"
-              alt="Portrait"
+              alt="Luis Guenther - Full-Stack Webentwickler und Gründer von SwiftGate AI"
               fill
               className="portrait-image"
               style={{ objectFit: 'cover' }}
               priority
+              sizes="(max-width: 768px) 280px, (max-width: 1024px) 400px, 480px"
             />
           </div>
 

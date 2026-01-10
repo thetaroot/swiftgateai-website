@@ -1,12 +1,21 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
 import PageTransition from '@/components/PageTransition';
 import BrowserMockup from '@/components/BrowserMockup';
-import ServicesSection from '@/components/ServicesSection';
-import PersonalSection from '@/components/PersonalSection';
-import Footer from '@/components/Footer';
+
+// Lazy load below-the-fold components
+const ServicesSection = dynamic(() => import('@/components/ServicesSection'), {
+  loading: () => <div style={{ minHeight: '100vh' }} />,
+});
+const PersonalSection = dynamic(() => import('@/components/PersonalSection'), {
+  loading: () => <div style={{ minHeight: '100vh' }} />,
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+  loading: () => <div style={{ minHeight: '200px' }} />,
+});
 
 export default function Home() {
   return (
