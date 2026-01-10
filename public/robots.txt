@@ -1,0 +1,6 @@
+# Alle Crawler erlauben
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://swiftgateai.de/sitemap.xml

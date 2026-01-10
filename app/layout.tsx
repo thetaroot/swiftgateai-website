@@ -9,8 +9,56 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "ThetaCMD Portfolio",
-  description: "Portfolio Website",
+  metadataBase: new URL('https://swiftgateai.de'),
+  title: {
+    default: "SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen",
+    template: "%s | SwiftGate AI"
+  },
+  description: "Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript - Von der Beratung bis zum Launch. SEO-optimiert, DSGVO-konform und Performance-first.",
+  keywords: ["Webentwicklung", "Web Development", "React", "Next.js", "TypeScript", "SEO", "Performance", "DSGVO", "Full-Service", "Web Design", "Frontend", "Backend", "KI", "AI", "Machine Learning"],
+  authors: [{ name: "Luis Guenther" }],
+  creator: "Luis Guenther",
+  publisher: "SwiftGate AI",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'de_DE',
+    url: 'https://swiftgateai.de',
+    siteName: 'SwiftGate AI',
+    title: 'SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen',
+    description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript - Von der Beratung bis zum Launch.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SwiftGate AI - Professionelle Webentwicklung',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen',
+    description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript.',
+    images: ['/og-image.jpg'],
+  },
+  alternates: {
+    canonical: 'https://swiftgateai.de',
+  },
+  verification: {
+    // Google Search Console Verification (falls vorhanden)
+    // google: 'your-google-verification-code',
+  },
 };
 
 export default function RootLayout({
@@ -18,8 +66,69 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: 'SwiftGate AI',
+    description: 'Full-Service Webentwicklung mit modernsten Technologien',
+    url: 'https://swiftgateai.de',
+    logo: 'https://swiftgateai.de/logo.png',
+    image: 'https://swiftgateai.de/og-image.jpg',
+    founder: {
+      '@type': 'Person',
+      name: 'Luis Guenther',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'DE',
+    },
+    sameAs: [
+      // Social Media Links können hier hinzugefügt werden
+    ],
+    areaServed: {
+      '@type': 'Country',
+      name: 'Germany',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Web Development Services',
+      itemListElement: [
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Beratung & Konzept',
+            description: 'Anforderungsanalyse, Technologie-Beratung und Projektplanung',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Design & Entwicklung',
+            description: 'Modernes UI/UX Design mit React, Next.js & TypeScript',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Performance & SEO',
+            description: 'Core Web Vitals Optimierung und SEO-Optimierung',
+          },
+        },
+      ],
+    },
+  };
+
   return (
     <html lang="de">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={spaceGrotesk.className}>{children}</body>
     </html>
   );
