@@ -18,13 +18,13 @@ export default function Portfolio() {
         <div className="relative z-10">
           {/* Hero Section */}
           <section style={{
-            minHeight: '40vh',
+            minHeight: '35vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: '0 40px',
-            paddingTop: '140px',
-            paddingBottom: '60px'
+            paddingTop: '120px',
+            paddingBottom: '40px'
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -79,7 +79,7 @@ export default function Portfolio() {
 
           {/* Project Card Section */}
           <section style={{
-            minHeight: '60vh',
+            minHeight: '65vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -91,7 +91,7 @@ export default function Portfolio() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               style={{
-                maxWidth: '1100px',
+                maxWidth: '650px',
                 width: '100%'
               }}
             >
@@ -100,15 +100,19 @@ export default function Portfolio() {
                 border: '2px solid rgba(26, 77, 46, 0.18)',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+                boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+                height: '780px',
+                display: 'flex',
+                flexDirection: 'column'
               }}>
-                {/* Screenshot */}
+                {/* Screenshot - Top Half */}
                 <div style={{
                   position: 'relative',
                   width: '100%',
-                  height: '500px',
+                  height: '50%',
                   overflow: 'hidden',
-                  borderBottom: '2px solid rgba(26, 77, 46, 0.12)'
+                  borderBottom: '2px solid rgba(26, 77, 46, 0.12)',
+                  flexShrink: 0
                 }}>
                   <Image
                     src="/pictures/luistravels.com-screenshot.png"
@@ -122,22 +126,30 @@ export default function Portfolio() {
                   />
                 </div>
 
-                {/* Content */}
-                <div style={{
-                  padding: '48px 50px'
-                }}>
+                {/* Content - Bottom Half - Scrollable */}
+                <div
+                  style={{
+                    height: '50%',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    padding: '32px 36px',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)'
+                  }}
+                  className="custom-scrollbar"
+                >
                   {/* Category Badge */}
                   <div style={{
                     display: 'inline-block',
-                    padding: '6px 16px',
+                    padding: '6px 14px',
                     background: 'rgba(139, 115, 85, 0.1)',
                     border: '1px solid rgba(139, 115, 85, 0.2)',
                     borderRadius: '4px',
-                    marginBottom: '20px'
+                    marginBottom: '16px'
                   }}>
                     <span style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '12px',
+                      fontSize: '11px',
                       fontWeight: 600,
                       color: '#8B7355',
                       letterSpacing: '1px',
@@ -150,11 +162,11 @@ export default function Portfolio() {
                   {/* Title */}
                   <h2 style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '42px',
+                    fontSize: '32px',
                     fontWeight: 700,
                     color: '#3E2E1F',
                     letterSpacing: '-0.02em',
-                    marginBottom: '16px',
+                    marginBottom: '12px',
                     lineHeight: 1.1
                   }}>
                     Luis Travels
@@ -167,11 +179,11 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '18px',
+                      fontSize: '15px',
                       fontWeight: 500,
                       color: '#8B7355',
                       textDecoration: 'none',
-                      marginBottom: '24px',
+                      marginBottom: '20px',
                       display: 'inline-block',
                       transition: 'color 0.2s ease'
                     }}
@@ -184,12 +196,11 @@ export default function Portfolio() {
                   {/* Description */}
                   <p style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '18px',
+                    fontSize: '15px',
                     fontWeight: 400,
-                    lineHeight: 1.8,
+                    lineHeight: 1.7,
                     color: '#4A3428',
-                    marginBottom: '32px',
-                    maxWidth: '800px'
+                    marginBottom: '24px'
                   }}>
                     Ein moderner Reise-Blog mit CMS-Integration, optimiert für Performance und SEO.
                     Die Website präsentiert Reiseberichte, Fotogalerien und Reisetipps in einem
@@ -197,34 +208,34 @@ export default function Portfolio() {
                   </p>
 
                   {/* Tech Stack */}
-                  <div style={{ marginBottom: '32px' }}>
+                  <div style={{ marginBottom: '24px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '14px',
+                      fontSize: '12px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '16px'
+                      marginBottom: '12px'
                     }}>
                       Tech Stack
                     </h3>
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: '10px'
+                      gap: '8px'
                     }}>
                       {['Next.js', 'TypeScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'Vercel'].map((tech) => (
                         <span
                           key={tech}
                           style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '14px',
+                            fontSize: '12px',
                             fontWeight: 500,
                             color: '#5C4A3A',
                             background: 'rgba(139, 115, 85, 0.08)',
-                            padding: '8px 16px',
-                            borderRadius: '6px',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
                             border: '1px solid rgba(139, 115, 85, 0.15)'
                           }}
                         >
@@ -235,22 +246,22 @@ export default function Portfolio() {
                   </div>
 
                   {/* Features */}
-                  <div style={{ marginBottom: '40px' }}>
+                  <div style={{ marginBottom: '28px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '14px',
+                      fontSize: '12px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '16px'
+                      marginBottom: '12px'
                     }}>
                       Key Features
                     </h3>
                     <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                      gap: '16px'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px'
                     }}>
                       {[
                         'Headless CMS Integration',
@@ -269,15 +280,15 @@ export default function Portfolio() {
                           }}
                         >
                           <div style={{
-                            width: '6px',
-                            height: '6px',
+                            width: '5px',
+                            height: '5px',
                             borderRadius: '50%',
                             background: '#8B7355',
                             flexShrink: 0
                           }} />
                           <span style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '15px',
+                            fontSize: '14px',
                             fontWeight: 400,
                             color: '#4A3428'
                           }}>
@@ -295,13 +306,13 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       display: 'inline-block',
-                      padding: '16px 32px',
+                      padding: '14px 28px',
                       background: 'rgba(139, 115, 85, 0.12)',
                       border: '2px solid rgba(139, 115, 85, 0.3)',
                       borderRadius: '6px',
                       color: '#5C4A3A',
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -323,6 +334,28 @@ export default function Portfolio() {
                   </a>
                 </div>
               </div>
+
+              {/* Custom Scrollbar Styles */}
+              <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                  width: 8px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-track {
+                  background: rgba(139, 115, 85, 0.08);
+                  border-radius: 4px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background: rgba(139, 115, 85, 0.3);
+                  border-radius: 4px;
+                  transition: background 0.2s ease;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                  background: rgba(139, 115, 85, 0.5);
+                }
+              `}</style>
             </motion.div>
           </section>
         </div>
