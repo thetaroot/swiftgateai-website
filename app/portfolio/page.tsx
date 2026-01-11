@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
 import PageTransition from '@/components/PageTransition';
-import Breadcrumbs from '@/components/Breadcrumbs';
 
 const Footer = dynamic(() => import('@/components/Footer'));
 
@@ -190,7 +189,6 @@ export default function Portfolio() {
     <main className="min-h-screen flex flex-col">
       <AnimatedBackground />
       <Navigation />
-      <Breadcrumbs />
       <PageTransition>
         <div className="relative z-10">
           {/* Hero Section */}
