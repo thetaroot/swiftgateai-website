@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
@@ -9,182 +9,7 @@ import PageTransition from '@/components/PageTransition';
 
 const Footer = dynamic(() => import('@/components/Footer'));
 
-interface Project {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
-  tech: string[];
-  year: string;
-}
-
-interface ProjectCardProps {
-  project: Project;
-  position: number;
-  currentIndex: number;
-  onNext?: () => void;
-  onPrev?: () => void;
-}
-
-function ProjectCard({ project, position, currentIndex, onNext, onPrev }: ProjectCardProps) {
-  const isActive = position === currentIndex;
-
-  return (
-    <div
-      style={{
-        background: 'linear-gradient(145deg, #E8E5D9 0%, #EAE7DC 100%)',
-        border: isActive ? '2px solid rgba(26, 77, 46, 0.18)' : '1px solid rgba(26, 77, 46, 0.12)',
-        borderRadius: isActive ? '8px' : '20px',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: isActive
-          ? '0 30px 60px -12px rgba(0, 0, 0, 0.25), 0 18px 36px -18px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-          : '0 20px 40px -12px rgba(0, 0, 0, 0.15)',
-        transition: 'all 0.3s ease',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden',
-        WebkitFontSmoothing: 'antialiased',
-        willChange: 'transform, opacity'
-      }}
-    >
-      {/* Navigation Buttons - Only visible on active card */}
-      {isActive && onNext && onPrev && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '16px'
-        }}>
-          <button
-            onClick={onPrev}
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(139, 115, 85, 0.12)',
-              border: '2px solid rgba(139, 115, 85, 0.25)',
-              color: '#5C4A3A',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(139, 115, 85, 0.18)';
-              e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.35)';
-              e.currentTarget.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(139, 115, 85, 0.12)';
-              e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.25)';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-
-          <button
-            onClick={onNext}
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(139, 115, 85, 0.12)',
-              border: '2px solid rgba(139, 115, 85, 0.25)',
-              color: '#5C4A3A',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(139, 115, 85, 0.18)';
-              e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.35)';
-              e.currentTarget.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(139, 115, 85, 0.12)';
-              e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.25)';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Portfolio() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [rotation, setRotation] = useState(0);
-
-  const projects = [
-    {
-      id: 1,
-      title: 'E-Commerce Platform',
-      category: 'Web Development',
-      description: 'Moderne E-Commerce-Lösung mit React, Next.js und Stripe Integration. Vollständig responsive mit optimierter Performance und SEO.',
-      tech: ['Next.js', 'TypeScript', 'Stripe', 'Tailwind CSS'],
-      year: '2024'
-    },
-    {
-      id: 2,
-      title: 'Corporate Website',
-      category: 'Web Design',
-      description: 'Unternehmenswebsite mit CMS-Integration, mehrsprachiger Unterstützung und DSGVO-konformen Formularen.',
-      tech: ['React', 'Contentful', 'i18n', 'Framer Motion'],
-      year: '2024'
-    },
-    {
-      id: 3,
-      title: 'SaaS Dashboard',
-      category: 'Web Application',
-      description: 'Komplexes Analytics-Dashboard mit Echtzeit-Daten, interaktiven Charts und benutzerdefinierten Reports.',
-      tech: ['React', 'Chart.js', 'WebSockets', 'PostgreSQL'],
-      year: '2023'
-    },
-    {
-      id: 4,
-      title: 'Portfolio Website',
-      category: 'Web Design',
-      description: 'Kreative Portfolio-Website für einen Fotografen mit Gallery-Feature und Kontaktformular.',
-      tech: ['Next.js', 'Sanity CMS', 'Lightbox', 'GSAP'],
-      year: '2023'
-    },
-    {
-      id: 5,
-      title: 'Mobile App Landing',
-      category: 'Marketing Website',
-      description: 'Landing Page für Mobile App mit App Store Integration, Video-Background und Download-Tracking.',
-      tech: ['Next.js', 'Vercel Analytics', 'Motion Design'],
-      year: '2024'
-    }
-  ];
-
-  const nextProject = () => {
-    setCurrentIndex((prev) => (prev + 1) % projects.length);
-    setRotation((prev) => prev - anglePerCard); // Rotate left (negative)
-  };
-
-  const prevProject = () => {
-    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
-    setRotation((prev) => prev + anglePerCard); // Rotate right (positive)
-  };
-
-  // Calculate rotation angle for the carousel
-  const anglePerCard = 360 / projects.length; // 72 degrees for 5 cards
-  const radius = 450; // Distance from center (reduced from 650)
-
   return (
     <main className="min-h-screen flex flex-col">
       <AnimatedBackground />
@@ -193,13 +18,13 @@ export default function Portfolio() {
         <div className="relative z-10">
           {/* Hero Section */}
           <section style={{
-            minHeight: '35vh',
+            minHeight: '40vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: '0 40px',
-            paddingTop: '120px',
-            paddingBottom: '40px'
+            paddingTop: '140px',
+            paddingBottom: '60px'
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -236,7 +61,7 @@ export default function Portfolio() {
                 marginBottom: '24px',
                 textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
               }}>
-                Ausgewählte<br />Projekte
+                Featured Project
               </h1>
 
               <p style={{
@@ -247,133 +72,258 @@ export default function Portfolio() {
                 color: 'rgba(245, 243, 237, 0.85)',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)'
               }}>
-                Ein Einblick in meine bisherigen Arbeiten
+                Ein Einblick in meine Arbeit
               </p>
             </motion.div>
           </section>
 
-          {/* Carousel Section */}
+          {/* Project Card Section */}
           <section style={{
-            minHeight: '65vh',
+            minHeight: '60vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '80px 40px 120px',
-            position: 'relative'
+            padding: '40px 40px 120px'
           }}>
-            <div style={{
-              width: '100%',
-              maxWidth: '1200px',
-              margin: '0 auto',
-              position: 'relative'
-            }}>
-              {/* 3D Carousel Container */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              style={{
+                maxWidth: '1100px',
+                width: '100%'
+              }}
+            >
               <div style={{
-                position: 'relative',
-                width: '100%',
-                height: '550px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                perspective: '2000px',
-                perspectiveOrigin: 'center center'
+                background: 'linear-gradient(145deg, #E8E5D9 0%, #EAE7DC 100%)',
+                border: '2px solid rgba(26, 77, 46, 0.18)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
               }}>
-                {/* Carousel Ring */}
-                <motion.div
-                  animate={{
-                    rotateY: rotation
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                  }}
-                  style={{
-                    position: 'relative',
-                    width: '480px',
-                    height: '500px',
-                    transformStyle: 'preserve-3d'
-                  }}
-                >
-                  {projects.map((project, index) => {
-                    // Calculate angle for this card
-                    const angle = index * anglePerCard;
-
-                    // Calculate relative position to current index
-                    const diff = (index - currentIndex + projects.length) % projects.length;
-                    const normalizedDiff = diff > projects.length / 2 ? diff - projects.length : diff;
-
-                    // Calculate opacity and brightness based on distance from front
-                    const distance = Math.abs(normalizedDiff);
-
-                    // Make all cards visible with varying opacity
-                    let opacity = 1;
-                    if (distance === 1) opacity = 0.6; // Adjacent cards
-                    else if (distance === 2) opacity = 0.3; // Behind cards
-
-                    const brightness = distance === 0 ? 1 : Math.max(0.65, 1 - (distance * 0.18));
-
-                    // Z-index based on distance (closer = higher)
-                    const zIndex = 10 - distance;
-
-                    return (
-                      <div
-                        key={project.id}
-                        style={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%',
-                          left: 0,
-                          top: 0,
-                          transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                          transformStyle: 'preserve-3d',
-                          opacity: opacity,
-                          filter: `brightness(${brightness})`,
-                          transition: 'opacity 0.7s ease, filter 0.7s ease',
-                          pointerEvents: index === currentIndex ? 'auto' : 'none',
-                          backfaceVisibility: 'hidden',
-                          WebkitBackfaceVisibility: 'hidden',
-                          zIndex: zIndex
-                        }}
-                      >
-                        <ProjectCard
-                          project={project}
-                          position={index}
-                          currentIndex={currentIndex}
-                          onNext={index === currentIndex ? nextProject : undefined}
-                          onPrev={index === currentIndex ? prevProject : undefined}
-                        />
-                      </div>
-                    );
-                  })}
-                </motion.div>
-              </div>
-
-              {/* Dots Navigation */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '12px',
-                marginTop: '50px'
-              }}>
-                {projects.map((project, index) => (
-                  <button
-                    key={project.id}
-                    onClick={() => setCurrentIndex(index)}
+                {/* Screenshot */}
+                <div style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '500px',
+                  overflow: 'hidden',
+                  borderBottom: '2px solid rgba(26, 77, 46, 0.12)'
+                }}>
+                  <Image
+                    src="/pictures/luistravels.com-screenshot.png"
+                    alt="Luis Travels Blog - Reise-Blog Website"
+                    fill
                     style={{
-                      width: index === currentIndex ? '32px' : '12px',
-                      height: '12px',
+                      objectFit: 'cover',
+                      objectPosition: 'top'
+                    }}
+                    priority
+                  />
+                </div>
+
+                {/* Content */}
+                <div style={{
+                  padding: '48px 50px'
+                }}>
+                  {/* Category Badge */}
+                  <div style={{
+                    display: 'inline-block',
+                    padding: '6px 16px',
+                    background: 'rgba(139, 115, 85, 0.1)',
+                    border: '1px solid rgba(139, 115, 85, 0.2)',
+                    borderRadius: '4px',
+                    marginBottom: '20px'
+                  }}>
+                    <span style={{
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#8B7355',
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase'
+                    }}>
+                      Travel Blog
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h2 style={{
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    fontSize: '42px',
+                    fontWeight: 700,
+                    color: '#3E2E1F',
+                    letterSpacing: '-0.02em',
+                    marginBottom: '16px',
+                    lineHeight: 1.1
+                  }}>
+                    Luis Travels
+                  </h2>
+
+                  {/* URL */}
+                  <a
+                    href="https://luistravels.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '18px',
+                      fontWeight: 500,
+                      color: '#8B7355',
+                      textDecoration: 'none',
+                      marginBottom: '24px',
+                      display: 'inline-block',
+                      transition: 'color 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#5C4A3A'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#8B7355'}
+                  >
+                    luistravels.com ↗
+                  </a>
+
+                  {/* Description */}
+                  <p style={{
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    fontSize: '18px',
+                    fontWeight: 400,
+                    lineHeight: 1.8,
+                    color: '#4A3428',
+                    marginBottom: '32px',
+                    maxWidth: '800px'
+                  }}>
+                    Ein moderner Reise-Blog mit CMS-Integration, optimiert für Performance und SEO.
+                    Die Website präsentiert Reiseberichte, Fotogalerien und Reisetipps in einem
+                    ansprechenden, responsiven Design.
+                  </p>
+
+                  {/* Tech Stack */}
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      color: '#8B7355',
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      marginBottom: '16px'
+                    }}>
+                      Tech Stack
+                    </h3>
+                    <div style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '10px'
+                    }}>
+                      {['Next.js', 'TypeScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'Vercel'].map((tech) => (
+                        <span
+                          key={tech}
+                          style={{
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: '#5C4A3A',
+                            background: 'rgba(139, 115, 85, 0.08)',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(139, 115, 85, 0.15)'
+                          }}
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div style={{ marginBottom: '40px' }}>
+                    <h3 style={{
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      color: '#8B7355',
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      marginBottom: '16px'
+                    }}>
+                      Key Features
+                    </h3>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gap: '16px'
+                    }}>
+                      {[
+                        'Headless CMS Integration',
+                        'Responsive Design',
+                        'SEO Optimiert',
+                        'Image Optimization',
+                        'Fast Page Loads',
+                        'Blog & Gallery Features'
+                      ].map((feature, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                          }}
+                        >
+                          <div style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: '#8B7355',
+                            flexShrink: 0
+                          }} />
+                          <span style={{
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '15px',
+                            fontWeight: 400,
+                            color: '#4A3428'
+                          }}>
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <a
+                    href="https://luistravels.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      padding: '16px 32px',
+                      background: 'rgba(139, 115, 85, 0.12)',
+                      border: '2px solid rgba(139, 115, 85, 0.3)',
                       borderRadius: '6px',
-                      background: index === currentIndex
-                        ? 'rgba(26, 77, 46, 0.6)'
-                        : 'rgba(26, 77, 46, 0.2)',
-                      border: 'none',
-                      cursor: 'pointer',
+                      color: '#5C4A3A',
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      textDecoration: 'none',
                       transition: 'all 0.3s ease'
                     }}
-                  />
-                ))}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(139, 115, 85, 0.18)';
+                      e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.4)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(139, 115, 85, 0.12)';
+                      e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.3)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    Website Besuchen →
+                  </a>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </section>
         </div>
       </PageTransition>
