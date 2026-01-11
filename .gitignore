@@ -38,3 +38,29 @@ next-env.d.ts
 # personal files
 untitled folder/
 .claude/settings.local.json
+
+# environment
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary
+temp/
+tmp/
