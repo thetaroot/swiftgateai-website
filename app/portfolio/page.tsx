@@ -188,7 +188,7 @@ export default function Portfolio() {
                   style={{
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    padding: isImageHovered ? '0 36px' : '28px 36px',
+                    padding: isImageHovered ? '0 40px' : '32px 40px',
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)',
                     pointerEvents: isImageHovered ? 'none' : 'auto'
@@ -198,15 +198,15 @@ export default function Portfolio() {
                   {/* Category Badge */}
                   <div style={{
                     display: 'inline-block',
-                    padding: '5px 12px',
+                    padding: '6px 14px',
                     background: 'rgba(139, 115, 85, 0.1)',
                     border: '1px solid rgba(139, 115, 85, 0.2)',
                     borderRadius: '4px',
-                    marginBottom: '14px'
+                    marginBottom: '16px'
                   }}>
                     <span style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '10px',
+                      fontSize: '12px',
                       fontWeight: 600,
                       color: '#8B7355',
                       letterSpacing: '1px',
@@ -219,11 +219,11 @@ export default function Portfolio() {
                   {/* Title */}
                   <h2 style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '28px',
+                    fontSize: '36px',
                     fontWeight: 700,
                     color: '#3E2E1F',
                     letterSpacing: '-0.02em',
-                    marginBottom: '10px',
+                    marginBottom: '12px',
                     lineHeight: 1.1
                   }}>
                     Luis Travels
@@ -236,11 +236,11 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '14px',
+                      fontSize: '16px',
                       fontWeight: 500,
                       color: '#8B7355',
                       textDecoration: 'none',
-                      marginBottom: '18px',
+                      marginBottom: '20px',
                       display: 'inline-block',
                       transition: 'color 0.2s ease'
                     }}
@@ -253,11 +253,11 @@ export default function Portfolio() {
                   {/* Description */}
                   <p style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     fontWeight: 400,
                     lineHeight: 1.6,
                     color: '#4A3428',
-                    marginBottom: '20px'
+                    marginBottom: '24px'
                   }}>
                     Ein moderner Reise-Blog mit CMS-Integration, optimiert für Performance und SEO.
                     Die Website präsentiert Reiseberichte, Fotogalerien und Reisetipps in einem
@@ -265,33 +265,33 @@ export default function Portfolio() {
                   </p>
 
                   {/* Tech Stack */}
-                  <div style={{ marginBottom: '20px' }}>
+                  <div style={{ marginBottom: '28px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '11px',
+                      fontSize: '13px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '10px'
+                      marginBottom: '14px'
                     }}>
                       Tech Stack
                     </h3>
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: '6px'
+                      gap: '8px'
                     }}>
-                      {['Next.js', 'TypeScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'Vercel'].map((tech) => (
+                      {['Next.js', 'React', 'TypeScript', 'JavaScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'HTML/CSS', 'Vercel', 'Image Optimization'].map((tech) => (
                         <span
                           key={tech}
                           style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '11px',
+                            fontSize: '13px',
                             fontWeight: 500,
                             color: '#5C4A3A',
                             background: 'rgba(139, 115, 85, 0.08)',
-                            padding: '5px 10px',
+                            padding: '6px 12px',
                             borderRadius: '4px',
                             border: '1px solid rgba(139, 115, 85, 0.15)'
                           }}
@@ -303,22 +303,22 @@ export default function Portfolio() {
                   </div>
 
                   {/* Features */}
-                  <div style={{ marginBottom: '24px' }}>
+                  <div style={{ marginBottom: '32px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '11px',
+                      fontSize: '13px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '10px'
+                      marginBottom: '14px'
                     }}>
                       Key Features
                     </h3>
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '8px'
+                      gap: '10px'
                     }}>
                       {[
                         'Headless CMS Integration',
@@ -333,19 +333,19 @@ export default function Portfolio() {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '10px'
                           }}
                         >
                           <div style={{
-                            width: '4px',
-                            height: '4px',
+                            width: '5px',
+                            height: '5px',
                             borderRadius: '50%',
                             background: '#8B7355',
                             flexShrink: 0
                           }} />
                           <span style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '13px',
+                            fontSize: '15px',
                             fontWeight: 400,
                             color: '#4A3428'
                           }}>
@@ -363,13 +363,13 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       display: 'inline-block',
-                      padding: '12px 24px',
+                      padding: '14px 28px',
                       background: 'rgba(139, 115, 85, 0.12)',
                       border: '2px solid rgba(139, 115, 85, 0.3)',
                       borderRadius: '6px',
                       color: '#5C4A3A',
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '13px',
+                      fontSize: '15px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
