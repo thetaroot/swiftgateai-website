@@ -3,12 +3,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
 import PageTransition from '@/components/PageTransition';
-
-const Footer = dynamic(() => import('@/components/Footer'));
+import Footer from '@/components/Footer';
 
 export default function Portfolio() {
   const [isImageHovered, setIsImageHovered] = useState(false);
