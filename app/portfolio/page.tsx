@@ -92,7 +92,7 @@ export default function Portfolio() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               style={{
-                maxWidth: '550px',
+                maxWidth: '900px',
                 width: '100%'
               }}
             >
@@ -102,7 +102,7 @@ export default function Portfolio() {
                 borderRadius: '12px',
                 overflow: 'hidden',
                 boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-                height: '680px',
+                height: '550px',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative'
