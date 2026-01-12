@@ -19,7 +19,14 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 pt-8 pb-4">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 pt-8 pb-4"
+      style={{
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        background: 'linear-gradient(180deg, rgba(18, 36, 24, 0.85) 0%, rgba(18, 36, 24, 0.75) 70%, rgba(18, 36, 24, 0) 100%)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-8">
         <div className="flex justify-between items-center relative">
           {/* Logo */}
