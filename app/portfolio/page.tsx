@@ -1,16 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
 import PageTransition from '@/components/PageTransition';
 import Footer from '@/components/Footer';
 
+// Portfolio Projects Data
+const projects = [
+  {
+    id: 1,
+    title: 'Luis Travels',
+    category: 'Travel Blog',
+    url: 'https://luistravels.com',
+    description: 'Ein moderner Reise-Blog mit CMS-Integration, optimiert für Performance und SEO. Die Website präsentiert Reiseberichte, Fotogalerien und Reisetipps in einem ansprechenden, responsiven Design.',
+    image: '/pictures/luistravels.com-screenshot.png',
+    mobileImage: '/pictures/luistravels.com-smartphonescreenshot.jpg',
+    techStack: ['Next.js', 'React', 'TypeScript', 'JavaScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'HTML/CSS', 'Vercel', 'Image Optimization'],
+    features: [
+      'Headless CMS Integration',
+      'Responsive Design',
+      'SEO Optimiert',
+      'Image Optimization',
+      'Fast Page Loads',
+      'Blog & Gallery Features'
+    ]
+  }
+  // More projects can be added here
+];
+
 export default function Portfolio() {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -22,6 +47,402 @@ export default function Portfolio() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const threshold = 50;
+
+    if (info.offset.x > threshold && currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    } else if (info.offset.x < -threshold && currentIndex < projects.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+
+    setIsDragging(false);
+  };
+
+  // Mobile Carousel Render
+  if (isMobile) {
+    const currentProject = projects[currentIndex];
+
+    return (
+      <main className="min-h-screen flex flex-col">
+        <AnimatedBackground />
+        <Navigation />
+        <PageTransition>
+          <div className="relative z-10">
+            {/* Hero Section - Mobile */}
+            <section style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '120px 20px 24px'
+            }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                style={{ textAlign: 'center', maxWidth: '360px', width: '100%' }}
+              >
+                <div style={{
+                  display: 'inline-block',
+                  padding: '8px 18px',
+                  background: 'rgba(26, 77, 46, 0.25)',
+                  border: '1px solid rgba(26, 77, 46, 0.5)',
+                  borderRadius: '4px',
+                  color: '#F5F3ED',
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  marginBottom: '20px',
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
+                }}>
+                  PORTFOLIO
+                </div>
+
+                <h1 style={{
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: '40px',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  color: '#F5F3ED',
+                  letterSpacing: '-0.03em',
+                  textTransform: 'uppercase',
+                  marginBottom: '16px',
+                  textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
+                }}>
+                  {projects.length > 1 ? 'Featured Projects' : 'Featured Project'}
+                </h1>
+
+                <p style={{
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: '17px',
+                  fontWeight: 400,
+                  lineHeight: 1.6,
+                  color: 'rgba(245, 243, 237, 0.85)',
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)',
+                  marginBottom: '12px'
+                }}>
+                  Ein Einblick in meine Arbeit
+                </p>
+
+                {/* Project Counter */}
+                {projects.length > 1 && (
+                  <div style={{
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: 'rgba(245, 243, 237, 0.6)',
+                    letterSpacing: '1px'
+                  }}>
+                    {currentIndex + 1} / {projects.length}
+                  </div>
+                )}
+              </motion.div>
+            </section>
+
+            {/* Carousel Section - Mobile */}
+            <section style={{
+              position: 'relative',
+              padding: '0 0 40px',
+              overflow: 'hidden'
+            }}>
+              {/* Swipeable Cards Container */}
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                padding: '0 20px',
+                marginBottom: '32px'
+              }}>
+                <motion.div
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.2}
+                  onDragStart={() => setIsDragging(true)}
+                  onDragEnd={handleDragEnd}
+                  animate={{ x: -currentIndex * (window.innerWidth - 40) }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30
+                  }}
+                  style={{
+                    display: 'flex',
+                    gap: '20px',
+                    cursor: isDragging ? 'grabbing' : 'grab'
+                  }}
+                >
+                  {projects.map((project, index) => (
+                    <motion.div
+                      key={project.id}
+                      style={{
+                        minWidth: 'calc(100vw - 40px)',
+                        maxWidth: 'calc(100vw - 40px)',
+                        flexShrink: 0
+                      }}
+                    >
+                      {/* Project Card */}
+                      <div style={{
+                        background: 'linear-gradient(145deg, #E8E5D9 0%, #EAE7DC 100%)',
+                        border: '2px solid rgba(26, 77, 46, 0.18)',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+                      }}>
+                        {/* Image */}
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => isDragging && e.preventDefault()}
+                          style={{
+                            position: 'relative',
+                            display: 'block',
+                            width: '100%',
+                            height: '280px',
+                            overflow: 'hidden',
+                            borderBottom: '2px solid rgba(26, 77, 46, 0.12)'
+                          }}
+                        >
+                          <Image
+                            src={project.mobileImage}
+                            alt={`${project.title} - ${project.category}`}
+                            fill
+                            style={{
+                              objectFit: 'cover',
+                              objectPosition: '50% 15%'
+                            }}
+                            priority={index === 0}
+                          />
+
+                          {/* Tap Hint */}
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '12px',
+                            right: '12px',
+                            padding: '8px 16px',
+                            background: 'rgba(245, 243, 237, 0.95)',
+                            border: '2px solid rgba(26, 77, 46, 0.3)',
+                            borderRadius: '6px',
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: '#3E2E1F',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                          }}>
+                            Tap zum Öffnen
+                          </div>
+                        </a>
+
+                        {/* Content */}
+                        <div style={{ padding: '24px' }}>
+                          {/* Category Badge */}
+                          <div style={{
+                            display: 'inline-block',
+                            padding: '5px 12px',
+                            background: 'rgba(139, 115, 85, 0.1)',
+                            border: '1px solid rgba(139, 115, 85, 0.2)',
+                            borderRadius: '4px',
+                            marginBottom: '14px'
+                          }}>
+                            <span style={{
+                              fontFamily: 'Space Grotesk, sans-serif',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              color: '#8B7355',
+                              letterSpacing: '1px',
+                              textTransform: 'uppercase'
+                            }}>
+                              {project.category}
+                            </span>
+                          </div>
+
+                          {/* Title */}
+                          <h2 style={{
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '28px',
+                            fontWeight: 700,
+                            color: '#3E2E1F',
+                            letterSpacing: '-0.02em',
+                            marginBottom: '8px',
+                            lineHeight: 1.1
+                          }}>
+                            {project.title}
+                          </h2>
+
+                          {/* URL */}
+                          <a
+                            href={project.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => isDragging && e.preventDefault()}
+                            style={{
+                              fontFamily: 'Space Grotesk, sans-serif',
+                              fontSize: '15px',
+                              fontWeight: 500,
+                              color: '#8B7355',
+                              textDecoration: 'none',
+                              marginBottom: '16px',
+                              display: 'inline-block'
+                            }}
+                          >
+                            {project.url.replace('https://', '')} ↗
+                          </a>
+
+                          {/* Description */}
+                          <p style={{
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '15px',
+                            fontWeight: 400,
+                            lineHeight: 1.6,
+                            color: '#4A3428',
+                            marginBottom: '20px'
+                          }}>
+                            {project.description}
+                          </p>
+
+                          {/* Tech Stack */}
+                          <div style={{ marginBottom: '20px' }}>
+                            <h3 style={{
+                              fontFamily: 'Space Grotesk, sans-serif',
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              color: '#8B7355',
+                              letterSpacing: '1px',
+                              textTransform: 'uppercase',
+                              marginBottom: '12px'
+                            }}>
+                              Tech Stack
+                            </h3>
+                            <div style={{
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              gap: '8px'
+                            }}>
+                              {project.techStack.slice(0, 6).map((tech) => (
+                                <span
+                                  key={tech}
+                                  style={{
+                                    fontFamily: 'Space Grotesk, sans-serif',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    color: '#5C4A3A',
+                                    background: 'rgba(139, 115, 85, 0.08)',
+                                    padding: '6px 10px',
+                                    borderRadius: '4px',
+                                    border: '1px solid rgba(139, 115, 85, 0.15)'
+                                  }}
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* CTA Button */}
+                          <a
+                            href={project.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => isDragging && e.preventDefault()}
+                            style={{
+                              display: 'inline-block',
+                              padding: '14px 24px',
+                              background: 'rgba(139, 115, 85, 0.12)',
+                              border: '2px solid rgba(139, 115, 85, 0.3)',
+                              borderRadius: '6px',
+                              color: '#5C4A3A',
+                              fontFamily: 'Space Grotesk, sans-serif',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              textDecoration: 'none',
+                              width: '100%',
+                              textAlign: 'center'
+                            }}
+                          >
+                            Website Besuchen →
+                          </a>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+
+              {/* Navigation Dots */}
+              {projects.length > 1 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  marginBottom: '24px'
+                }}>
+                  {projects.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      style={{
+                        width: currentIndex === index ? '32px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        background: currentIndex === index
+                          ? 'rgba(26, 77, 46, 0.6)'
+                          : 'rgba(245, 243, 237, 0.3)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        boxShadow: currentIndex === index
+                          ? '0 0 8px rgba(26, 77, 46, 0.4)'
+                          : 'none'
+                      }}
+                      aria-label={`Go to project ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Swipe Hint - Only show on first load */}
+              {projects.length > 1 && currentIndex === 0 && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0 }}
+                  transition={{ delay: 3, duration: 0.5 }}
+                  style={{
+                    textAlign: 'center',
+                    padding: '0 20px'
+                  }}
+                >
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    background: 'rgba(26, 77, 46, 0.15)',
+                    border: '1px solid rgba(26, 77, 46, 0.3)',
+                    borderRadius: '20px',
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: 'rgba(245, 243, 237, 0.8)',
+                    textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)'
+                  }}>
+                    <span>← Swipe →</span>
+                  </div>
+                </motion.div>
+              )}
+            </section>
+          </div>
+        </PageTransition>
+        <Footer />
+      </main>
+    );
+  }
+
+  // Desktop Version (unchanged)
   return (
     <main className="min-h-screen flex flex-col">
       <AnimatedBackground />
@@ -33,7 +454,7 @@ export default function Portfolio() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: isMobile ? '120px 20px 32px' : '140px 40px 40px'
+            padding: '140px 40px 40px'
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -43,17 +464,17 @@ export default function Portfolio() {
             >
               <div style={{
                 display: 'inline-block',
-                padding: isMobile ? '8px 18px' : '10px 24px',
+                padding: '10px 24px',
                 background: 'rgba(26, 77, 46, 0.25)',
                 border: '1px solid rgba(26, 77, 46, 0.5)',
                 borderRadius: '4px',
                 color: '#F5F3ED',
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: isMobile ? '12px' : '13px',
+                fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '2px',
                 textTransform: 'uppercase',
-                marginBottom: isMobile ? '20px' : '24px',
+                marginBottom: '24px',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
               }}>
                 PORTFOLIO
@@ -61,13 +482,13 @@ export default function Portfolio() {
 
               <h1 style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: isMobile ? '40px' : '56px',
+                fontSize: '56px',
                 fontWeight: 700,
                 lineHeight: 1,
                 color: '#F5F3ED',
                 letterSpacing: '-0.03em',
                 textTransform: 'uppercase',
-                marginBottom: isMobile ? '20px' : '24px',
+                marginBottom: '24px',
                 textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
               }}>
                 Featured Project
@@ -75,7 +496,7 @@ export default function Portfolio() {
 
               <p style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: isMobile ? '17px' : '20px',
+                fontSize: '20px',
                 fontWeight: 400,
                 lineHeight: 1.6,
                 color: 'rgba(245, 243, 237, 0.85)',
