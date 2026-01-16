@@ -111,7 +111,7 @@ export default function Portfolio() {
                   marginBottom: '16px',
                   textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
                 }}>
-                  {projects.length > 1 ? 'Featured Projects' : 'Featured Project'}
+                  {projects.length > 1 ? 'Ausgewählte Projekte' : 'Ausgewähltes Projekt'}
                 </h1>
 
                 <p style={{
@@ -491,7 +491,7 @@ export default function Portfolio() {
                 marginBottom: '24px',
                 textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
               }}>
-                Featured Project
+                Ausgewähltes Projekt
               </h1>
 
               <p style={{
@@ -533,23 +533,27 @@ export default function Portfolio() {
                 flexDirection: 'column',
                 position: 'relative'
               }}>
-                {/* Screenshot - Top Half - Clickable */}
-                <a
+                {/* Screenshot - Expandable on Hover */}
+                <motion.a
                   href="https://luistravels.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   onMouseEnter={() => !isMobile && setIsImageHovered(true)}
                   onMouseLeave={() => !isMobile && setIsImageHovered(false)}
+                  animate={{
+                    height: (isImageHovered && !isMobile) ? '550px' : '275px'
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    ease: [0.4, 0, 0.2, 1]
+                  }}
                   style={{
                     position: 'relative',
                     width: '100%',
-                    height: (isImageHovered && !isMobile) ? '100%' : '50%',
                     minHeight: isMobile ? '240px' : '275px',
                     overflow: 'hidden',
                     borderBottom: (isImageHovered && !isMobile) ? 'none' : '2px solid rgba(26, 77, 46, 0.12)',
-                    flexShrink: 0,
                     cursor: 'pointer',
-                    transition: 'height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     zIndex: 2
                   }}
                 >
@@ -627,26 +631,31 @@ export default function Portfolio() {
                 </a>
 
                 {/* Content - Bottom Half - Scrollable */}
-                <motion.div
-                  animate={{
-                    height: (isImageHovered && !isMobile) ? '0%' : '50%',
-                    opacity: (isImageHovered && !isMobile) ? 0 : 1
-                  }}
-                  transition={{
-                    duration: 0.4,
-                    ease: [0.4, 0, 0.2, 1]
-                  }}
-                  style={{
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
-                    padding: (isImageHovered && !isMobile) ? '0' : (isMobile ? '24px' : '32px 40px'),
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)',
-                    pointerEvents: (isImageHovered && !isMobile) ? 'none' : 'auto',
-                    minHeight: (isImageHovered && !isMobile) ? '0' : (isMobile ? '240px' : '275px')
-                  }}
-                  className="custom-scrollbar"
-                >
+                {!(isImageHovered && !isMobile) && (
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: '50%',
+                      opacity: 1
+                    }}
+                    exit={{
+                      height: 0,
+                      opacity: 0
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                    style={{
+                      overflowY: 'auto',
+                      overflowX: 'hidden',
+                      padding: isMobile ? '24px' : '32px 40px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)',
+                      minHeight: isMobile ? '240px' : '275px'
+                    }}
+                    className="custom-scrollbar"
+                  >
                   {/* Category Badge */}
                   <div style={{
                     display: 'inline-block',
@@ -842,6 +851,7 @@ export default function Portfolio() {
                     Website Besuchen →
                   </a>
                 </motion.div>
+                )}
               </div>
 
               {/* Custom Scrollbar Styles */}
