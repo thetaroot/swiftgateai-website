@@ -531,7 +531,8 @@ export default function Portfolio() {
                 boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
                 display: 'flex',
                 flexDirection: 'column',
-                position: 'relative'
+                position: 'relative',
+                height: isMobile ? 'auto' : '550px'
               }}>
                 {/* Screenshot - Expandable on Hover */}
                 <motion.a
@@ -631,31 +632,28 @@ export default function Portfolio() {
                 </motion.a>
 
                 {/* Content - Bottom Half - Scrollable */}
-                {!(isImageHovered && !isMobile) && (
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      height: '50%',
-                      opacity: 1
-                    }}
-                    exit={{
-                      height: 0,
-                      opacity: 0
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      ease: [0.4, 0, 0.2, 1]
-                    }}
-                    style={{
-                      overflowY: 'auto',
-                      overflowX: 'hidden',
-                      padding: isMobile ? '24px' : '32px 40px',
-                      scrollbarWidth: 'thin',
-                      scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)',
-                      minHeight: isMobile ? '240px' : '275px'
-                    }}
-                    className="custom-scrollbar"
-                  >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: (isImageHovered && !isMobile) ? '0px' : '275px',
+                    opacity: (isImageHovered && !isMobile) ? 0 : 1,
+                    paddingTop: (isImageHovered && !isMobile) ? 0 : (isMobile ? 24 : 32),
+                    paddingBottom: (isImageHovered && !isMobile) ? 0 : (isMobile ? 24 : 32)
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    ease: [0.4, 0, 0.2, 1]
+                  }}
+                  style={{
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    paddingLeft: isMobile ? '24px' : '40px',
+                    paddingRight: isMobile ? '24px' : '40px',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)'
+                  }}
+                  className="custom-scrollbar"
+                >
                   {/* Category Badge */}
                   <div style={{
                     display: 'inline-block',
@@ -851,7 +849,6 @@ export default function Portfolio() {
                     Website Besuchen →
                   </a>
                 </motion.div>
-                )}
               </div>
 
               {/* Custom Scrollbar Styles */}
