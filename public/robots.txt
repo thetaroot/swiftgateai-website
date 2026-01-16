@@ -1,6 +1,21 @@
-# Alle Crawler erlauben
+# SwiftGate AI - Robots.txt
 User-agent: *
 Allow: /
 
 # Sitemap
 Sitemap: https://swiftgateai.de/sitemap.xml
+
+# Block unnecessary crawling
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important pages
+Allow: /
+Allow: /services
+Allow: /portfolio
+Allow: /ueber-mich
+Allow: /kontakt
+Allow: /datenschutz
+Allow: /impressum
+Allow: /agb

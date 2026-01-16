@@ -1,81 +1,57 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://swiftgateai.de'
-  const lastModified = new Date()
+  const baseUrl = 'https://swiftgateai.de';
+  const currentDate = new Date();
 
   return [
     {
       url: baseUrl,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 1,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 1.0,
     },
     {
       url: `${baseUrl}/services`,
-      lastModified,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/portfolio`,
-      lastModified,
-      changeFrequency: 'weekly',
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/about`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
       url: `${baseUrl}/ueber-mich`,
-      lastModified,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/kontakt`,
-      lastModified,
+      lastModified: currentDate,
       changeFrequency: 'yearly',
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/business`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/creative`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/tech`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.6,
+      url: `${baseUrl}/datenschutz`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.5,
     },
     {
       url: `${baseUrl}/impressum`,
-      lastModified,
+      lastModified: currentDate,
       changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/datenschutz`,
-      lastModified,
-      changeFrequency: 'yearly',
-      priority: 0.3,
+      priority: 0.5,
     },
     {
       url: `${baseUrl}/agb`,
-      lastModified,
+      lastModified: currentDate,
       changeFrequency: 'yearly',
-      priority: 0.3,
+      priority: 0.5,
     },
-  ]
+  ];
 }

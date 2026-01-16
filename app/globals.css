@@ -39,6 +39,7 @@ body {
   background-size: 400% 400%;
   animation: liquidFlow 15s ease infinite;
   will-change: background-position;
+  transform: translate3d(0, 0, 0); /* GPU acceleration */
 }
 
 @keyframes liquidFlow {
@@ -57,4 +58,36 @@ body {
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .liquid-gradient {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
+/* Performance optimizations for animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
