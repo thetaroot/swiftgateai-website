@@ -86,129 +86,161 @@ export default function Navigation() {
               SWIFTGATE
             </button>
 
-            {/* Hamburger Button */}
+            {/* Menu Button - Modern Icon */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{
                 width: '44px',
                 height: '44px',
                 display: 'flex',
-                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '6px',
-                background: 'none',
-                border: 'none',
+                background: isMenuOpen
+                  ? 'rgba(26, 77, 46, 0.2)'
+                  : 'rgba(245, 243, 237, 0.1)',
+                border: isMenuOpen
+                  ? '2px solid rgba(26, 77, 46, 0.4)'
+                  : '2px solid rgba(245, 243, 237, 0.2)',
+                borderRadius: '12px',
                 cursor: 'pointer',
                 position: 'relative',
                 zIndex: 101,
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
               }}
-              aria-label="Menu"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
-              <span
-                style={{
-                  width: '24px',
-                  height: '2px',
-                  background: '#F5F3ED',
-                  borderRadius: '2px',
-                  transition: 'all 0.3s ease',
-                  transform: isMenuOpen ? 'rotate(45deg)' : 'none',
-                  position: isMenuOpen ? 'absolute' : 'relative',
-                }}
-              />
-              <span
-                style={{
-                  width: '24px',
-                  height: '2px',
-                  background: '#F5F3ED',
-                  borderRadius: '2px',
-                  transition: 'all 0.3s ease',
-                  opacity: isMenuOpen ? 0 : 1,
-                }}
-              />
-              <span
-                style={{
-                  width: '24px',
-                  height: '2px',
-                  background: '#F5F3ED',
-                  borderRadius: '2px',
-                  transition: 'all 0.3s ease',
-                  transform: isMenuOpen ? 'rotate(-45deg)' : 'none',
-                  position: isMenuOpen ? 'absolute' : 'relative',
-                }}
-              />
+              {isMenuOpen ? (
+                // X Close Icon
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M15 5L5 15M5 5L15 15"
+                    stroke="#F5F3ED"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                // Menu Dots Icon
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="4" r="1.5" fill="#F5F3ED" />
+                  <circle cx="10" cy="10" r="1.5" fill="#F5F3ED" />
+                  <circle cx="10" cy="16" r="1.5" fill="#F5F3ED" />
+                </svg>
+              )}
             </button>
           </div>
         </nav>
 
-        {/* Fullscreen Mobile Menu */}
+        {/* Modern Glassmorphism Dropdown Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
               style={{
                 position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(18, 36, 24, 0.98)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                zIndex: 99,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '80px 40px 40px',
+                top: 'max(84px, calc(env(safe-area-inset-top) + 64px))',
+                left: '20px',
+                right: '20px',
+                zIndex: 98,
+                pointerEvents: 'auto'
               }}
             >
-              <motion.div
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '32px',
-                  width: '100%',
-                  maxWidth: '320px',
-                }}
-              >
-                {navItems.map((item, index) => {
-                  const isActive = pathname === item.path;
-                  return (
-                    <motion.button
-                      key={item.path}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.15 + index * 0.05, duration: 0.3 }}
-                      onClick={() => handleNavClick(item.path)}
-                      style={{
-                        background: isActive ? 'rgba(26, 77, 46, 0.2)' : 'transparent',
-                        border: isActive ? '2px solid rgba(26, 77, 46, 0.4)' : '2px solid rgba(245, 243, 237, 0.1)',
-                        borderRadius: '8px',
-                        padding: '24px 28px',
-                        color: isActive ? '#F5F3ED' : 'rgba(245, 243, 237, 0.8)',
-                        fontSize: '24px',
-                        fontWeight: 600,
-                        fontFamily: 'Space Grotesk, sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      {item.label}
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <div style={{
+                background: 'rgba(18, 36, 24, 0.75)',
+                backdropFilter: 'blur(40px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                borderRadius: '24px',
+                border: '1px solid rgba(26, 77, 46, 0.3)',
+                boxShadow: '0 20px 60px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                padding: '20px',
+                overflow: 'hidden'
+              }}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
+                  }}
+                >
+                  {navItems.map((item, index) => {
+                    const isActive = pathname === item.path;
+                    return (
+                      <motion.button
+                        key={item.path}
+                        initial={{ x: -10, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.15 + index * 0.05, duration: 0.3 }}
+                        onClick={() => handleNavClick(item.path)}
+                        style={{
+                          background: isActive
+                            ? 'rgba(26, 77, 46, 0.3)'
+                            : 'rgba(245, 243, 237, 0.05)',
+                          border: isActive
+                            ? '2px solid rgba(26, 77, 46, 0.5)'
+                            : '2px solid rgba(245, 243, 237, 0.1)',
+                          borderRadius: '16px',
+                          padding: '18px 24px',
+                          color: isActive ? '#F5F3ED' : 'rgba(245, 243, 237, 0.85)',
+                          fontSize: '18px',
+                          fontWeight: isActive ? 600 : 500,
+                          fontFamily: 'Space Grotesk, sans-serif',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)',
+                          transition: 'all 0.2s ease',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}
+                        onMouseDown={(e) => {
+                          e.currentTarget.style.transform = 'scale(0.98)';
+                        }}
+                        onMouseUp={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                      >
+                        {/* Active indicator */}
+                        {isActive && (
+                          <motion.div
+                            layoutId="mobileActiveIndicator"
+                            style={{
+                              position: 'absolute',
+                              left: '12px',
+                              top: '50%',
+                              width: '4px',
+                              height: '60%',
+                              background: 'linear-gradient(180deg, rgba(26, 77, 46, 0.8) 0%, rgba(26, 77, 46, 0.4) 100%)',
+                              borderRadius: '2px',
+                              transform: 'translateY(-50%)',
+                              boxShadow: '0 0 8px rgba(26, 77, 46, 0.6)'
+                            }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 400,
+                              damping: 30
+                            }}
+                          />
+                        )}
+                        <span style={{ position: 'relative', zIndex: 1, paddingLeft: isActive ? '12px' : '0' }}>
+                          {item.label}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
