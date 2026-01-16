@@ -63,8 +63,8 @@ export default function Navigation() {
             paddingBottom: '20px',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            background: 'rgba(18, 36, 24, 0.95)',
-            borderBottom: '1px solid rgba(26, 77, 46, 0.2)'
+            background: 'linear-gradient(180deg, rgba(18, 36, 24, 0.98) 0%, rgba(18, 36, 24, 0.95) 85%, rgba(18, 36, 24, 0.75) 100%)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
           }}
         >
           <div style={{ padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

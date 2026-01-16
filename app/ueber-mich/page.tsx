@@ -101,9 +101,10 @@ export default function UeberMich() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '60px 20px'
+              padding: '60px 20px',
+              overflow: 'hidden'
             }}>
-              <div style={{ maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'center' }}>
+              <div style={{ maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'center', overflow: 'hidden' }}>
                 {/* Portrait */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -137,18 +138,24 @@ export default function UeberMich() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}
                 >
                   <h2 style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '32px',
+                    fontSize: '28px',
                     fontWeight: 700,
-                    lineHeight: 1.1,
+                    lineHeight: 1.2,
                     color: '#F5F3ED',
                     letterSpacing: '-0.02em',
                     textTransform: 'uppercase',
                     textShadow: '0 2px 12px rgba(0, 0, 0, 0.9)',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word',
+                    width: '100%',
+                    hyphens: 'auto',
+                    WebkitHyphens: 'auto',
+                    maxWidth: '100%'
                   }}>
                     Warum persönlicher Service im digitalen Zeitalter wichtiger denn je ist
                   </h2>
