@@ -628,7 +628,7 @@ export default function Portfolio() {
                       Tap zum Öffnen
                     </div>
                   )}
-                </a>
+                </motion.a>
 
                 {/* Content - Bottom Half - Scrollable */}
                 {!(isImageHovered && !isMobile) && (
