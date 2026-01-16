@@ -1,37 +1,49 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function Footer() {
   const router = useRouter();
   const currentYear = new Date().getFullYear();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
-    <footer className="relative z-10 bg-[#F5F1ED] py-8 px-8 border-t border-[#E8E5D9]">
+    <footer className={`relative z-10 bg-[#F5F1ED] border-t border-[#E8E5D9] ${isMobile ? 'py-6 px-5' : 'py-8 px-8'}`}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col items-center gap-6">
+        <div className={`flex flex-col items-center ${isMobile ? 'gap-5' : 'gap-6'}`}>
           {/* Legal Links */}
-          <div className="flex gap-6">
+          <div className={isMobile ? 'flex gap-5' : 'flex gap-6'}>
             <button
               onClick={() => router.push('/impressum')}
-              className="text-sm text-[#8B7355] hover:text-[#6B5745] transition-colors duration-200 font-medium"
+              className={`${isMobile ? 'text-xs' : 'text-sm'} text-[#8B7355] hover:text-[#6B5745] transition-colors duration-200 font-medium`}
             >
               Impressum
             </button>
             <button
               onClick={() => router.push('/datenschutz')}
-              className="text-sm text-[#8B7355] hover:text-[#6B5745] transition-colors duration-200 font-medium"
+              className={`${isMobile ? 'text-xs' : 'text-sm'} text-[#8B7355] hover:text-[#6B5745] transition-colors duration-200 font-medium`}
             >
               Datenschutz
             </button>
           </div>
 
           {/* Copyright & Rights */}
-          <div className="flex flex-col items-center gap-2 text-center">
-            <div className="text-sm text-[#8B7355] font-semibold">
+          <div className={`flex flex-col items-center text-center ${isMobile ? 'gap-1.5 px-2' : 'gap-2'}`}>
+            <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-[#8B7355] font-semibold`}>
               © {currentYear} Swiftgateai – Alle Rechte vorbehalten
             </div>
-            <div className="text-xs text-[#8B7355]/80 max-w-2xl">
+            <div className={`${isMobile ? 'text-[11px] leading-relaxed' : 'text-xs'} text-[#8B7355]/80 max-w-2xl`}>
               Sämtliche Inhalte, Texte, Bilder, Grafiken und Designelemente dieser Website unterliegen
               dem Urheberrecht und sind Eigentum von Luis Amadeus Guenther / Swiftgateai.
               Jegliche Verwendung, Vervielfältigung oder Verbreitung ohne ausdrückliche schriftliche
@@ -40,11 +52,11 @@ export default function Footer() {
           </div>
 
           {/* Additional Info */}
-          <div className="flex items-center gap-2 text-xs text-[#8B7355]/60">
+          <div className={`flex items-center gap-2 ${isMobile ? 'text-[11px]' : 'text-xs'} text-[#8B7355]/60`}>
             <span>Made with</span>
             <svg
-              width="12"
-              height="11"
+              width={isMobile ? 11 : 12}
+              height={isMobile ? 10 : 11}
               viewBox="0 0 24 22"
               fill="none"
               stroke="currentColor"

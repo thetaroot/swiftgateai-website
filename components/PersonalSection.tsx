@@ -3,9 +3,21 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 export default function PersonalSection() {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -18,6 +30,153 @@ export default function PersonalSection() {
     },
   };
 
+  // ============================================================================
+  // MOBILE VERSION - Complete Redesign
+  // ============================================================================
+  if (isMobile) {
+    return (
+      <div style={{
+        position: 'relative',
+        zIndex: 10,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '80px 20px'
+      }}>
+        <motion.div
+          style={{ width: '100%', maxWidth: '400px' }}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '44px',
+            alignItems: 'center'
+          }}>
+            {/* Image */}
+            <div style={{
+              width: '300px',
+              height: '380px',
+              background: 'linear-gradient(145deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%)',
+              border: '2px solid rgba(26, 77, 46, 0.3)',
+              borderRadius: '8px',
+              position: 'relative',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.4), inset 0 4px 12px rgba(0, 0, 0, 0.6)'
+            }}>
+              <Image
+                src="/pictures/portrait.jpg"
+                alt="Luis Guenther - Full-Stack Webentwickler und Gründer von SwiftGate AI"
+                fill
+                style={{
+                  objectFit: 'cover',
+                  filter: 'grayscale(100%) contrast(110%)'
+                }}
+                priority
+                sizes="300px"
+              />
+            </div>
+
+            {/* Text Section */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '40px',
+              width: '100%'
+            }}>
+              <h2 style={{
+                fontFamily: 'Space Grotesk, sans-serif',
+                fontWeight: 700,
+                lineHeight: 1.05,
+                color: '#F5F3ED',
+                letterSpacing: '-0.03em',
+                textTransform: 'uppercase',
+                margin: 0,
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)'
+              }}>
+                <span style={{ display: 'inline-block', fontSize: '32px' }}>KI kann Code</span><br />
+                <span style={{ display: 'inline-block', fontSize: '31px' }}>produzieren aber</span><br />
+                <span style={{ display: 'inline-block', fontSize: '30px' }}>deinem Projekt</span><br />
+                <span style={{ display: 'inline-block', fontSize: '29px' }}>keine Geschichte</span><br />
+                <span style={{ display: 'inline-block', fontSize: '28px' }}>und kein Gesicht</span><br />
+                <span style={{ display: 'inline-block', fontSize: '27px' }}>geben.</span><br />
+                <br />
+                <span style={{ display: 'inline-block', fontSize: '26px' }}>Ich setze auf</span><br />
+                <span style={{ display: 'inline-block', fontSize: '26px' }}>Mensch zu Mensch.</span>
+              </h2>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                alignItems: 'flex-start'
+              }}>
+                <button
+                  onClick={() => router.push('/ueber-mich')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 32px',
+                    background: 'rgba(26, 77, 46, 0.15)',
+                    border: '2px solid rgba(26, 77, 46, 0.3)',
+                    borderRadius: '4px',
+                    color: '#F5F3ED',
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    width: 'fit-content',
+                    textShadow: '0 1px 8px rgba(0, 0, 0, 0.7)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(26, 77, 46, 0.25)';
+                    e.currentTarget.style.borderColor = 'rgba(26, 77, 46, 0.4)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(26, 77, 46, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(26, 77, 46, 0.3)';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}
+                >
+                  <span>Mehr über mich</span>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+
+                <p style={{
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  lineHeight: 1.4,
+                  color: '#C4C1BC',
+                  margin: 0,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  textShadow: '0 1px 6px rgba(0, 0, 0, 0.6)'
+                }}>
+                  Persönlich da für Sie.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // DESKTOP VERSION - Unchanged (Approved)
+  // ============================================================================
   return (
     <div className="relative z-10 min-h-screen flex items-center justify-center px-8 py-32">
       <motion.div
@@ -37,7 +196,7 @@ export default function PersonalSection() {
               className="portrait-image"
               style={{ objectFit: 'cover' }}
               priority
-              sizes="(max-width: 768px) 280px, (max-width: 1024px) 400px, 480px"
+              sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 480px"
             />
           </div>
 
@@ -158,41 +317,14 @@ export default function PersonalSection() {
           display: inline-block;
         }
 
-        .personal-title .line-1 {
-          font-size: 48px;
-        }
-
-        .personal-title .line-2 {
-          font-size: 46px;
-        }
-
-        .personal-title .line-3 {
-          font-size: 44px;
-        }
-
-        .personal-title .line-4 {
-          font-size: 42px;
-        }
-
-        .personal-title .line-5 {
-          font-size: 40px;
-        }
-
-        .personal-title .line-6 {
-          font-size: 38px;
-        }
-
-        .personal-title .line-7 {
-          font-size: 36px;
-        }
-
-        .personal-title .line-8 {
-          font-size: 34px;
-        }
-
-        .personal-title .line-9 {
-          font-size: 32px;
-        }
+        .personal-title .line-1 { font-size: 48px; }
+        .personal-title .line-2 { font-size: 46px; }
+        .personal-title .line-3 { font-size: 44px; }
+        .personal-title .line-4 { font-size: 42px; }
+        .personal-title .line-5 { font-size: 40px; }
+        .personal-title .line-6 { font-size: 38px; }
+        .personal-title .line-7 { font-size: 36px; }
+        .personal-title .line-8 { font-size: 34px; }
 
         .button-group {
           display: flex;
@@ -245,62 +377,6 @@ export default function PersonalSection() {
 
         .about-button:hover svg {
           transform: translateX(4px);
-        }
-
-        @media (max-width: 1024px) {
-          .personal-container {
-            grid-template-columns: 1fr;
-            gap: 60px;
-            padding-left: 0;
-          }
-
-          .image-placeholder {
-            min-height: 550px;
-            max-width: 400px;
-            margin: 0 auto;
-          }
-
-          .text-section {
-            align-items: flex-start;
-            text-align: left;
-            margin-left: 0;
-          }
-
-          .personal-title .line-1 { font-size: 38px; }
-          .personal-title .line-2 { font-size: 36px; }
-          .personal-title .line-3 { font-size: 34px; }
-          .personal-title .line-4 { font-size: 32px; }
-          .personal-title .line-5 { font-size: 30px; }
-          .personal-title .line-6 { font-size: 28px; }
-          .personal-title .line-7 { font-size: 26px; }
-          .personal-title .line-8 { font-size: 24px; }
-          .personal-title .line-9 { font-size: 22px; }
-        }
-
-        @media (max-width: 768px) {
-          .image-placeholder {
-            min-height: 400px;
-            max-width: 280px;
-          }
-
-          .personal-title .line-1 { font-size: 30px; }
-          .personal-title .line-2 { font-size: 29px; }
-          .personal-title .line-3 { font-size: 28px; }
-          .personal-title .line-4 { font-size: 27px; }
-          .personal-title .line-5 { font-size: 26px; }
-          .personal-title .line-6 { font-size: 25px; }
-          .personal-title .line-7 { font-size: 24px; }
-          .personal-title .line-8 { font-size: 23px; }
-          .personal-title .line-9 { font-size: 22px; }
-
-          .personal-tagline {
-            font-size: 14px;
-          }
-
-          .about-button {
-            padding: 16px 28px;
-            font-size: 15px;
-          }
         }
       `}</style>
     </div>

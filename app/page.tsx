@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
@@ -18,12 +19,24 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 
 export default function Home() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <main className="flex flex-col">
       <AnimatedBackground />
       <Navigation />
       <PageTransition>
-        <div className="relative z-10 h-screen flex items-end justify-center px-8 pb-16">
+        <div className={`relative z-10 h-screen flex justify-center ${isMobile ? 'items-center px-5 pt-8' : 'items-end px-8 pb-16'}`}>
           <div className="w-full flex items-center justify-center">
             <BrowserMockup />
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -10,6 +10,17 @@ import Footer from '@/components/Footer';
 
 export default function Portfolio() {
   const [isImageHovered, setIsImageHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -19,13 +30,10 @@ export default function Portfolio() {
         <div className="relative z-10">
           {/* Hero Section */}
           <section style={{
-            minHeight: '35vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0 40px',
-            paddingTop: '120px',
-            paddingBottom: '40px'
+            padding: isMobile ? '120px 20px 32px' : '140px 40px 40px'
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -35,17 +43,17 @@ export default function Portfolio() {
             >
               <div style={{
                 display: 'inline-block',
-                padding: '10px 24px',
+                padding: isMobile ? '8px 18px' : '10px 24px',
                 background: 'rgba(26, 77, 46, 0.25)',
                 border: '1px solid rgba(26, 77, 46, 0.5)',
                 borderRadius: '4px',
                 color: '#F5F3ED',
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '13px',
+                fontSize: isMobile ? '12px' : '13px',
                 fontWeight: 700,
                 letterSpacing: '2px',
                 textTransform: 'uppercase',
-                marginBottom: '24px',
+                marginBottom: isMobile ? '20px' : '24px',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
               }}>
                 PORTFOLIO
@@ -53,13 +61,13 @@ export default function Portfolio() {
 
               <h1 style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '56px',
+                fontSize: isMobile ? '40px' : '56px',
                 fontWeight: 700,
                 lineHeight: 1,
                 color: '#F5F3ED',
                 letterSpacing: '-0.03em',
                 textTransform: 'uppercase',
-                marginBottom: '24px',
+                marginBottom: isMobile ? '20px' : '24px',
                 textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)'
               }}>
                 Featured Project
@@ -67,7 +75,7 @@ export default function Portfolio() {
 
               <p style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '20px',
+                fontSize: isMobile ? '17px' : '20px',
                 fontWeight: 400,
                 lineHeight: 1.6,
                 color: 'rgba(245, 243, 237, 0.85)',
@@ -80,28 +88,26 @@ export default function Portfolio() {
 
           {/* Project Card Section */}
           <section style={{
-            minHeight: '65vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '40px 40px 120px'
+            padding: isMobile ? '32px 20px 100px' : '40px 40px 120px'
           }}>
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               style={{
-                maxWidth: '900px',
+                maxWidth: isMobile ? '360px' : '900px',
                 width: '100%'
               }}
             >
               <div style={{
                 background: 'linear-gradient(145deg, #E8E5D9 0%, #EAE7DC 100%)',
                 border: '2px solid rgba(26, 77, 46, 0.18)',
-                borderRadius: '12px',
+                borderRadius: isMobile ? '8px' : '12px',
                 overflow: 'hidden',
                 boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-                height: '550px',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative'
@@ -111,14 +117,15 @@ export default function Portfolio() {
                   href="https://luistravels.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onMouseEnter={() => setIsImageHovered(true)}
-                  onMouseLeave={() => setIsImageHovered(false)}
+                  onMouseEnter={() => !isMobile && setIsImageHovered(true)}
+                  onMouseLeave={() => !isMobile && setIsImageHovered(false)}
                   style={{
                     position: 'relative',
                     width: '100%',
-                    height: isImageHovered ? '100%' : '50%',
+                    height: (isImageHovered && !isMobile) ? '100%' : '50%',
+                    minHeight: isMobile ? '240px' : '275px',
                     overflow: 'hidden',
-                    borderBottom: isImageHovered ? 'none' : '2px solid rgba(26, 77, 46, 0.12)',
+                    borderBottom: (isImageHovered && !isMobile) ? 'none' : '2px solid rgba(26, 77, 46, 0.12)',
                     flexShrink: 0,
                     cursor: 'pointer',
                     transition: 'height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -126,7 +133,7 @@ export default function Portfolio() {
                   }}
                 >
                   <Image
-                    src="/pictures/luistravels.com-screenshot.png"
+                    src={isMobile ? "/pictures/luistravels.com-smartphonescreenshot.jpg" : "/pictures/luistravels.com-screenshot.png"}
                     alt="Luis Travels Blog - Reise-Blog Website"
                     fill
                     style={{
@@ -137,48 +144,72 @@ export default function Portfolio() {
                     priority
                   />
 
-                  {/* Hover Overlay */}
-                  <AnimatePresence>
-                    {isImageHovered && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'rgba(0, 0, 0, 0.3)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          zIndex: 1
-                        }}
-                      >
-                        <div style={{
-                          padding: '16px 32px',
-                          background: 'rgba(245, 243, 237, 0.95)',
-                          border: '2px solid rgba(26, 77, 46, 0.3)',
-                          borderRadius: '8px',
-                          fontFamily: 'Space Grotesk, sans-serif',
-                          fontSize: '16px',
-                          fontWeight: 600,
-                          color: '#3E2E1F',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}>
-                          Website Besuchen →
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/* Overlay - Desktop only */}
+                  {!isMobile && (
+                    <AnimatePresence>
+                      {isImageHovered && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(0, 0, 0, 0.3)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1
+                          }}
+                        >
+                          <div style={{
+                            padding: '16px 32px',
+                            background: 'rgba(245, 243, 237, 0.95)',
+                            border: '2px solid rgba(26, 77, 46, 0.3)',
+                            borderRadius: '8px',
+                            fontFamily: 'Space Grotesk, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 600,
+                            color: '#3E2E1F',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            Website Besuchen →
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+
+                  {/* Mobile Tap Hint */}
+                  {isMobile && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '12px',
+                      right: '12px',
+                      padding: '8px 16px',
+                      background: 'rgba(245, 243, 237, 0.95)',
+                      border: '2px solid rgba(26, 77, 46, 0.3)',
+                      borderRadius: '6px',
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#3E2E1F',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      Tap zum Öffnen
+                    </div>
+                  )}
                 </a>
 
                 {/* Content - Bottom Half - Scrollable */}
                 <motion.div
                   animate={{
-                    height: isImageHovered ? '0%' : '50%',
-                    opacity: isImageHovered ? 0 : 1
+                    height: (isImageHovered && !isMobile) ? '0%' : '50%',
+                    opacity: (isImageHovered && !isMobile) ? 0 : 1
                   }}
                   transition={{
                     duration: 0.4,
@@ -187,25 +218,26 @@ export default function Portfolio() {
                   style={{
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    padding: isImageHovered ? '0 40px' : '32px 40px',
+                    padding: (isImageHovered && !isMobile) ? '0' : (isMobile ? '24px' : '32px 40px'),
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(139, 115, 85, 0.3) rgba(139, 115, 85, 0.1)',
-                    pointerEvents: isImageHovered ? 'none' : 'auto'
+                    pointerEvents: (isImageHovered && !isMobile) ? 'none' : 'auto',
+                    minHeight: (isImageHovered && !isMobile) ? '0' : (isMobile ? '240px' : '275px')
                   }}
                   className="custom-scrollbar"
                 >
                   {/* Category Badge */}
                   <div style={{
                     display: 'inline-block',
-                    padding: '6px 14px',
+                    padding: isMobile ? '5px 12px' : '6px 14px',
                     background: 'rgba(139, 115, 85, 0.1)',
                     border: '1px solid rgba(139, 115, 85, 0.2)',
                     borderRadius: '4px',
-                    marginBottom: '16px'
+                    marginBottom: isMobile ? '14px' : '16px'
                   }}>
                     <span style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '12px',
+                      fontSize: isMobile ? '11px' : '12px',
                       fontWeight: 600,
                       color: '#8B7355',
                       letterSpacing: '1px',
@@ -218,11 +250,11 @@ export default function Portfolio() {
                   {/* Title */}
                   <h2 style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '36px',
+                    fontSize: isMobile ? '28px' : '36px',
                     fontWeight: 700,
                     color: '#3E2E1F',
                     letterSpacing: '-0.02em',
-                    marginBottom: '12px',
+                    marginBottom: isMobile ? '12px' : '12px',
                     lineHeight: 1.1
                   }}>
                     Luis Travels
@@ -235,11 +267,11 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '16px',
+                      fontSize: isMobile ? '15px' : '16px',
                       fontWeight: 500,
                       color: '#8B7355',
                       textDecoration: 'none',
-                      marginBottom: '20px',
+                      marginBottom: isMobile ? '18px' : '20px',
                       display: 'inline-block',
                       transition: 'color 0.2s ease'
                     }}
@@ -252,11 +284,11 @@ export default function Portfolio() {
                   {/* Description */}
                   <p style={{
                     fontFamily: 'Space Grotesk, sans-serif',
-                    fontSize: '16px',
+                    fontSize: isMobile ? '16px' : '16px',
                     fontWeight: 400,
                     lineHeight: 1.6,
                     color: '#4A3428',
-                    marginBottom: '24px'
+                    marginBottom: isMobile ? '20px' : '24px'
                   }}>
                     Ein moderner Reise-Blog mit CMS-Integration, optimiert für Performance und SEO.
                     Die Website präsentiert Reiseberichte, Fotogalerien und Reisetipps in einem
@@ -264,33 +296,33 @@ export default function Portfolio() {
                   </p>
 
                   {/* Tech Stack */}
-                  <div style={{ marginBottom: '28px' }}>
+                  <div style={{ marginBottom: isMobile ? '24px' : '28px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '13px',
+                      fontSize: isMobile ? '12px' : '13px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '14px'
+                      marginBottom: isMobile ? '12px' : '14px'
                     }}>
                       Tech Stack
                     </h3>
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: '8px'
+                      gap: isMobile ? '8px' : '8px'
                     }}>
                       {['Next.js', 'React', 'TypeScript', 'JavaScript', 'Sanity CMS', 'Tailwind CSS', 'Framer Motion', 'HTML/CSS', 'Vercel', 'Image Optimization'].map((tech) => (
                         <span
                           key={tech}
                           style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '13px',
+                            fontSize: isMobile ? '12px' : '13px',
                             fontWeight: 500,
                             color: '#5C4A3A',
                             background: 'rgba(139, 115, 85, 0.08)',
-                            padding: '6px 12px',
+                            padding: isMobile ? '6px 10px' : '6px 12px',
                             borderRadius: '4px',
                             border: '1px solid rgba(139, 115, 85, 0.15)'
                           }}
@@ -302,22 +334,22 @@ export default function Portfolio() {
                   </div>
 
                   {/* Features */}
-                  <div style={{ marginBottom: '32px' }}>
+                  <div style={{ marginBottom: isMobile ? '24px' : '32px' }}>
                     <h3 style={{
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '13px',
+                      fontSize: isMobile ? '12px' : '13px',
                       fontWeight: 700,
                       color: '#8B7355',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
-                      marginBottom: '14px'
+                      marginBottom: isMobile ? '12px' : '14px'
                     }}>
                       Key Features
                     </h3>
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '10px'
+                      gap: isMobile ? '10px' : '10px'
                     }}>
                       {[
                         'Headless CMS Integration',
@@ -332,19 +364,19 @@ export default function Portfolio() {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '10px'
+                            gap: isMobile ? '10px' : '10px'
                           }}
                         >
                           <div style={{
-                            width: '5px',
-                            height: '5px',
+                            width: isMobile ? '5px' : '5px',
+                            height: isMobile ? '5px' : '5px',
                             borderRadius: '50%',
                             background: '#8B7355',
                             flexShrink: 0
                           }} />
                           <span style={{
                             fontFamily: 'Space Grotesk, sans-serif',
-                            fontSize: '15px',
+                            fontSize: isMobile ? '15px' : '15px',
                             fontWeight: 400,
                             color: '#4A3428'
                           }}>
@@ -362,13 +394,13 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     style={{
                       display: 'inline-block',
-                      padding: '14px 28px',
+                      padding: isMobile ? '14px 24px' : '14px 28px',
                       background: 'rgba(139, 115, 85, 0.12)',
                       border: '2px solid rgba(139, 115, 85, 0.3)',
                       borderRadius: '6px',
                       color: '#5C4A3A',
                       fontFamily: 'Space Grotesk, sans-serif',
-                      fontSize: '15px',
+                      fontSize: isMobile ? '14px' : '15px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
