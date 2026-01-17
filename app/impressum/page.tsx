@@ -1,5 +1,6 @@
 'use client';
 
+import Obfuscate from 'react-obfuscate';
 import LegalNavigation from '@/components/LegalNavigation';
 import Footer from '@/components/Footer';
 
@@ -30,11 +31,26 @@ export default function Impressum() {
               <div className="space-y-2">
                 <p>
                   <span className="font-semibold">Telefon:</span>{' '}
-                  <a href="tel:+4917672601048" className="hover:underline">+49 176 72601048</a>
+                  <Obfuscate
+                    tel="+4917672601048"
+                    style={{
+                      textDecoration: 'none',
+                      color: 'inherit'
+                    }}
+                  />
                 </p>
                 <p>
                   <span className="font-semibold">E-Mail:</span>{' '}
-                  <a href="mailto:gunther.luis@icloud.com" className="hover:underline">gunther.luis@icloud.com</a>
+                  <Obfuscate
+                    email="hello@swiftgateai.de"
+                    headers={{
+                      subject: 'Anfrage über SwiftGate AI - Impressum',
+                    }}
+                    style={{
+                      textDecoration: 'none',
+                      color: 'inherit'
+                    }}
+                  />
                 </p>
               </div>
             </section>

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Obfuscate from 'react-obfuscate';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Navigation from '@/components/Navigation';
 import PageTransition from '@/components/PageTransition';
@@ -119,8 +120,11 @@ export default function Kontakt() {
                     }}>
                       E-Mail
                     </h2>
-                    <a
-                      href="mailto:hello@swiftgateai.de"
+                    <Obfuscate
+                      email="hello@swiftgateai.de"
+                      headers={{
+                        subject: 'Anfrage über SwiftGate AI',
+                      }}
                       style={{
                         fontFamily: 'Space Grotesk, sans-serif',
                         fontSize: '18px',
@@ -131,11 +135,7 @@ export default function Kontakt() {
                         wordBreak: 'break-word',
                         display: 'block'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = '#5C4A3A'}
-                      onMouseLeave={(e) => e.currentTarget.style.color = '#3E2E1F'}
-                    >
-                      hello@swiftgateai.de
-                    </a>
+                    />
                   </div>
 
                   <div style={{ height: '1px', background: 'rgba(139, 115, 85, 0.15)', marginBottom: '40px' }}></div>
@@ -227,8 +227,11 @@ export default function Kontakt() {
 
                   {/* CTA Button */}
                   <div>
-                    <a
-                      href="mailto:hello@swiftgateai.de"
+                    <Obfuscate
+                      email="hello@swiftgateai.de"
+                      headers={{
+                        subject: 'Anfrage über SwiftGate AI',
+                      }}
                       style={{
                         display: 'block',
                         padding: '16px 32px',
@@ -245,19 +248,9 @@ export default function Kontakt() {
                         transition: 'all 0.2s ease',
                         textAlign: 'center'
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(139, 115, 85, 0.18)';
-                        e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.4)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(139, 115, 85, 0.12)';
-                        e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.3)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
                     >
                       E-Mail schreiben
-                    </a>
+                    </Obfuscate>
                   </div>
                 </div>
               </motion.div>
@@ -362,8 +355,11 @@ export default function Kontakt() {
                   }}>
                     E-Mail
                   </h2>
-                  <a
-                    href="mailto:hello@swiftgateai.de"
+                  <Obfuscate
+                    email="hello@swiftgateai.de"
+                    headers={{
+                      subject: 'Anfrage über SwiftGate AI',
+                    }}
                     style={{
                       fontFamily: 'Space Grotesk, sans-serif',
                       fontSize: '32px',
@@ -372,11 +368,7 @@ export default function Kontakt() {
                       textDecoration: 'none',
                       transition: 'color 0.2s ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = '#5C4A3A'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = '#3E2E1F'}
-                  >
-                    hello@swiftgateai.de
-                  </a>
+                  />
                 </div>
 
                 <div style={{ height: '1px', background: 'rgba(139, 115, 85, 0.15)', marginBottom: '48px' }}></div>
@@ -554,8 +546,11 @@ export default function Kontakt() {
 
                 {/* CTA Button */}
                 <div style={{ textAlign: 'center' }}>
-                  <a
-                    href="mailto:hello@swiftgateai.de"
+                  <Obfuscate
+                    email="hello@swiftgateai.de"
+                    headers={{
+                      subject: 'Anfrage über SwiftGate AI',
+                    }}
                     style={{
                       display: 'inline-block',
                       padding: '18px 48px',
@@ -571,19 +566,9 @@ export default function Kontakt() {
                       textDecoration: 'none',
                       transition: 'all 0.2s ease'
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(139, 115, 85, 0.18)';
-                      e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.4)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(139, 115, 85, 0.12)';
-                      e.currentTarget.style.borderColor = 'rgba(139, 115, 85, 0.3)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
                   >
                     E-Mail schreiben
-                  </a>
+                  </Obfuscate>
                 </div>
               </div>
             </motion.div>
