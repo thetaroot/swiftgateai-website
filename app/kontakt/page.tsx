@@ -120,7 +120,7 @@ export default function Kontakt() {
                       E-Mail
                     </h2>
                     <a
-                      href="mailto:kontakt@swiftgateai.de"
+                      href="mailto:hello@swiftgateai.de"
                       style={{
                         fontFamily: 'Space Grotesk, sans-serif',
                         fontSize: '18px',
@@ -134,7 +134,7 @@ export default function Kontakt() {
                       onMouseEnter={(e) => e.currentTarget.style.color = '#5C4A3A'}
                       onMouseLeave={(e) => e.currentTarget.style.color = '#3E2E1F'}
                     >
-                      kontakt@swiftgateai.de
+                      hello@swiftgateai.de
                     </a>
                   </div>
 
@@ -228,7 +228,7 @@ export default function Kontakt() {
                   {/* CTA Button */}
                   <div>
                     <a
-                      href="mailto:kontakt@swiftgateai.de"
+                      href="mailto:hello@swiftgateai.de"
                       style={{
                         display: 'block',
                         padding: '16px 32px',
@@ -363,7 +363,7 @@ export default function Kontakt() {
                     E-Mail
                   </h2>
                   <a
-                    href="mailto:kontakt@swiftgateai.de"
+                    href="mailto:hello@swiftgateai.de"
                     style={{
                       fontFamily: 'Space Grotesk, sans-serif',
                       fontSize: '32px',
@@ -375,7 +375,7 @@ export default function Kontakt() {
                     onMouseEnter={(e) => e.currentTarget.style.color = '#5C4A3A'}
                     onMouseLeave={(e) => e.currentTarget.style.color = '#3E2E1F'}
                   >
-                    kontakt@swiftgateai.de
+                    hello@swiftgateai.de
                   </a>
                 </div>
 
@@ -555,7 +555,7 @@ export default function Kontakt() {
                 {/* CTA Button */}
                 <div style={{ textAlign: 'center' }}>
                   <a
-                    href="mailto:kontakt@swiftgateai.de"
+                    href="mailto:hello@swiftgateai.de"
                     style={{
                       display: 'inline-block',
                       padding: '18px 48px',
