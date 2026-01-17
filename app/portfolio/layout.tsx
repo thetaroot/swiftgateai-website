@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     siteName: 'SwiftGate AI',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'SwiftGate AI Portfolio',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Portfolio - Referenzprojekte | SwiftGate AI',
     description: 'Entdecken Sie ausgewählte Projekte aus den Bereichen Business, Creative und Tech.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.svg'],
   },
   alternates: {
     canonical: 'https://swiftgateai.de/portfolio',

@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript - Von der Beratung bis zum Launch.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'SwiftGate AI - Professionelle Webentwicklung',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen',
     description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.svg'],
   },
   alternates: {
     canonical: 'https://swiftgateai.de',
@@ -75,8 +75,8 @@ export default function RootLayout({
     name: 'SwiftGate AI',
     description: 'Full-Service Webentwicklung mit modernsten Technologien',
     url: 'https://swiftgateai.de',
-    logo: 'https://swiftgateai.de/logo.png',
-    image: 'https://swiftgateai.de/og-image.jpg',
+    logo: 'https://swiftgateai.de/icon.svg',
+    image: 'https://swiftgateai.de/og-image.svg',
     founder: {
       '@type': 'Person',
       name: 'Luis Guenther',
@@ -129,9 +129,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#0C2312" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
