@@ -1,11 +1,13 @@
-import AnimatedBackground from '@/components/AnimatedBackground';
-import Navigation from '@/components/Navigation';
+'use client';
+
+import Footer from '@/components/Footer';
 
 export default function About() {
   return (
-    <main className="min-h-screen">
-      <AnimatedBackground />
-      <Navigation />
+    <main className="flex flex-col">
+      <div className="relative z-10 h-screen">
+      </div>
+      <Footer />
     </main>
   );
 }

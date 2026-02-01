@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Color Palette - Only 3 Colors */
+  --color-beige: #E5E1D8;
+  --color-green: #4A5A45;
+  --color-brown: #43302E;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -10,55 +17,14 @@
 
 html,
 body {
-  background-color: rgb(12, 24, 18);
+  background-color: var(--color-beige);
   font-feature-settings: 'kern' 1, 'liga' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Glass Card - Apple Style */
-.glass-card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Liquid gradient animation - GPU beschleunigt */
-.liquid-gradient {
-  background: linear-gradient(45deg,
-    rgb(8, 25, 12),
-    rgb(12, 35, 18),
-    rgb(15, 45, 20),
-    rgb(10, 30, 15),
-    rgb(8, 25, 12)
-  );
-  background-size: 400% 400%;
-  animation: liquidFlow 15s ease infinite;
-  will-change: background-position;
-  transform: translate3d(0, 0, 0); /* GPU acceleration */
-}
-
-@keyframes liquidFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+/* Animated background handled by AnimatedBackground component */
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -68,26 +34,5 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
-
-  .liquid-gradient {
-    animation: none;
-    background-position: 0% 50%;
-  }
-}
-
-/* Performance optimizations for animations */
-.will-change-transform {
-  will-change: transform;
-}
-
-.will-change-opacity {
-  will-change: opacity;
-}
-
-.gpu-accelerated {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000px;
 }
