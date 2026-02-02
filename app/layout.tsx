@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import { BackgroundProvider } from "@/context/BackgroundContext";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -140,8 +141,10 @@ export default function RootLayout({
         />
       </head>
       <body className={spaceGrotesk.className}>
-        <AnimatedBackground />
-        {children}
+        <BackgroundProvider>
+          <AnimatedBackground />
+          {children}
+        </BackgroundProvider>
       </body>
     </html>
   );
