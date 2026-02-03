@@ -6,6 +6,7 @@ import { useBackgroundAnimation } from '@/context/BackgroundContext';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  status?: 'thinking' | 'working' | 'complete';
 }
 
 export default function ChatWindow() {
@@ -21,10 +22,10 @@ export default function ChatWindow() {
 
   // Demo conversation
   const demoConversation: Message[] = [
-    { role: 'user', content: 'Hallo! Können Sie mir mehr über Ihre Services erzählen?' },
-    { role: 'assistant', content: 'Gerne! Ich biete Full-Service Webentwicklung mit modernsten Technologien wie React, Next.js und TypeScript. Von der initialen Beratung bis zum finalen Launch begleite ich Projekte komplett.' },
-    { role: 'user', content: 'Wie lange dauert typischerweise ein Projekt?' },
-    { role: 'assistant', content: 'Das hängt stark vom Umfang ab. Ein kleineres Portfolio-Projekt kann in 2-3 Wochen fertig sein, während größere E-Commerce Plattformen 2-3 Monate benötigen. Ich plane immer realistisch und transparent.' },
+    { role: 'user', content: 'Hallo! Können Sie mir mehr über Ihre Services erzählen?', status: 'complete' },
+    { role: 'assistant', content: 'Gerne! Ich biete Full-Service Webentwicklung mit modernsten Technologien wie React, Next.js und TypeScript. Von der initialen Beratung bis zum finalen Launch begleite ich Projekte komplett.', status: 'complete' },
+    { role: 'user', content: 'Wie lange dauert typischerweise ein Projekt?', status: 'complete' },
+    { role: 'assistant', content: 'Das hängt stark vom Umfang ab. Ein kleineres Portfolio-Projekt kann in 2-3 Wochen fertig sein, während größere E-Commerce Plattformen 2-3 Monate benötigen. Ich plane immer realistisch und transparent.', status: 'complete' },
   ];
 
   // Random function (matches shader)
@@ -122,10 +123,21 @@ export default function ChatWindow() {
     }
   }, [messages, isExpanded]);
 
+  const getStatusText = (status?: string) => {
+    const statusTexts = [
+      'Analysiere Anfrage...',
+      'Durchsuche Datenbank...',
+      'Generiere Antwort...',
+      'Überprüfe Informationen...',
+      'Formuliere Gedanken...'
+    ];
+    return statusTexts[Math.floor(Math.random() * statusTexts.length)];
+  };
+
   const handleSend = () => {
     if (message.trim()) {
       // Add user message
-      const newMessages = [...messages, { role: 'user' as const, content: message }];
+      const newMessages = [...messages, { role: 'user' as const, content: message, status: 'complete' as const }];
       setMessages(newMessages);
       setMessage('');
 
@@ -136,16 +148,35 @@ export default function ChatWindow() {
         setTimeout(() => {
           setMessages(demoConversation);
         }, 300);
-      }
-
-      // Simulate AI response (demo only)
-      if (isExpanded) {
+      } else {
+        // Add thinking status
         setTimeout(() => {
           setMessages([...newMessages, {
             role: 'assistant' as const,
-            content: 'Das ist eine Demo-Antwort. In der finalen Version wird hier die echte AI antworten.'
+            content: getStatusText('thinking'),
+            status: 'thinking' as const
           }]);
-        }, 1000);
+        }, 500);
+
+        // Update to working status
+        setTimeout(() => {
+          const thinkingMsgs = newMessages.filter(m => m.status !== 'thinking');
+          setMessages([...thinkingMsgs, {
+            role: 'assistant' as const,
+            content: getStatusText('working'),
+            status: 'working' as const
+          }]);
+        }, 1500);
+
+        // Final answer
+        setTimeout(() => {
+          const finalMsgs = newMessages.filter(m => m.status === 'complete');
+          setMessages([...finalMsgs, {
+            role: 'assistant' as const,
+            content: 'Das ist eine Demo-Antwort. In der finalen Version wird hier die echte AI antworten.',
+            status: 'complete' as const
+          }]);
+        }, 2500);
       }
     }
   };
@@ -187,23 +218,51 @@ export default function ChatWindow() {
             <div className="flex-1 overflow-y-auto px-6 pt-6 pb-4">
               <div className="space-y-8 max-w-2xl mx-auto">
                 {messages.map((msg, index) => (
-                  <div key={index} className="flex gap-4 group">
-                    {/* Dot Indicator */}
-                    <div className="pt-2">
-                      <div
-                        className="w-1.5 h-1.5 rounded-full transition-all duration-300"
-                        style={{
-                          background: msg.role === 'user' ? '#4A5A45' : '#43302E',
-                          opacity: 0.6,
-                        }}
-                      />
-                    </div>
+                  <div
+                    key={index}
+                    className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {msg.role === 'assistant' && (
+                      <div className="flex items-start pt-[3px]">
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            msg.status === 'thinking' || msg.status === 'working'
+                              ? 'animate-pulse'
+                              : ''
+                          }`}
+                          style={{
+                            background: '#43302E',
+                            opacity: 0.6,
+                          }}
+                        />
+                      </div>
+                    )}
+
                     {/* Message Text */}
-                    <div className="flex-1 pt-0.5">
-                      <p className="text-[#1a1a1a] text-[15px] leading-[1.7] font-normal tracking-[-0.01em]">
-                        {msg.content}
-                      </p>
+                    <div className={`flex-1 ${msg.role === 'user' ? 'text-right' : 'text-left'} max-w-[85%]`}>
+                      {(msg.status === 'thinking' || msg.status === 'working') && (
+                        <p className="text-[13px] text-[#666] italic mb-1">
+                          {msg.content}
+                        </p>
+                      )}
+                      {msg.status === 'complete' && (
+                        <p className="text-[#1a1a1a] text-[15px] leading-[1.7] font-normal tracking-[-0.01em]">
+                          {msg.content}
+                        </p>
+                      )}
                     </div>
+
+                    {msg.role === 'user' && (
+                      <div className="flex items-start pt-[3px]">
+                        <div
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{
+                            background: '#4A5A45',
+                            opacity: 0.6,
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
                 <div ref={messagesEndRef} />
@@ -267,7 +326,6 @@ export default function ChatWindow() {
                   </svg>
                 </button>
               </div>
-
             </div>
           </div>
         </div>
