@@ -1,42 +1,43 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
-interface BackgroundContextType {
-  animationTime: number;
+interface BackgroundColors {
+  primary: string; // Hauptfarbe für Schlaufen
+  secondary: string; // Sekundärfarbe für Gradienten
+  background: string; // Basis-Hintergrund
 }
 
-const BackgroundContext = createContext<BackgroundContextType>({ animationTime: 0 });
+interface BackgroundContextType {
+  colors: BackgroundColors;
+  setColors: (colors: BackgroundColors) => void;
+  animationTime: number;
+  setAnimationTime: (time: number) => void;
+}
 
-export function BackgroundProvider({ children }: { children: React.ReactNode }) {
+const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
+
+export function BackgroundProvider({ children }: { children: ReactNode }) {
   const [animationTime, setAnimationTime] = useState(0);
 
-  useEffect(() => {
-    let startTime = Date.now();
-    let animationFrame: number;
-
-    const updateTime = () => {
-      const currentTime = Date.now() - startTime;
-      setAnimationTime(currentTime);
-      animationFrame = requestAnimationFrame(updateTime);
-    };
-
-    animationFrame = requestAnimationFrame(updateTime);
-
-    return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
-  }, []);
+  // Default: Cocktail Palette für Main Page
+  const [colors, setColors] = useState<BackgroundColors>({
+    primary: '#D39858', // Whiskey Sour
+    secondary: '#85431E', // Honey Garlic
+    background: '#EACEAA', // Champagne
+  });
 
   return (
-    <BackgroundContext.Provider value={{ animationTime }}>
+    <BackgroundContext.Provider value={{ colors, setColors, animationTime, setAnimationTime }}>
       {children}
     </BackgroundContext.Provider>
   );
 }
 
-export function useBackgroundAnimation() {
-  return useContext(BackgroundContext);
+export function useBackgroundContext() {
+  const context = useContext(BackgroundContext);
+  if (!context) {
+    throw new Error('useBackgroundContext must be used within BackgroundProvider');
+  }
+  return context;
 }

@@ -3,10 +3,17 @@
 @tailwind utilities;
 
 :root {
-  /* Color Palette - Only 3 Colors */
-  --color-beige: #E5E1D8;
-  --color-green: #4A5A45;
-  --color-brown: #43302E;
+  /* Cocktail Color Palette - 5 Colors */
+  --color-champagne: #EACEAA; /* Hell, luxuriös */
+  --color-whiskey: #D39858; /* Golden, warm */
+  --color-honey: #85431E; /* Erdig, stabil */
+  --color-coffee: #34150F; /* Dunkel, sophisticated */
+  --color-balsamico: #150C0C; /* Tiefstes Schwarz, premium */
+
+  /* Legacy-Variablen für Kompatibilität */
+  --color-beige: #EACEAA;
+  --color-green: #85431E;
+  --color-brown: #34150F;
 }
 
 * {
@@ -17,11 +24,16 @@
 
 html,
 body {
-  background-color: var(--color-beige);
+  background-color: var(--color-champagne); /* Champagne als Basis */
   font-feature-settings: 'kern' 1, 'liga' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow: hidden; /* No native scroll - we handle it */
+  overscroll-behavior: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* Animated background handled by AnimatedBackground component */
