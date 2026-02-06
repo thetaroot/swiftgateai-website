@@ -6,6 +6,9 @@ import ChatWindow from '@/components/ChatWindow';
 import PortfolioPreview from '@/components/PortfolioPreview';
 import Footer from '@/components/Footer';
 import WelcomeScreen from '@/components/WelcomeScreen';
+import BrutalistLogo from '@/components/BrutalistLogo';
+import BrutalistNav from '@/components/BrutalistNav';
+import BrutalistTextBlock from '@/components/BrutalistTextBlock';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 
 // Ultra-smooth spring configurations
@@ -82,6 +85,14 @@ export default function Home() {
     setIsAnimating(true);
     setShowPortfolio(true);
     setShowPortfolioHint(false);
+
+    // Reset portfolio scroll to top
+    setTimeout(() => {
+      const container = portfolioContainerRef.current;
+      if (container) {
+        container.scrollTop = 0;
+      }
+    }, 100);
 
     setTimeout(() => { setIsAnimating(false); }, 1000);
   }, [isAnimating, showPortfolio, showPortfolioHint]);
@@ -344,6 +355,29 @@ export default function Home() {
           willChange: 'transform, opacity, filter',
         }}
       >
+        {/* Brutalist Logo - Top Left */}
+        <div className="fixed top-6 left-6" style={{ zIndex: 55 }}>
+          <BrutalistLogo />
+        </div>
+
+        {/* Brutalist Navigation - Conditional Position */}
+        {isChatExpanded ? (
+          // Vertical on left when chat expanded
+          <div className="fixed top-24 left-6" style={{ zIndex: 55 }}>
+            <BrutalistNav isVertical />
+          </div>
+        ) : (
+          // Horizontal on top center when chat not expanded
+          <div className="fixed top-6 left-1/2" style={{ zIndex: 55, transform: 'translateX(-50%)' }}>
+            <BrutalistNav />
+          </div>
+        )}
+
+        {/* Brutalist Text Block - Bottom Right (hidden when chat expanded) */}
+        <div className="fixed bottom-6 right-6" style={{ zIndex: 55 }}>
+          <BrutalistTextBlock isVisible={!isChatExpanded} />
+        </div>
+
         <ChatWindow />
       </motion.div>
 
@@ -423,14 +457,19 @@ export default function Home() {
       <AnimatePresence>
         {!showPortfolio && !isAnimating && !isChatExpanded && showPortfolioHint && (
           <motion.div
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            className="fixed bottom-8 flex flex-col items-center gap-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.3 }}
-            style={{ zIndex: 20 }}
+            style={{
+              zIndex: 20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
           >
             <motion.span
+              className="text-center whitespace-nowrap"
               style={{
                 color: 'rgba(52, 21, 15, 0.5)',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
@@ -457,12 +496,16 @@ export default function Home() {
       <AnimatePresence>
         {showPortfolio && !isAnimating && showChatHint && (
           <motion.div
-            className="fixed top-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            className="fixed top-8 flex flex-col items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            style={{ zIndex: 20 }}
+            style={{
+              zIndex: 20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
           >
             <motion.div
               animate={{ y: [0, -4, 0] }}
@@ -473,6 +516,7 @@ export default function Home() {
               </svg>
             </motion.div>
             <motion.span
+              className="text-center whitespace-nowrap"
               style={{
                 color: 'rgba(234, 206, 170, 0.6)',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
