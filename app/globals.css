@@ -4,31 +4,40 @@
 
 :root {
   /* Cocktail Color Palette - 5 Colors */
-  --color-champagne: #EACEAA; /* Hell, luxuriös */
-  --color-whiskey: #D39858; /* Golden, warm */
-  --color-honey: #85431E; /* Erdig, stabil */
-  --color-coffee: #34150F; /* Dunkel, sophisticated */
-  --color-balsamico: #150C0C; /* Tiefstes Schwarz, premium */
+  --color-champagne: #EACEAA;
+  --color-whiskey: #D39858;
+  --color-honey: #85431E;
+  --color-coffee: #34150F;
+  --color-balsamico: #150C0C;
 
-  /* Legacy-Variablen für Kompatibilität */
+  /* Legacy variables for compatibility */
   --color-beige: #EACEAA;
   --color-green: #85431E;
   --color-brown: #34150F;
+
+  /* System */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Space Grotesk', system-ui, sans-serif;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 html,
 body {
-  background-color: var(--color-champagne); /* Champagne als Basis */
+  background-color: var(--color-champagne);
   font-feature-settings: 'kern' 1, 'liga' 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow: hidden; /* No native scroll - we handle it */
+  overflow: hidden;
   overscroll-behavior: none;
   position: fixed;
   inset: 0;
@@ -36,7 +45,71 @@ body {
   height: 100%;
 }
 
-/* Animated background handled by AnimatedBackground component */
+/* Smooth scrolling for containers that need it */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GPU acceleration utility */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Glass effect utility */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+
+.glass-dark {
+  background: rgba(52, 21, 15, 0.85);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+
+/* Focus states */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-whiskey);
+  outline-offset: 2px;
+}
+
+/* Remove tap highlight on mobile */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--color-whiskey);
+  color: var(--color-champagne);
+}
+
+/* Scrollbar styling for WebKit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(52, 21, 15, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 21, 15, 0.3);
+}
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -46,5 +119,14 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-champagne: #FFF5E6;
+    --color-coffee: #000000;
   }
 }

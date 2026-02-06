@@ -1,34 +1,69 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 interface BackgroundColors {
-  primary: string; // Hauptfarbe für Schlaufen
-  secondary: string; // Sekundärfarbe für Gradienten
-  background: string; // Basis-Hintergrund
+  primary: string;
+  secondary: string;
+  background: string;
 }
 
 interface BackgroundContextType {
   colors: BackgroundColors;
   setColors: (colors: BackgroundColors) => void;
-  animationTime: number;
-  setAnimationTime: (time: number) => void;
+  isChatExpanded: boolean;
+  setIsChatExpanded: (expanded: boolean) => void;
+  canScrollToPortfolio: boolean;
+  setCanScrollToPortfolio: (can: boolean) => void;
 }
 
 const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 
-export function BackgroundProvider({ children }: { children: ReactNode }) {
-  const [animationTime, setAnimationTime] = useState(0);
+// Default colors - memoized outside component
+const DEFAULT_COLORS: BackgroundColors = {
+  primary: '#D39858',
+  secondary: '#85431E',
+  background: '#EACEAA',
+};
 
-  // Default: Cocktail Palette für Main Page
-  const [colors, setColors] = useState<BackgroundColors>({
-    primary: '#D39858', // Whiskey Sour
-    secondary: '#85431E', // Honey Garlic
-    background: '#EACEAA', // Champagne
-  });
+export function BackgroundProvider({ children }: { children: ReactNode }) {
+  const [colors, setColorsState] = useState<BackgroundColors>(DEFAULT_COLORS);
+  const [isChatExpanded, setIsChatExpandedState] = useState(false);
+  const [canScrollToPortfolio, setCanScrollToPortfolioState] = useState(false);
+
+  // Memoized setters to prevent unnecessary re-renders
+  const setColors = useCallback((newColors: BackgroundColors) => {
+    setColorsState(prev => {
+      // Only update if colors actually changed
+      if (prev.primary === newColors.primary &&
+          prev.secondary === newColors.secondary &&
+          prev.background === newColors.background) {
+        return prev;
+      }
+      return newColors;
+    });
+  }, []);
+
+  const setIsChatExpanded = useCallback((expanded: boolean) => {
+    setIsChatExpandedState(expanded);
+  }, []);
+
+  const setCanScrollToPortfolio = useCallback((can: boolean) => {
+    setCanScrollToPortfolioState(can);
+  }, []);
+
+  // Memoize context value to prevent re-renders
+  const contextValue = useMemo(() => ({
+    colors,
+    setColors,
+    isChatExpanded,
+    setIsChatExpanded,
+    canScrollToPortfolio,
+    setCanScrollToPortfolio,
+  }), [colors, setColors, isChatExpanded, setIsChatExpanded, canScrollToPortfolio, setCanScrollToPortfolio]);
 
   return (
-    <BackgroundContext.Provider value={{ colors, setColors, animationTime, setAnimationTime }}>
+    <BackgroundContext.Provider value={contextValue}>
       {children}
     </BackgroundContext.Provider>
   );

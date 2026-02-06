@@ -9,31 +9,41 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        // Cocktail Color Palette
+        champagne: '#EACEAA',
+        whiskey: '#D39858',
+        honey: '#85431E',
+        coffee: '#34150F',
+        balsamico: '#150C0C',
+        // Semantic aliases
+        background: 'var(--color-champagne)',
+        foreground: 'var(--color-coffee)',
+        primary: 'var(--color-whiskey)',
+        secondary: 'var(--color-honey)',
       },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'wave': 'wave 2s ease-in-out',
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Space Grotesk', 'system-ui', 'sans-serif'],
       },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        wave: {
-          '0%': { transform: 'rotate(0deg)' },
-          '10%': { transform: 'rotate(14deg)' },
-          '20%': { transform: 'rotate(-8deg)' },
-          '30%': { transform: 'rotate(14deg)' },
-          '40%': { transform: 'rotate(-4deg)' },
-          '50%': { transform: 'rotate(10deg)' },
-          '60%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(0deg)' },
-        },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem',
+      },
+      boxShadow: {
+        'glass': '0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 4px 16px rgba(52, 21, 15, 0.1)',
+        'glass-lg': '0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 8px 32px rgba(52, 21, 15, 0.15)',
+        'glow': '0 0 20px rgba(211, 152, 88, 0.3)',
+        'glow-lg': '0 0 40px rgba(211, 152, 88, 0.4)',
+      },
+      backdropBlur: {
+        'xs': '2px',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'spring': 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },
   plugins: [],
 };
+
 export default config;

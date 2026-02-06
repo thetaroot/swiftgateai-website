@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Space_Grotesk, Bebas_Neue, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { BackgroundProvider } from "@/context/BackgroundContext";
@@ -11,6 +11,21 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
   preload: true,
   fallback: ['system-ui', 'arial'],
+});
+
+const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bebas-neue",
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -140,7 +155,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={spaceGrotesk.className}>
+      <body className={`${spaceGrotesk.className} ${bebasNeue.variable} ${playfairDisplay.variable}`}>
         <BackgroundProvider>
           <AnimatedBackground />
           {children}
