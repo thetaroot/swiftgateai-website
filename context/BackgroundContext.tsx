@@ -15,6 +15,8 @@ interface BackgroundContextType {
   setIsChatExpanded: (expanded: boolean) => void;
   canScrollToPortfolio: boolean;
   setCanScrollToPortfolio: (can: boolean) => void;
+  isPageScrollUnlocked: boolean;
+  setIsPageScrollUnlocked: (unlocked: boolean) => void;
 }
 
 const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
@@ -30,6 +32,7 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
   const [colors, setColorsState] = useState<BackgroundColors>(DEFAULT_COLORS);
   const [isChatExpanded, setIsChatExpandedState] = useState(false);
   const [canScrollToPortfolio, setCanScrollToPortfolioState] = useState(false);
+  const [isPageScrollUnlocked, setIsPageScrollUnlockedState] = useState(false);
 
   // Memoized setters to prevent unnecessary re-renders
   const setColors = useCallback((newColors: BackgroundColors) => {
@@ -52,6 +55,10 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
     setCanScrollToPortfolioState(can);
   }, []);
 
+  const setIsPageScrollUnlocked = useCallback((unlocked: boolean) => {
+    setIsPageScrollUnlockedState(unlocked);
+  }, []);
+
   // Memoize context value to prevent re-renders
   const contextValue = useMemo(() => ({
     colors,
@@ -60,7 +67,9 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
     setIsChatExpanded,
     canScrollToPortfolio,
     setCanScrollToPortfolio,
-  }), [colors, setColors, isChatExpanded, setIsChatExpanded, canScrollToPortfolio, setCanScrollToPortfolio]);
+    isPageScrollUnlocked,
+    setIsPageScrollUnlocked,
+  }), [colors, setColors, isChatExpanded, setIsChatExpanded, canScrollToPortfolio, setCanScrollToPortfolio, isPageScrollUnlocked, setIsPageScrollUnlocked]);
 
   return (
     <BackgroundContext.Provider value={contextValue}>

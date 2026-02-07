@@ -34,7 +34,7 @@ function ChatWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const portfolioScrollAccumulator = useRef(0);
 
-  const { setIsChatExpanded, setCanScrollToPortfolio } = useBackgroundContext();
+  const { setIsChatExpanded, setCanScrollToPortfolio, isPageScrollUnlocked } = useBackgroundContext();
 
   // Sync expanded state
   useEffect(() => {
@@ -196,7 +196,7 @@ function ChatWindow() {
   // ========== COLLAPSED STATE ==========
   if (!isExpanded) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 50 }}>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 50 }}>
         <motion.div
           initial={{ opacity: 0, y: 60, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -298,7 +298,7 @@ function ChatWindow() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed inset-0"
+      className={isPageScrollUnlocked ? "absolute inset-0" : "fixed inset-0"}
       style={{ zIndex: 50 }}
     >
       {/* Close Button */}
@@ -309,7 +309,7 @@ function ChatWindow() {
         exit={{ opacity: 0, scale: 0.5 }}
         transition={{ ...smoothSpring, delay: 0.2 }}
         onClick={handleClose}
-        className="fixed top-6 right-6 pointer-events-auto group"
+        className={`${isPageScrollUnlocked ? 'absolute' : 'fixed'} top-6 right-6 pointer-events-auto group`}
         style={{ zIndex: 60 }}
       >
         <motion.div className="relative" whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} transition={quickSpring}>
@@ -412,9 +412,9 @@ function ChatWindow() {
             ))}
           </AnimatePresence>
 
-          {/* Portfolio Hint - only shows when at bottom */}
+          {/* End of conversation indicator - shows when at bottom */}
           <AnimatePresence>
-            {showPortfolioHint && isAtBottom && messages.length > 0 && (
+            {isAtBottom && messages.length > 0 && !isPageScrollUnlocked && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -426,11 +426,8 @@ function ChatWindow() {
                   animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   className="flex flex-col items-center gap-2"
-                  style={{ color: 'rgba(52, 21, 15, 0.4)' }}
+                  style={{ color: 'rgba(52, 21, 15, 0.3)' }}
                 >
-                  <span style={{ fontSize: '11px', fontFamily: '-apple-system, sans-serif', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                    Weiter scrollen für Portfolio
-                  </span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 5v14M5 12l7 7 7-7" />
                   </svg>
@@ -449,7 +446,7 @@ function ChatWindow() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 60 }}
         transition={{ ...smoothSpring, delay: 0.15 }}
-        className="fixed bottom-0 left-0 right-0 pointer-events-auto"
+        className={`${isPageScrollUnlocked ? 'absolute' : 'fixed'} bottom-0 left-0 right-0 pointer-events-auto`}
         style={{ padding: '20px 24px 32px', background: 'linear-gradient(to top, rgba(234, 206, 170, 0.98) 0%, rgba(234, 206, 170, 0.9) 60%, transparent 100%)', zIndex: 55 }}
       >
         <motion.div className="max-w-2xl mx-auto relative" whileHover={{ y: -3 }} transition={quickSpring}>
