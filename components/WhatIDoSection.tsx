@@ -62,7 +62,7 @@ function WhatIDoSection() {
 
       {/* Main Content Area - Dark Background */}
       <div
-        className="relative w-full min-h-screen"
+        className="relative w-full"
         style={{ background: '#0A0A0A' }}
       >
         {/* Subtle gradient overlay */}
@@ -249,74 +249,218 @@ function WhatIDoSection() {
                 DO
               </h2>
             </motion.div>
+
+            {/* Spiral Arrow with Text - Right Side */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="absolute right-0 md:right-12 bottom-0 md:-bottom-20 flex flex-col items-end"
+              style={{ maxWidth: '320px' }}
+            >
+              {/* Text */}
+              <p
+                style={{
+                  fontFamily: '"Courier New", monospace',
+                  fontSize: 'clamp(12px, 1.4vw, 15px)',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  textAlign: 'right',
+                  lineHeight: 1.6,
+                  marginBottom: '20px',
+                }}
+              >
+                Es muss nicht schwierig sein,
+                <br />
+                mit AI und Business-Integrationen
+                <br />
+                <span style={{ color: '#D39858' }}>2026</span> mitzuhalten.
+              </p>
+
+              {/* Spiral Arrow SVG */}
+              <motion.svg
+                width="180"
+                height="200"
+                viewBox="0 0 180 200"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, delay: 0.6, ease: "easeOut" }}
+              >
+                {/* Spiral path */}
+                <motion.path
+                  d="M160,20
+                     C140,25 120,35 100,50
+                     C70,70 50,90 40,115
+                     C30,140 35,160 50,175
+                     C60,185 45,190 30,195"
+                  stroke="url(#spiralGradient)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.5, delay: 0.6, ease: "easeOut" }}
+                />
+
+                {/* Arrow head */}
+                <motion.path
+                  d="M30,195 L15,185 M30,195 L40,185"
+                  stroke="#D39858"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 2 }}
+                />
+
+                {/* Decorative dots along path */}
+                <motion.circle
+                  cx="130"
+                  cy="35"
+                  r="3"
+                  fill="#D39858"
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.8 }}
+                />
+                <motion.circle
+                  cx="65"
+                  cy="100"
+                  r="2"
+                  fill="rgba(211, 152, 88, 0.5)"
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 1.2 }}
+                />
+
+                <defs>
+                  <linearGradient id="spiralGradient" x1="160" y1="20" x2="30" y2="195">
+                    <stop offset="0%" stopColor="rgba(211, 152, 88, 0.3)" />
+                    <stop offset="50%" stopColor="#D39858" />
+                    <stop offset="100%" stopColor="#85431E" />
+                  </linearGradient>
+                </defs>
+              </motion.svg>
+            </motion.div>
           </div>
 
-          {/* Side annotations */}
+          {/* Side annotation */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="absolute right-6 md:right-12 top-1/3 hidden md:flex flex-col gap-4"
+            className="absolute left-6 md:left-12 top-1/2 hidden md:flex flex-col gap-4"
           >
             <span
               style={{
                 fontFamily: '"Courier New", monospace',
                 fontSize: '11px',
-                color: 'rgba(255, 255, 255, 0.3)',
+                color: 'rgba(255, 255, 255, 0.25)',
                 letterSpacing: '0.15em',
                 writingMode: 'vertical-rl',
                 textOrientation: 'mixed',
               }}
             >
-              FULL-STACK DEVELOPMENT
+              AI SOLUTIONS
             </span>
           </motion.div>
+        </div>
 
-          {/* Bottom description */}
+        {/* Spacer for spiral arrow */}
+        <div className="h-32 md:h-48" style={{ background: '#0A0A0A' }} />
+
+        {/* Golden Gradient Divider with Grain - Like the screenshot */}
+        <div className="relative w-full" style={{ height: 'clamp(300px, 50vw, 600px)' }}>
+          {/* Main gradient ellipse */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 120% 100% at 50% 0%, #D39858 0%, rgba(211, 152, 88, 0.8) 30%, rgba(211, 152, 88, 0.4) 50%, rgba(211, 152, 88, 0.1) 70%, transparent 90%)',
+            }}
+          />
+
+          {/* Inner glow */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 80% at 50% 10%, rgba(234, 206, 170, 0.3) 0%, transparent 50%)',
+            }}
+          />
+
+          {/* Grain texture overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+              opacity: 0.15,
+              mixBlendMode: 'overlay',
+            }}
+          />
+
+          {/* Dark overlay at bottom for transition */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-1/3"
+            style={{
+              background: 'linear-gradient(to top, #0A0A0A 0%, transparent 100%)',
+            }}
+          />
+
+          {/* Transition curve to light section */}
+          <svg
+            viewBox="0 0 1440 120"
+            className="absolute -bottom-1 w-full"
+            preserveAspectRatio="none"
+            style={{ height: '120px' }}
+          >
+            <path
+              d="M0,120 L0,60 Q720,120 1440,60 L1440,120 Z"
+              fill="#EACEAA"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* New Light Section */}
+      <div
+        className="relative w-full min-h-screen"
+        style={{ background: '#EACEAA' }}
+      >
+        {/* Grain texture for light section */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            opacity: 0.04,
+            mixBlendMode: 'multiply',
+          }}
+        />
+
+        {/* Content placeholder - can be filled later */}
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16 md:mt-24 max-w-xl"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7 }}
           >
-            <p
+            <span
               style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                fontSize: 'clamp(16px, 2vw, 20px)',
-                color: 'rgba(255, 255, 255, 0.6)',
-                lineHeight: 1.7,
+                fontFamily: '"Courier New", monospace',
+                fontSize: '12px',
+                color: 'rgba(52, 21, 15, 0.5)',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
               }}
             >
-              Moderne Webentwicklung mit Fokus auf Performance,
-              Design und User Experience. Von der Konzeption
-              bis zum Launch.
-            </p>
-
-            {/* Service tags */}
-            <div className="flex flex-wrap gap-3 mt-8">
-              {['React', 'Next.js', 'TypeScript', 'Node.js', 'UI/UX'].map((tag, index) => (
-                <motion.span
-                  key={tag}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.7 + index * 0.1 }}
-                  style={{
-                    fontFamily: '"Courier New", monospace',
-                    fontSize: '12px',
-                    color: 'rgba(211, 152, 88, 0.8)',
-                    padding: '8px 16px',
-                    border: '1px solid rgba(211, 152, 88, 0.3)',
-                    borderRadius: '4px',
-                    background: 'rgba(211, 152, 88, 0.05)',
-                  }}
-                >
-                  {tag}
-                </motion.span>
-              ))}
-            </div>
+              [ Weiter ]
+            </span>
           </motion.div>
         </div>
       </div>

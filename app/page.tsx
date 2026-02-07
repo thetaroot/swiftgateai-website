@@ -424,24 +424,21 @@ export default function Home() {
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {/* Sticky Header with Logo and Nav */}
+          {/* Sticky Header with Logo and Nav - Always visible with blur */}
           <motion.div
-            className="fixed top-0 left-0 right-0 z-50"
+            className="fixed top-0 left-0 right-0"
+            style={{ zIndex: 100 }}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div
-              className="px-6 py-4 transition-all duration-500"
+              className="px-6 py-4 transition-all duration-300"
               style={{
-                background: isInDarkSection
-                  ? 'rgba(10, 10, 10, 0.85)'
-                  : 'rgba(234, 206, 170, 0.8)',
-                backdropFilter: 'blur(20px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                borderBottom: isInDarkSection
-                  ? '1px solid rgba(211, 152, 88, 0.1)'
-                  : '1px solid rgba(52, 21, 15, 0.05)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(24px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
               <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -455,6 +452,7 @@ export default function Home() {
                       fontWeight: 400,
                       color: isInDarkSection ? '#EACEAA' : '#34150F',
                       letterSpacing: '0.05em',
+                      textShadow: isInDarkSection ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
                     }}
                   >
                     [ SWIFTGATEAI ]
@@ -485,6 +483,7 @@ export default function Home() {
                           background: 'none',
                           border: 'none',
                           padding: 0,
+                          textShadow: isInDarkSection ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
                         }}
                       >
                         [ {link} ]
