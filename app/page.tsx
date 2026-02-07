@@ -9,6 +9,7 @@ import WelcomeScreen from '@/components/WelcomeScreen';
 import BrutalistLogo from '@/components/BrutalistLogo';
 import BrutalistNav from '@/components/BrutalistNav';
 import BrutalistTextBlock from '@/components/BrutalistTextBlock';
+import WhatIDoSection from '@/components/WhatIDoSection';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 
 // Ultra-smooth spring configurations
@@ -38,6 +39,9 @@ export default function Home() {
   // Hint states for portfolio transition
   const [showChatHint, setShowChatHint] = useState(false);
   const [showPortfolioHint, setShowPortfolioHint] = useState(false);
+
+  // Track if user has scrolled past the first section (for sticky nav styling)
+  const [isInDarkSection, setIsInDarkSection] = useState(false);
 
   const { setColors, isChatExpanded, canScrollToPortfolio, setIsPageScrollUnlocked } = useBackgroundContext();
 
@@ -213,6 +217,12 @@ export default function Home() {
           setShowPortfolioHint(false);
         }
       }
+
+      // Check if scrolled into dark section (past first viewport)
+      const scrolledPastFirst = container.scrollTop > window.innerHeight * 0.7;
+      if (scrolledPastFirst !== isInDarkSection) {
+        setIsInDarkSection(scrolledPastFirst);
+      }
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -246,7 +256,7 @@ export default function Home() {
       container.removeEventListener('scroll', handleScroll);
       container.removeEventListener('wheel', handleWheel);
     };
-  }, [showPortfolio, isChatExpanded, isScrollLocked, isAnimating, showPortfolioHint, checkPortfolioTransition, goToPortfolio]);
+  }, [showPortfolio, isChatExpanded, isScrollLocked, isAnimating, showPortfolioHint, checkPortfolioTransition, goToPortfolio, isInDarkSection]);
 
   // Wheel handler for Portfolio section - back to chat
   useEffect(() => {
@@ -414,27 +424,90 @@ export default function Home() {
             WebkitOverflowScrolling: 'touch',
           }}
         >
+          {/* Sticky Header with Logo and Nav */}
+          <motion.div
+            className="fixed top-0 left-0 right-0 z-50"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div
+              className="px-6 py-4 transition-all duration-500"
+              style={{
+                background: isInDarkSection
+                  ? 'rgba(10, 10, 10, 0.85)'
+                  : 'rgba(234, 206, 170, 0.8)',
+                backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                borderBottom: isInDarkSection
+                  ? '1px solid rgba(211, 152, 88, 0.1)'
+                  : '1px solid rgba(52, 21, 15, 0.05)',
+              }}
+            >
+              <div className="max-w-7xl mx-auto flex items-center justify-between">
+                {/* Logo */}
+                <motion.div className="select-none">
+                  <span
+                    className="transition-colors duration-500"
+                    style={{
+                      fontFamily: '"Courier New", monospace',
+                      fontSize: 'clamp(14px, 1.8vw, 18px)',
+                      fontWeight: 400,
+                      color: isInDarkSection ? '#EACEAA' : '#34150F',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    [ SWIFTGATEAI ]
+                  </span>
+                </motion.div>
+
+                {/* Navigation */}
+                {!isChatExpanded && (
+                  <motion.nav
+                    className="flex items-center gap-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 0.3 }}
+                  >
+                    {['SERVICES', 'PORTFOLIO', 'KONTAKT'].map((link, index) => (
+                      <motion.button
+                        key={link}
+                        className="cursor-pointer hover:opacity-60 transition-all duration-300"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                        style={{
+                          fontFamily: '"Courier New", monospace',
+                          fontSize: 'clamp(12px, 1.5vw, 16px)',
+                          fontWeight: 400,
+                          color: isInDarkSection ? '#EACEAA' : '#34150F',
+                          letterSpacing: '0.05em',
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                        }}
+                      >
+                        [ {link} ]
+                      </motion.button>
+                    ))}
+                  </motion.nav>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Vertical Nav when chat expanded */}
+          {isChatExpanded && (
+            <div className="fixed top-24 left-6" style={{ zIndex: 55 }}>
+              <BrutalistNav isVertical />
+            </div>
+          )}
+
           {/* First Section - Chat Area */}
           <div
             className="relative min-h-screen"
             style={{ background: '#EACEAA' }}
           >
-            {/* Brutalist Logo - Top Left */}
-            <div className="fixed top-6 left-6" style={{ zIndex: 55 }}>
-              <BrutalistLogo />
-            </div>
-
-            {/* Brutalist Navigation - Conditional Position */}
-            {isChatExpanded ? (
-              <div className="fixed top-24 left-6" style={{ zIndex: 55 }}>
-                <BrutalistNav isVertical />
-              </div>
-            ) : (
-              <div className="fixed top-6 left-1/2" style={{ zIndex: 55, transform: 'translateX(-50%)' }}>
-                <BrutalistNav />
-              </div>
-            )}
-
             {/* Brutalist Text Block - Bottom Right (hidden when chat expanded) */}
             <div className="fixed bottom-6 right-6" style={{ zIndex: 55 }}>
               <BrutalistTextBlock isVisible={!isChatExpanded} />
@@ -443,29 +516,30 @@ export default function Home() {
             <ChatWindow />
           </div>
 
-          {/* Second Section - Empty Scrollable Area */}
+          {/* Second Section - What I Do */}
           <div
             ref={secondSectionRef}
-            className="relative min-h-screen flex flex-col items-center justify-center"
+            className="relative"
             style={{ background: '#EACEAA' }}
           >
-            {/* Empty section - content can be added later */}
+            {/* WhatIDoSection with integrated divider */}
+            <WhatIDoSection />
 
-            {/* Portfolio Transition Hint at Bottom */}
+            {/* Portfolio Transition Hint at Bottom of WhatIDoSection */}
             <AnimatePresence>
               {showPortfolioHint && !isAnimating && (
                 <motion.div
-                  className="absolute bottom-12 flex flex-col items-center gap-2"
+                  className="flex flex-col items-center gap-2 py-16"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.3 }}
-                  style={{ left: '50%', transform: 'translateX(-50%)' }}
+                  style={{ background: '#0A0A0A' }}
                 >
                   <motion.span
                     className="text-center whitespace-nowrap"
                     style={{
-                      color: 'rgba(52, 21, 15, 0.5)',
+                      color: 'rgba(211, 152, 88, 0.5)',
                       fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
                       fontSize: '11px',
                       letterSpacing: '0.12em',
@@ -478,7 +552,7 @@ export default function Home() {
                     animate={{ y: [0, 6, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(52, 21, 15, 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(211, 152, 88, 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 5v14M5 12l7 7 7-7" />
                     </svg>
                   </motion.div>
