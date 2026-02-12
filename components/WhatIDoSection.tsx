@@ -76,7 +76,7 @@ function WhatIDoSection() {
               <h2
                 style={{
                   fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                  fontSize: 'clamp(60px, 18vw, 200px)',
+                  fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
                   fontWeight: 700,
                   color: '#FFFFFF',
                   letterSpacing: '-0.04em',
@@ -99,7 +99,7 @@ function WhatIDoSection() {
                 <h2
                   style={{
                     fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                    fontSize: 'clamp(60px, 18vw, 200px)',
+                    fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
                     fontWeight: 700,
                     color: '#FFFFFF',
                     letterSpacing: '-0.04em',
@@ -199,7 +199,7 @@ function WhatIDoSection() {
               <h2
                 style={{
                   fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                  fontSize: 'clamp(60px, 18vw, 200px)',
+                  fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
                   fontWeight: 700,
                   color: '#FFFFFF',
                   letterSpacing: '-0.04em',
@@ -372,9 +372,9 @@ function WhatIDoSection() {
       <div className="relative w-full" style={{ marginTop: '-1px' }}>
         {/* SERVICES text - top portion visible, bottom hidden behind light bg */}
         <motion.div
-          className="absolute left-0 right-0 flex justify-center pointer-events-none select-none"
+          className="absolute left-0 right-0 flex justify-center pointer-events-none select-none overflow-hidden"
           style={{
-            top: 'clamp(-200px, -20vw, -450px)', // Aggressively lifted for better visibility
+            top: isMobile ? '-60px' : 'clamp(-450px, -20vw, -200px)',
             zIndex: 1,
           }}
           initial={{ opacity: 0, y: 40 }}
@@ -385,13 +385,14 @@ function WhatIDoSection() {
           <h2
             style={{
               fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-              fontSize: 'clamp(120px, 22vw, 320px)',
+              fontSize: isMobile ? 'clamp(60px, 20vw, 100px)' : 'clamp(120px, 22vw, 320px)',
               fontWeight: 800,
-              color: '#34150F',
+              color: isMobile ? '#EACEAA' : '#34150F',
               letterSpacing: '-0.04em',
               lineHeight: 0.85,
               textAlign: 'center',
-              opacity: 0.15, // Slightly increased opacity
+              opacity: isMobile ? 0.35 : 0.15,
+              whiteSpace: 'nowrap',
             }}
           >
             {t.whatIDo.servicesTitle}

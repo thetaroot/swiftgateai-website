@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
+import { useSettings } from '@/context/SettingsContext';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'model';
   content: string;
   status?: 'thinking' | 'streaming' | 'complete';
 }
@@ -16,18 +17,22 @@ interface Message {
 const smoothSpring = { type: "spring" as const, stiffness: 200, damping: 30, mass: 1 };
 const quickSpring = { type: "spring" as const, stiffness: 300, damping: 35, mass: 0.8 };
 
+const MAX_HISTORY_LENGTH = 20;
+
 function ChatWindow() {
   const { t } = useTranslation();
+  const { language } = useSettings();
   const isMobile = useMobile();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showExitHint, setShowExitHint] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Memoize demo conversation from translations
   const DEMO_CONVERSATION = useMemo<Message[]>(() => {
     return t.chat.demo.map(msg => ({
-      role: msg.role as 'user' | 'assistant',
+      role: msg.role === 'assistant' ? 'model' as const : msg.role as 'user' | 'model',
       content: msg.content,
       status: 'complete'
     }));
@@ -39,7 +44,15 @@ function ChatWindow() {
   const hasHitBottom = useRef(false);
   const exitScrollAccumulator = useRef(0);
 
-  const { setIsChatExpanded, chatVisible, setChatVisible } = useBackgroundContext();
+  const { setIsChatExpanded, chatVisible, setChatVisible, setChatMessages } = useBackgroundContext();
+
+  // Sync messages to BackgroundContext for ContactSection access
+  useEffect(() => {
+    const geminiMessages = messages
+      .filter((msg): msg is Message & { status: 'complete' } => msg.status === 'complete')
+      .map(msg => ({ role: msg.role, content: msg.content }));
+    setChatMessages(geminiMessages);
+  }, [messages, setChatMessages]);
 
   // Sync expanded state
   useEffect(() => {
@@ -97,7 +110,7 @@ function ChatWindow() {
     if (!isExpanded || messages.length === 0) return;
 
     const lastMessage = messages[messages.length - 1];
-    const isAITyping = lastMessage?.role === 'assistant' &&
+    const isAITyping = lastMessage?.role === 'model' &&
       (lastMessage.status === 'thinking' || lastMessage.status === 'streaming');
 
     if (isAITyping) {
@@ -175,16 +188,103 @@ function ChatWindow() {
     setTimeout(() => { setMessages([]); setMessage(''); }, 600);
   }, [setChatVisible]);
 
-  // === DISABLED FOR BASIS LAUNCH ===
-  const handleSend = useCallback(() => {
-    // AI features disabled for basis launch
-    return;
-  }, []);
+  // ── Send Message Handler ──
+  const handleSend = useCallback(async () => {
+    const trimmed = message.trim();
+    if (!trimmed || isLoading) return;
+
+    // Expand chat on first send
+    if (!isExpanded) {
+      setIsExpanded(true);
+    }
+
+    const userMessage: Message = { role: 'user', content: trimmed, status: 'complete' };
+    const thinkingMessage: Message = { role: 'model', content: '', status: 'thinking' };
+
+    // Add user message + thinking indicator
+    setMessages(prev => {
+      let updated = [...prev, userMessage, thinkingMessage];
+      // Enforce max history (keep last MAX_HISTORY_LENGTH items + the thinking msg)
+      if (updated.length > MAX_HISTORY_LENGTH + 1) {
+        updated = updated.slice(updated.length - MAX_HISTORY_LENGTH - 1);
+      }
+      return updated;
+    });
+    setMessage('');
+    setIsLoading(true);
+
+    try {
+      // Build history for API (only completed messages, excluding thinking)
+      const currentMessages = [...messages, userMessage];
+      const history = currentMessages
+        .filter(m => m.status === 'complete')
+        .slice(-MAX_HISTORY_LENGTH)
+        .map(m => ({ role: m.role, content: m.content }));
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: trimmed,
+          history: history.slice(0, -1), // Exclude the current message from history
+          language,
+        }),
+      });
+
+      if (response.status === 429) {
+        setMessages(prev =>
+          prev.map((msg, i) =>
+            i === prev.length - 1
+              ? { ...msg, content: t.ai.rateLimit, status: 'complete' as const }
+              : msg
+          )
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        setMessages(prev =>
+          prev.map((msg, i) =>
+            i === prev.length - 1
+              ? { ...msg, content: t.ai.error, status: 'complete' as const }
+              : msg
+          )
+        );
+        return;
+      }
+
+      const data: unknown = await response.json();
+      const reply = typeof data === 'object' && data !== null && 'reply' in data
+        ? String((data as Record<string, unknown>).reply)
+        : t.ai.fallback;
+
+      // Replace thinking message with actual reply
+      setMessages(prev =>
+        prev.map((msg, i) =>
+          i === prev.length - 1
+            ? { ...msg, content: reply, status: 'complete' as const }
+            : msg
+        )
+      );
+    } catch {
+      setMessages(prev =>
+        prev.map((msg, i) =>
+          i === prev.length - 1
+            ? { ...msg, content: t.ai.error, status: 'complete' as const }
+            : msg
+        )
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [message, isLoading, isExpanded, messages, language, t.ai]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // AI features disabled for basis launch
-    e.preventDefault();
-  }, []);
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }, [handleSend]);
 
   // ========== COLLAPSED STATE ==========
   if (!isExpanded) {
@@ -223,15 +323,14 @@ function ChatWindow() {
 
               <textarea
                 ref={textareaRef}
-                value=""
-                readOnly
-                disabled
-                tabIndex={-1}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
                 rows={1}
                 placeholder={t.chat.placeholder}
                 className="flex-1 resize-none focus:outline-none relative bg-transparent"
                 style={{
-                  color: 'rgba(52, 21, 15, 0.25)',
+                  color: '#1a1a1a',
                   fontSize: '15px',
                   lineHeight: '1.6',
                   fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif',
@@ -239,16 +338,16 @@ function ChatWindow() {
                   minHeight: '44px',
                   maxHeight: '120px',
                   padding: '10px 0',
-                  cursor: 'default',
-                  opacity: 0.5,
                 }}
               />
 
               <motion.button
                 type="button"
-                disabled
-                tabIndex={-1}
-                animate={{ scale: 0.85, opacity: 0.25 }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSend(); }}
+                disabled={!message.trim() || isLoading}
+                animate={{ scale: message.trim() ? 1 : 0.85, opacity: message.trim() ? 1 : 0.35 }}
+                whileHover={message.trim() ? { scale: 1.1 } : {}}
+                whileTap={message.trim() ? { scale: 0.9 } : {}}
                 transition={quickSpring}
                 className="flex-shrink-0 ml-2 flex items-center justify-center"
                 style={{
@@ -257,41 +356,16 @@ function ChatWindow() {
                   borderRadius: '14px',
                   border: 'none',
                   outline: 'none',
-                  background: 'rgba(52, 21, 15, 0.06)',
-                  cursor: 'default',
-                  pointerEvents: 'none',
+                  background: message.trim() ? 'linear-gradient(135deg, #34150F 0%, #52241A 50%, #34150F 100%)' : 'rgba(52, 21, 15, 0.06)',
+                  cursor: message.trim() ? 'pointer' : 'default',
+                  boxShadow: message.trim() ? '0 0 0 1px rgba(255,255,255,0.1) inset, 0 4px 12px rgba(52, 21, 15, 0.3), 0 8px 20px rgba(52, 21, 15, 0.15)' : 'none',
                 }}
               >
                 <motion.svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="rgba(52, 21, 15, 0.15)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke={message.trim() ? '#FDFCFA' : 'rgba(52, 21, 15, 0.15)'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 </motion.svg>
               </motion.button>
             </div>
-          </motion.div>
-
-          {/* Coming Soon Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-center mt-5 flex items-center justify-center gap-2"
-          >
-            <span
-              style={{
-                fontSize: '11px',
-                color: 'rgba(52, 21, 15, 0.4)',
-                fontFamily: '"Courier New", monospace',
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                padding: '6px 14px',
-                border: '1px solid rgba(52, 21, 15, 0.15)',
-                borderRadius: '8px',
-                background: 'rgba(52, 21, 15, 0.03)',
-              }}
-            >
-              [ COMING SOON ]
-            </span>
           </motion.div>
         </motion.div>
       </div>
@@ -387,7 +461,7 @@ function ChatWindow() {
                         : '0 0 0 1px rgba(52, 21, 15, 0.08), 0 4px 8px rgba(52, 21, 15, 0.08), 0 8px 20px rgba(52, 21, 15, 0.12)',
                     }}
                   >
-                    {msg.role === 'assistant' && <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 40%)' }} />}
+                    {msg.role === 'model' && <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 40%)' }} />}
 
                     {msg.status === 'thinking' ? (
                       <div className="flex items-center gap-2 py-1 px-1">
@@ -492,7 +566,7 @@ function ChatWindow() {
             <motion.button
               type="button"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSend(); }}
-              disabled={!message.trim()}
+              disabled={!message.trim() || isLoading}
               animate={{ scale: message.trim() ? 1 : 0.85, opacity: message.trim() ? 1 : 0.35 }}
               whileHover={message.trim() ? { scale: 1.1 } : {}}
               whileTap={message.trim() ? { scale: 0.9 } : {}}

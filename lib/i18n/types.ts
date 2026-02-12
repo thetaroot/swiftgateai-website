@@ -127,4 +127,15 @@ export interface Dictionary {
         highContrast: string;
         largeText: string;
     };
+    ai: {
+        error: string;
+        rateLimit: string;
+        emptyInput: string;
+        generating: string;
+        fallback: string;
+        clipboardSuccess: string;
+        clipboardBody: string;
+        mailError: string;
+        mailNoHistory: string;
+    };
 }

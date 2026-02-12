@@ -253,4 +253,15 @@ export const de: Dictionary = {
         highContrast: 'Hoher Kontrast',
         largeText: 'Große Schrift',
     },
+    ai: {
+        error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
+        rateLimit: 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+        emptyInput: 'Bitte geben Sie eine Nachricht ein.',
+        generating: 'Wird generiert...',
+        fallback: 'SwiftGate AI steht Ihnen für Fragen zu unseren Services gerne zur Verfügung. Kontaktieren Sie uns unter hello@swiftgateai.de.',
+        clipboardSuccess: 'Email-Text wurde in die Zwischenablage kopiert. Bitte fügen Sie ihn in Ihre Email ein.',
+        clipboardBody: 'Bitte fügen Sie den kopierten Text ein.',
+        mailError: 'Die Email konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
+        mailNoHistory: 'Bitte führen Sie zuerst ein Gespräch im Chat.',
+    },
 };
