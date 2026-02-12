@@ -168,10 +168,10 @@ export default function Home() {
 
       {/* Main Content */}
       <motion.div
-        style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 10 }}
-        initial={{ opacity: 0 }}
+        style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 10, background: '#EACEAA' }}
+        initial={{ opacity: introComplete ? 1 : 0 }}
         animate={{ opacity: introComplete ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       >
         {/* ... (rest of the component content remains the same, just unindented or inside fragment) ... */}
         {/* Sticky Header */}

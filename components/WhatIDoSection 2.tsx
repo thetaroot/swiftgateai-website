@@ -164,7 +164,6 @@ function WhatIDoSection() {
                     src="/pictures/portrait.jpg"
                     alt="Portrait"
                     fill
-                    priority
                     className="object-cover"
                     style={{ filter: 'contrast(1.05) saturate(0.9)' }}
                   />
