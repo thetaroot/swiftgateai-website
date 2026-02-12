@@ -9,6 +9,8 @@ interface BrutalistNavProps {
 
 function BrutalistNav({ isVertical = false }: BrutalistNavProps) {
   const links = ['SERVICES', 'PORTFOLIO', 'KONTAKT'];
+  // === DISABLED ITEMS FOR BASIS LAUNCH ===
+  const disabledLinks = ['PORTFOLIO'];
 
   if (isVertical) {
     // Vertical mode: Stack letters vertically
@@ -31,7 +33,9 @@ function BrutalistNav({ isVertical = false }: BrutalistNavProps) {
               background: 'none',
               border: 'none',
               padding: 0,
+              ...(disabledLinks.includes(link) ? { opacity: 0.25, pointerEvents: 'none' as const, cursor: 'default' } : {}),
             }}
+            tabIndex={disabledLinks.includes(link) ? -1 : 0}
           >
             {/* Opening bracket - rotated 90deg */}
             <span
@@ -116,7 +120,9 @@ function BrutalistNav({ isVertical = false }: BrutalistNavProps) {
             background: 'none',
             border: 'none',
             padding: 0,
+            ...(disabledLinks.includes(link) ? { opacity: 0.25, pointerEvents: 'none' as const, cursor: 'default' } : {}),
           }}
+          tabIndex={disabledLinks.includes(link) ? -1 : 0}
         >
           [ {link} ]
         </motion.button>

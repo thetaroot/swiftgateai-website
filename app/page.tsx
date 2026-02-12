@@ -1,479 +1,231 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatWindow from '@/components/ChatWindow';
 import PortfolioPreview from '@/components/PortfolioPreview';
 import Footer from '@/components/Footer';
 import WelcomeScreen from '@/components/WelcomeScreen';
-import BrutalistLogo from '@/components/BrutalistLogo';
 import BrutalistNav from '@/components/BrutalistNav';
 import BrutalistTextBlock from '@/components/BrutalistTextBlock';
 import WhatIDoSection from '@/components/WhatIDoSection';
 import { useBackgroundContext } from '@/context/BackgroundContext';
-
-// Ultra-smooth spring configurations
-const sectionTransition = {
-  type: "spring" as const,
-  stiffness: 100,
-  damping: 25,
-  mass: 1,
-};
-
-const quickTransition = {
-  type: "spring" as const,
-  stiffness: 200,
-  damping: 30,
-  mass: 0.8,
-};
+import ContactSection from '@/components/ContactSection';
+import MobileMenu from '@/components/MobileMenu';
+import SettingsModal from '@/components/SettingsModal';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useMobile } from '@/hooks/useMobile';
 
 export default function Home() {
+  const { t } = useTranslation();
+  const isMobile = useMobile();
   const [introComplete, setIntroComplete] = useState(false);
-  const [showPortfolio, setShowPortfolio] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // Scroll lock state - only active when chat is expanded
-  const [isScrollLocked, setIsScrollLocked] = useState(true);
-  const [showUnlockHint, setShowUnlockHint] = useState(false);
-
-  // Hint states for portfolio transition
-  const [showChatHint, setShowChatHint] = useState(false);
-  const [showPortfolioHint, setShowPortfolioHint] = useState(false);
-
-  // Track if user has scrolled past the first section (for sticky nav styling)
   const [isInDarkSection, setIsInDarkSection] = useState(false);
+  const [showScrollUpHint, setShowScrollUpHint] = useState(false);
+  const [isPastFirstSection, setIsPastFirstSection] = useState(false);
 
-  const { setColors, isChatExpanded, canScrollToPortfolio, setIsPageScrollUnlocked } = useBackgroundContext();
+  const { isChatExpanded, chatVisible, setChatVisible } = useBackgroundContext();
 
-  // Refs
-  const mainScrollRef = useRef<HTMLDivElement>(null);
-  const secondSectionRef = useRef<HTMLDivElement>(null);
-  const transitionAccumulator = useRef(0);
-  const touchStartY = useRef(0);
-  const scrollCooldown = useRef(false);
-  const portfolioContainerRef = useRef<HTMLDivElement>(null);
-  const hasHitEdge = useRef(false);
-  const unlockAccumulator = useRef(0);
+  const pageScrollRef = useRef<HTMLDivElement>(null);
+  const topScrollAccumulator = useRef(0);
 
-  // Callback when intro animation completes
+  const handleScrollTo = (id: string) => {
+    // Special case for services to hit the anchor deep inside component
+    const targetId = id === 'services' ? 'services-anchor' : id;
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
   }, []);
 
-  // Reset scroll lock when chat collapses
+  // IntersectionObserver for nav color switching
   useEffect(() => {
-    if (!isChatExpanded) {
-      setIsScrollLocked(true);
-      setShowUnlockHint(false);
-      unlockAccumulator.current = 0;
-      setIsPageScrollUnlocked(false);
-    }
-  }, [isChatExpanded, setIsPageScrollUnlocked]);
-
-  // Sync scroll lock state with context
-  useEffect(() => {
-    setIsPageScrollUnlocked(!isScrollLocked);
-  }, [isScrollLocked, setIsPageScrollUnlocked]);
-
-  // Update colors based on section
-  useEffect(() => {
-    if (!showPortfolio) {
-      setColors({
-        primary: '#D39858',
-        secondary: '#85431E',
-        background: '#EACEAA',
-      });
-    } else {
-      setColors({
-        primary: '#D39858',
-        secondary: '#EACEAA',
-        background: '#34150F',
-      });
-    }
-  }, [showPortfolio, setColors]);
-
-  // Reset hints when section changes
-  useEffect(() => {
-    setShowChatHint(false);
-    setShowPortfolioHint(false);
-    hasHitEdge.current = false;
-    transitionAccumulator.current = 0;
-  }, [showPortfolio]);
-
-  // Reset portfolio scroll position BEFORE paint
-  useLayoutEffect(() => {
-    const container = portfolioContainerRef.current;
+    const container = pageScrollRef.current;
     if (!container) return;
 
-    if (showPortfolio) {
-      container.scrollTop = 0;
-      requestAnimationFrame(() => {
-        container.scrollTop = 0;
-      });
-    }
-  }, [showPortfolio]);
+    const darkSections = container.querySelectorAll('[data-section="dark"]');
+    if (darkSections.length === 0) return;
 
-  // Initialize portfolio container with scrollTop = 0 on mount
-  useLayoutEffect(() => {
-    const container = portfolioContainerRef.current;
-    if (container) {
-      container.scrollTop = 0;
-    }
-  }, []);
-
-  // Navigate to portfolio with animation
-  const goToPortfolio = useCallback(() => {
-    if (isAnimating || scrollCooldown.current || showPortfolio) return;
-    if (!showPortfolioHint) return;
-
-    scrollCooldown.current = true;
-    setTimeout(() => { scrollCooldown.current = false; }, 800);
-
-    setIsAnimating(true);
-    setShowPortfolio(true);
-    setShowPortfolioHint(false);
-
-    setTimeout(() => { setIsAnimating(false); }, 1000);
-  }, [isAnimating, showPortfolio, showPortfolioHint]);
-
-  // Navigate back to chat
-  const goToChat = useCallback(() => {
-    if (isAnimating || scrollCooldown.current || !showPortfolio) return;
-    if (!showChatHint) return;
-
-    scrollCooldown.current = true;
-    setTimeout(() => { scrollCooldown.current = false; }, 800);
-
-    setIsAnimating(true);
-    setShowPortfolio(false);
-    setShowChatHint(false);
-
-    // Scroll back to top of main content
-    if (mainScrollRef.current) {
-      mainScrollRef.current.scrollTop = 0;
-    }
-
-    setTimeout(() => { setIsAnimating(false); }, 1000);
-  }, [isAnimating, showPortfolio, showChatHint]);
-
-  // Check if at bottom of second section for portfolio transition
-  const checkPortfolioTransition = useCallback(() => {
-    const container = mainScrollRef.current;
-    const secondSection = secondSectionRef.current;
-    if (!container || !secondSection) return false;
-
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
-    return isAtBottom;
-  }, []);
-
-  // Show unlock hint when chat signals it's ready
-  useEffect(() => {
-    if (isChatExpanded && isScrollLocked && canScrollToPortfolio && !showUnlockHint) {
-      setShowUnlockHint(true);
-    }
-  }, [isChatExpanded, isScrollLocked, canScrollToPortfolio, showUnlockHint]);
-
-  // Window-level wheel handler for unlocking scroll when chat is expanded
-  useEffect(() => {
-    if (showPortfolio || !isChatExpanded || !isScrollLocked || !showUnlockHint) return;
-
-    const UNLOCK_THRESHOLD = 150;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isAnimating || scrollCooldown.current) return;
-
-      if (e.deltaY > 0) {
-        unlockAccumulator.current += e.deltaY;
-        if (unlockAccumulator.current > UNLOCK_THRESHOLD) {
-          setIsScrollLocked(false);
-          setShowUnlockHint(false);
-          unlockAccumulator.current = 0;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Check if any dark section is intersecting the top area
+        let anyDarkVisible = false;
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            anyDarkVisible = true;
+            break;
+          }
         }
-      } else {
-        unlockAccumulator.current = 0;
+        setIsInDarkSection(anyDarkVisible);
+      },
+      {
+        root: container,
+        // Only trigger when section enters the top 20% of the viewport
+        rootMargin: '0px 0px -80% 0px',
+        threshold: 0,
       }
-    };
+    );
 
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [showPortfolio, isChatExpanded, isScrollLocked, showUnlockHint, isAnimating]);
+    darkSections.forEach((section) => observer.observe(section));
 
-  // Handle scroll on main container for portfolio transition (light section)
+    return () => observer.disconnect();
+  }, [introComplete]);
+
+  // Track scroll position to hide BrutalistTextBlock once past first section
   useEffect(() => {
-    if (showPortfolio) return;
-
-    const container = mainScrollRef.current;
+    const container = pageScrollRef.current;
     if (!container) return;
-
-    const PORTFOLIO_THRESHOLD = 120;
 
     const handleScroll = () => {
-      // Check for portfolio transition hint (only when not locked)
-      if (!isChatExpanded || !isScrollLocked) {
-        if (checkPortfolioTransition() && !showPortfolioHint) {
-          setShowPortfolioHint(true);
-        } else if (!checkPortfolioTransition() && showPortfolioHint) {
-          setShowPortfolioHint(false);
-        }
-      }
-
-      // Check if scrolled into dark section (past first viewport)
-      const scrolledPastFirst = container.scrollTop > window.innerHeight * 0.7;
-      if (scrolledPastFirst !== isInDarkSection) {
-        setIsInDarkSection(scrolledPastFirst);
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isAnimating || scrollCooldown.current) return;
-
-      // Skip if chat is expanded and locked (handled by window-level handler)
-      if (isChatExpanded && isScrollLocked) return;
-
-      // Normal scrolling - check for portfolio transition
-      if (e.deltaY > 0 && checkPortfolioTransition()) {
-        if (!showPortfolioHint) {
-          setShowPortfolioHint(true);
-          transitionAccumulator.current = 0;
-          return;
-        }
-
-        transitionAccumulator.current += e.deltaY;
-        if (transitionAccumulator.current > PORTFOLIO_THRESHOLD) {
-          goToPortfolio();
-          transitionAccumulator.current = 0;
-        }
-      } else {
-        transitionAccumulator.current = 0;
-      }
+      const pastThreshold = container.scrollTop > window.innerHeight * 0.4;
+      setIsPastFirstSection(pastThreshold);
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Chat re-entry: scrolling up at scrollTop=0 (only when chat was expanded and scrolled out)
+  useEffect(() => {
+    const container = pageScrollRef.current;
+    if (!container || chatVisible || !isChatExpanded) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (container.scrollTop > 0 || e.deltaY >= 0) {
+        topScrollAccumulator.current = 0;
+        if (showScrollUpHint) setShowScrollUpHint(false);
+        return;
+      }
+
+      // Scrolling up at top
+      topScrollAccumulator.current += Math.abs(e.deltaY);
+
+      if (!showScrollUpHint && topScrollAccumulator.current > 30) {
+        setShowScrollUpHint(true);
+      }
+
+      if (topScrollAccumulator.current > 150) {
+        setChatVisible(true);
+        setShowScrollUpHint(false);
+        topScrollAccumulator.current = 0;
+      }
+    };
+
     container.addEventListener('wheel', handleWheel, { passive: true });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [chatVisible, setChatVisible, showScrollUpHint, isChatExpanded]);
 
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      container.removeEventListener('wheel', handleWheel);
-    };
-  }, [showPortfolio, isChatExpanded, isScrollLocked, isAnimating, showPortfolioHint, checkPortfolioTransition, goToPortfolio, isInDarkSection]);
-
-  // Wheel handler for Portfolio section - back to chat
+  // Touch support for chat re-entry
   useEffect(() => {
-    const container = portfolioContainerRef.current;
-    if (!container || !showPortfolio) return;
+    const container = pageScrollRef.current;
+    if (!container || chatVisible || !isChatExpanded) return;
 
-    const SCROLL_THRESHOLD = 100;
+    let touchStartY = 0;
 
-    const handlePortfolioWheel = (e: WheelEvent) => {
-      if (isAnimating || scrollCooldown.current) return;
-
-      const isAtTop = container.scrollTop <= 0;
-
-      if (!isAtTop || e.deltaY >= 0) {
-        if (showChatHint) setShowChatHint(false);
-        transitionAccumulator.current = 0;
-        hasHitEdge.current = false;
-        return;
-      }
-
-      if (!hasHitEdge.current) {
-        hasHitEdge.current = true;
-        transitionAccumulator.current = 0;
-        return;
-      }
-
-      if (!showChatHint) {
-        transitionAccumulator.current += Math.abs(e.deltaY);
-        if (transitionAccumulator.current > 30) {
-          setShowChatHint(true);
-          transitionAccumulator.current = 0;
-        }
-        return;
-      }
-
-      transitionAccumulator.current += Math.abs(e.deltaY);
-      if (transitionAccumulator.current > SCROLL_THRESHOLD) {
-        goToChat();
-        transitionAccumulator.current = 0;
-      }
-    };
-
-    container.addEventListener('wheel', handlePortfolioWheel, { passive: true });
-    return () => container.removeEventListener('wheel', handlePortfolioWheel);
-  }, [showPortfolio, showChatHint, isAnimating, goToChat]);
-
-  // Touch handlers
-  useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
+      touchStartY = e.touches[0].clientY;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (isAnimating || scrollCooldown.current) return;
+      if (container.scrollTop > 0) return;
 
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchStartY.current - touchEndY;
-      const SWIPE_THRESHOLD = 100;
-
-      if (showPortfolio) {
-        const container = portfolioContainerRef.current;
-        if (container && container.scrollTop <= 0 && deltaY < -SWIPE_THRESHOLD) {
-          if (showChatHint) {
-            goToChat();
-          } else {
-            setShowChatHint(true);
-          }
-        }
-        return;
-      }
-
-      // On light section
-      if (isChatExpanded && isScrollLocked) {
-        if (canScrollToPortfolio && deltaY > SWIPE_THRESHOLD) {
-          if (showUnlockHint) {
-            setIsScrollLocked(false);
-            setShowUnlockHint(false);
-          } else {
-            setShowUnlockHint(true);
-          }
-        }
-        return;
-      }
-
-      // Check for portfolio transition
-      if (checkPortfolioTransition() && deltaY > SWIPE_THRESHOLD) {
-        if (showPortfolioHint) {
-          goToPortfolio();
+      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      // Swiping down (pulling content down = negative deltaY = scrolling up)
+      if (deltaY < -80) {
+        if (showScrollUpHint) {
+          setChatVisible(true);
+          setShowScrollUpHint(false);
         } else {
-          setShowPortfolioHint(true);
+          setShowScrollUpHint(true);
         }
       }
     };
 
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [showPortfolio, isChatExpanded, isScrollLocked, isAnimating, canScrollToPortfolio, showUnlockHint, showPortfolioHint, showChatHint, checkPortfolioTransition, goToPortfolio, goToChat]);
+  }, [chatVisible, setChatVisible, showScrollUpHint, isChatExpanded]);
 
-  // Keyboard support
+  // Reset scroll up hint when chat becomes visible
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isAnimating || scrollCooldown.current) return;
-
-      if (showPortfolio) {
-        if ((e.key === 'Escape' || e.key === 'ArrowUp') && showChatHint) {
-          e.preventDefault();
-          goToChat();
-        }
-        return;
-      }
-
-      if (isChatExpanded && isScrollLocked) return;
-
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        if (checkPortfolioTransition()) {
-          e.preventDefault();
-          if (showPortfolioHint) {
-            goToPortfolio();
-          } else {
-            setShowPortfolioHint(true);
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showPortfolio, isChatExpanded, isScrollLocked, isAnimating, showPortfolioHint, showChatHint, checkPortfolioTransition, goToPortfolio, goToChat]);
+    if (chatVisible) {
+      setShowScrollUpHint(false);
+      topScrollAccumulator.current = 0;
+    }
+  }, [chatVisible]);
 
   return (
     <>
-      {/* Welcome Screen - First Visit Only */}
+      {/* Welcome Screen */}
       <WelcomeScreen onComplete={handleIntroComplete} />
 
-      {/* Main Content Container */}
+      {/* Main Content */}
       <motion.div
         style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 10 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: introComplete ? 1 : 0 }}
         transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
       >
-        {/* Light Section - Normal Scrollable Page */}
+        {/* ... (rest of the component content remains the same, just unindented or inside fragment) ... */}
+        {/* Sticky Header */}
         <motion.div
-          ref={mainScrollRef}
-          className="absolute inset-0"
-          initial={false}
-          animate={{
-            opacity: !showPortfolio ? 1 : 0,
-            scale: !showPortfolio ? 1 : 0.92,
-            y: !showPortfolio ? 0 : '-8%',
-            filter: !showPortfolio ? 'blur(0px)' : 'blur(8px)',
-          }}
-          transition={sectionTransition}
-          style={{
-            zIndex: !showPortfolio ? 10 : 5,
-            pointerEvents: !showPortfolio ? 'auto' : 'none',
-            willChange: 'transform, opacity, filter',
-            overflowY: (!showPortfolio && (!isChatExpanded || !isScrollLocked)) ? 'auto' : 'hidden',
-            overflowX: 'hidden',
-            WebkitOverflowScrolling: 'touch',
-          }}
+          className="fixed top-0 left-0 right-0"
+          style={{ zIndex: 100 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {/* Sticky Header with Logo and Nav - Always visible with blur */}
-          <motion.div
-            className="fixed top-0 left-0 right-0"
-            style={{ zIndex: 100 }}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <div
+            className="px-4 md:px-6 py-3 md:py-5"
+            style={{ background: 'transparent' }}
           >
-            <div
-              className="px-6 py-4 transition-all duration-300"
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(24px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}
-            >
-              <div className="max-w-7xl mx-auto flex items-center justify-between">
-                {/* Logo */}
-                <motion.div className="select-none">
-                  <span
-                    className="transition-colors duration-500"
-                    style={{
-                      fontFamily: '"Courier New", monospace',
-                      fontSize: 'clamp(14px, 1.8vw, 18px)',
-                      fontWeight: 400,
-                      color: isInDarkSection ? '#EACEAA' : '#34150F',
-                      letterSpacing: '0.05em',
-                      textShadow: isInDarkSection ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
-                    }}
-                  >
-                    [ SWIFTGATEAI ]
-                  </span>
-                </motion.div>
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              {/* Logo — hidden on mobile (brand heading shown in hero instead) */}
+              <motion.div className="select-none hidden md:block">
+                <span
+                  className="transition-colors duration-500"
+                  style={{
+                    fontFamily: '"Courier New", monospace',
+                    fontSize: 'clamp(14px, 1.8vw, 18px)',
+                    fontWeight: 400,
+                    color: isInDarkSection ? '#EACEAA' : '#34150F',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  [ SWIFTGATEAI ]
+                </span>
+              </motion.div>
 
-                {/* Navigation */}
-                {!isChatExpanded && (
+              {/* Navigation & Settings - hide when chat overlay is showing */}
+              {!isChatExpanded && (
+                <div className="flex items-center gap-3 md:gap-8">
+                  {/* Desktop Nav Links */}
                   <motion.nav
-                    className="flex items-center gap-8"
+                    className="hidden md:flex items-center gap-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.3 }}
                   >
-                    {['SERVICES', 'PORTFOLIO', 'KONTAKT'].map((link, index) => (
+                    {[
+                      { key: 'services', label: t.common.services },
+                      { key: 'portfolio', label: t.common.portfolio, disabled: true },
+                      { key: 'kontakt', label: t.common.contact }
+                    ].map((item, index) => (
                       <motion.button
-                        key={link}
-                        className="cursor-pointer hover:opacity-60 transition-all duration-300"
+                        key={item.key}
+                        className="cursor-pointer transition-all duration-300"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                        onClick={() => !item.disabled && handleScrollTo(item.key.toLowerCase())}
+                        tabIndex={item.disabled ? -1 : 0}
                         style={{
                           fontFamily: '"Courier New", monospace',
                           fontSize: 'clamp(12px, 1.5vw, 16px)',
@@ -482,226 +234,198 @@ export default function Home() {
                           letterSpacing: '0.05em',
                           background: 'none',
                           border: 'none',
-                          padding: 0,
-                          textShadow: isInDarkSection ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
+                          padding: '4px 0',
+                          borderBottom: '1px solid transparent',
+                          ...(item.disabled ? { opacity: 0.25, pointerEvents: 'none' as const, cursor: 'default' } : {}),
+                        }}
+                        whileHover={item.disabled ? {} : {
+                          borderBottomColor: isInDarkSection ? '#EACEAA' : '#34150F',
                         }}
                       >
-                        [ {link} ]
+                        [ {item.label} ]
                       </motion.button>
                     ))}
                   </motion.nav>
-                )}
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Vertical Nav when chat expanded */}
-          {isChatExpanded && (
-            <div className="fixed top-24 left-6" style={{ zIndex: 55 }}>
-              <BrutalistNav isVertical />
-            </div>
-          )}
+                  {/* Settings Trigger */}
+                  <div className={isInDarkSection ? 'text-[#EACEAA]' : 'text-[#34150F]'}>
+                    <SettingsModal />
+                  </div>
 
-          {/* First Section - Chat Area */}
-          <div
-            className="relative min-h-screen"
-            style={{ background: '#EACEAA' }}
-          >
-            {/* Brutalist Text Block - Bottom Right (hidden when chat expanded) */}
-            <div className="fixed bottom-6 right-6" style={{ zIndex: 55 }}>
-              <BrutalistTextBlock isVisible={!isChatExpanded} />
-            </div>
-
-            <ChatWindow />
-          </div>
-
-          {/* Second Section - What I Do */}
-          <div
-            ref={secondSectionRef}
-            className="relative"
-            style={{ background: '#EACEAA' }}
-          >
-            {/* WhatIDoSection with integrated divider */}
-            <WhatIDoSection />
-
-            {/* Portfolio Transition Hint at Bottom of WhatIDoSection */}
-            <AnimatePresence>
-              {showPortfolioHint && !isAnimating && (
-                <motion.div
-                  className="flex flex-col items-center gap-2 py-16"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ background: '#0A0A0A' }}
-                >
-                  <motion.span
-                    className="text-center whitespace-nowrap"
-                    style={{
-                      color: 'rgba(211, 152, 88, 0.5)',
-                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                      fontSize: '11px',
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Weiter scrollen für Portfolio
-                  </motion.span>
-                  <motion.div
-                    animate={{ y: [0, 6, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(211, 152, 88, 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 5v14M5 12l7 7 7-7" />
-                    </svg>
-                  </motion.div>
-                </motion.div>
+                  {/* Mobile Hamburger */}
+                  <div className="md:hidden">
+                    <MobileMenu isInDarkSection={isInDarkSection} onScrollTo={handleScrollTo} />
+                  </div>
+                </div>
               )}
-            </AnimatePresence>
+            </div>
           </div>
         </motion.div>
 
-        {/* Unlock Scroll Hint - Shows when chat expanded and at bottom */}
+        {/* Vertical Nav when chat expanded */}
         <AnimatePresence>
-          {!showPortfolio && isChatExpanded && isScrollLocked && showUnlockHint && (
+          {chatVisible && isChatExpanded && (
             <motion.div
-              className="fixed bottom-8 flex flex-col items-center gap-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-              style={{ zIndex: 100, left: '50%', transform: 'translateX(-50%)' }}
+              className="fixed top-24 left-6"
+              style={{ zIndex: 55 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4 }}
             >
-              <motion.span
-                className="text-center whitespace-nowrap"
-                style={{
-                  color: 'rgba(52, 21, 15, 0.5)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                  fontSize: '11px',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Weiter scrollen um Chat zu verlassen
-              </motion.span>
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(52, 21, 15, 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14M5 12l7 7 7-7" />
-                </svg>
-              </motion.div>
+              <BrutalistNav isVertical />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Portfolio Section - Animated Transition */}
-        <motion.div
-          ref={portfolioContainerRef}
+        {/* Brutalist Text Block - Fixed on desktop, hidden on mobile (shown inline in ChatWindow) */}
+        {!isMobile && !isChatExpanded && !isPastFirstSection && !chatVisible && (
+          <div
+            className="fixed bottom-6 right-6"
+            style={{ zIndex: 55 }}
+            onWheel={(e) => {
+              if (pageScrollRef.current) {
+                pageScrollRef.current.scrollTop += e.deltaY;
+              }
+            }}
+          >
+            <BrutalistTextBlock isVisible />
+          </div>
+        )}
+
+        {/* ===== SINGLE SCROLL CONTAINER ===== */}
+        <div
+          ref={pageScrollRef}
           className="absolute inset-0"
-          initial={false}
-          animate={{
-            opacity: showPortfolio ? 1 : 0,
-            scale: showPortfolio ? 1 : 1.08,
-            y: showPortfolio ? 0 : '8%',
-            filter: showPortfolio ? 'blur(0px)' : 'blur(8px)',
-          }}
-          transition={sectionTransition}
           style={{
-            zIndex: showPortfolio ? 10 : 5,
-            pointerEvents: showPortfolio ? 'auto' : 'none',
-            willChange: 'transform, opacity, filter',
-            overflowY: showPortfolio ? 'auto' : 'hidden',
+            overflowY: 'auto',
             overflowX: 'hidden',
+            scrollBehavior: 'smooth',
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          <PortfolioPreview isVisible={showPortfolio} />
-          <Footer />
-        </motion.div>
-
-        {/* Section Indicator */}
-        <motion.div
-          className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 p-2 rounded-full"
-          style={{
-            zIndex: 60,
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-          }}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, ...quickTransition }}
-        >
-          <motion.button
-            onClick={() => showChatHint && goToChat()}
-            className="rounded-full cursor-pointer"
-            style={{ width: '10px', height: '10px', border: 'none', outline: 'none' }}
-            animate={{
-              scale: !showPortfolio ? 1.4 : 1,
-              backgroundColor: !showPortfolio
-                ? '#34150F'
-                : (showPortfolio ? 'rgba(234, 206, 170, 0.25)' : 'rgba(52, 21, 15, 0.25)'),
-              boxShadow: !showPortfolio ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
-            }}
-            transition={quickTransition}
-            whileHover={{ scale: 1.6 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Go to chat section"
-          />
-          <motion.button
-            onClick={() => showPortfolioHint && goToPortfolio()}
-            className="rounded-full cursor-pointer"
-            style={{ width: '10px', height: '10px', border: 'none', outline: 'none' }}
-            animate={{
-              scale: showPortfolio ? 1.4 : 1,
-              backgroundColor: showPortfolio
-                ? '#EACEAA'
-                : (!showPortfolio ? 'rgba(52, 21, 15, 0.25)' : 'rgba(234, 206, 170, 0.25)'),
-              boxShadow: showPortfolio ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
-            }}
-            transition={quickTransition}
-            whileHover={{ scale: 1.6 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Go to portfolio section"
-          />
-        </motion.div>
-
-        {/* Back to Chat hint on Portfolio */}
-        <AnimatePresence>
-          {showPortfolio && !isAnimating && showChatHint && (
-            <motion.div
-              className="fixed top-8 flex flex-col items-center gap-2"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              style={{ zIndex: 20, left: '50%', transform: 'translateX(-50%)' }}
-            >
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(234, 206, 170, 0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 19V5M5 12l7-7 7 7" />
-                </svg>
-              </motion.div>
-              <motion.span
-                className="text-center whitespace-nowrap"
+          {/* Chat Section - Light */}
+          <section
+            data-section="light"
+            className="relative"
+            style={{ background: '#EACEAA', contain: 'layout style', minHeight: isMobile ? '100dvh' : '100vh' }}
+          >
+            {/* Mobile Hero — vertical stacked layout */}
+            {isMobile && !isChatExpanded && !chatVisible ? (
+              <div
+                className="flex flex-col items-center"
                 style={{
-                  color: 'rgba(234, 206, 170, 0.6)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                  fontSize: '11px',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
+                  minHeight: '100dvh',
+                  padding: '72px 20px 24px',
                 }}
               >
-                Weiter scrollen für Chat
-              </motion.span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {/* Brand Heading */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="text-center mb-2 mt-4"
+                >
+                  <h1
+                    style={{
+                      fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif',
+                      fontSize: 'clamp(52px, 14vw, 72px)',
+                      fontWeight: 400,
+                      color: '#34150F',
+                      letterSpacing: '0.06em',
+                      lineHeight: 0.95,
+                      margin: 0,
+                    }}
+                  >
+                    SWIFTGATE
+                  </h1>
+                  <span
+                    style={{
+                      fontFamily: '"Courier New", monospace',
+                      fontSize: '11px',
+                      color: 'rgba(52, 21, 15, 0.45)',
+                      letterSpacing: '0.25em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    AI
+                  </span>
+                </motion.div>
+
+                {/* Description Text */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.3 }}
+                  className="w-full flex justify-center"
+                  style={{ flex: '1 1 0', display: 'flex', alignItems: 'center' }}
+                >
+                  <BrutalistTextBlock isVisible />
+                </motion.div>
+
+                {/* Chat Input */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.5 }}
+                  className="w-full"
+                >
+                  <ChatWindow />
+                </motion.div>
+
+                {/* Scroll Down Indicator */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2, duration: 0.8 }}
+                  className="mt-6 mb-2"
+                >
+                  <motion.div
+                    animate={{ y: [0, 6, 0] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                    style={{ opacity: 0.3 }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34150F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </motion.div>
+                </motion.div>
+              </div>
+            ) : (
+              <ChatWindow />
+            )}
+          </section>
+
+          {/* Services Section - has internal dark/light data-section attributes */}
+          <div id="services">
+            <WhatIDoSection />
+          </div>
+
+          {/* Portfolio Section - Dark with gradient transition */}
+          <div id="portfolio" data-section="dark" style={{ background: '#0A0A0A' }}>
+            {/* Gradient from light to dark (EACEAA → dark) */}
+            <div
+              style={{
+                height: 'clamp(100px, 15vw, 200px)',
+                background: 'linear-gradient(to bottom, #EACEAA 0%, #c8a87a 25%, #8b6b45 50%, #3d2a1a 75%, #0A0A0A 100%)',
+              }}
+            />
+
+            <PortfolioPreview />
+          </div>
+
+          {/* New Contact Section */}
+          <div id="kontakt" data-section="dark" style={{ background: '#0A0A0A' }}>
+            <ContactSection />
+          </div>
+
+          {/* Footer - also mark as dark for nav color sensing */}
+          <div id="footer" data-section="dark">
+            <Footer />
+          </div>
+        </div>
+
+        {/* Scroll Up Hint — DISABLED FOR BASIS LAUNCH (chat is disabled) */}
       </motion.div>
     </>
   );

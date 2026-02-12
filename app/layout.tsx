@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Bebas_Neue, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import AnimatedBackground from "@/components/AnimatedBackground";
-import { BackgroundProvider } from "@/context/BackgroundContext";
+import Providers from "./providers";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -28,14 +27,34 @@ const playfairDisplay = Playfair_Display({
   display: 'swap',
 });
 
+
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#E5E1D8',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://swiftgateai.de'),
   title: {
-    default: "SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen",
+    default: "SwiftGate AI - Webentwicklung & KI-Lösungen | Essen, NRW",
     template: "%s | SwiftGate AI"
   },
-  description: "Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript - Von der Beratung bis zum Launch. SEO-optimiert, DSGVO-konform und Performance-first.",
-  keywords: ["Webentwicklung", "Web Development", "React", "Next.js", "TypeScript", "SEO", "Performance", "DSGVO", "Full-Service", "Web Design", "Frontend", "Backend", "KI", "AI", "Machine Learning"],
+  description: "Professionelle Webentwicklung und KI-Integration aus Essen (NRW). Spezialisiert auf React, Next.js und maßgeschneiderte Softwarelösungen für Unternehmen.",
+  keywords: [
+    "Webentwicklung Essen",
+    "Webdesign NRW",
+    "Next.js Agentur",
+    "React Entwickler",
+    "KI Lösungen",
+    "Softwareentwicklung",
+    "Frontend Development",
+    "Fullstack Developer",
+    "SwiftGate AI",
+    "Luis Guenther"
+  ],
   authors: [{ name: "Luis Guenther" }],
   creator: "Luis Guenther",
   publisher: "SwiftGate AI",
@@ -55,29 +74,28 @@ export const metadata: Metadata = {
     locale: 'de_DE',
     url: 'https://swiftgateai.de',
     siteName: 'SwiftGate AI',
-    title: 'SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen',
-    description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript - Von der Beratung bis zum Launch.',
+    title: 'SwiftGate AI - Webentwicklung der nächsten Generation',
+    description: 'Wir entwickeln hochperformante Webanwendungen und integrieren KI-Lösungen, die Ihr Business voranbringen.',
     images: [
       {
         url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'SwiftGate AI - Professionelle Webentwicklung',
+        alt: 'SwiftGate AI - Future-Ready Web Development',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SwiftGate AI - Professionelle Webentwicklung & KI-Lösungen',
-    description: 'Full-Service Webentwicklung mit modernsten Technologien. React, Next.js, TypeScript.',
+    title: 'SwiftGate AI - Webentwicklung & KI',
+    description: 'Maßgeschneiderte Web-Lösungen und KI-Integrationen für moderne Unternehmen.',
     images: ['/og-image.svg'],
   },
   alternates: {
     canonical: 'https://swiftgateai.de',
   },
   verification: {
-    // Google Search Console Verification (falls vorhanden)
-    // google: 'your-google-verification-code',
+    // google: 'verification_token',
   },
 };
 
@@ -90,25 +108,29 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
     name: 'SwiftGate AI',
-    description: 'Full-Service Webentwicklung mit modernsten Technologien',
+    description: 'Full-Service Webentwicklung und KI-Integration.',
     url: 'https://swiftgateai.de',
     logo: 'https://swiftgateai.de/icon.svg',
     image: 'https://swiftgateai.de/og-image.svg',
+    priceRange: '$$',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Essen',
+      addressRegion: 'NRW',
+      addressCountry: 'DE',
+    },
     founder: {
       '@type': 'Person',
       name: 'Luis Guenther',
     },
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'DE',
-    },
-    sameAs: [
-      // Social Media Links können hier hinzugefügt werden
-    ],
     areaServed: {
       '@type': 'Country',
       name: 'Germany',
     },
+    sameAs: [
+      // 'https://www.linkedin.com/in/luisguenther',
+      // 'https://github.com/swiftgateai'
+    ],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Web Development Services',
@@ -117,24 +139,24 @@ export default function RootLayout({
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Beratung & Konzept',
-            description: 'Anforderungsanalyse, Technologie-Beratung und Projektplanung',
+            name: 'Webentwicklung',
+            description: 'Entwicklung moderner Webanwendungen mit Next.js und React.',
           },
         },
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Design & Entwicklung',
-            description: 'Modernes UI/UX Design mit React, Next.js & TypeScript',
+            name: 'KI-Integration',
+            description: 'Integration von künstlicher Intelligenz in Geschäftsprozesse.',
           },
         },
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Performance & SEO',
-            description: 'Core Web Vitals Optimierung und SEO-Optimierung',
+            name: 'SEO & Performance',
+            description: 'Suchmaschinenoptimierung und Performance-Tuning.',
           },
         },
       ],
@@ -144,10 +166,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="theme-color" content="#E5E1D8" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
@@ -156,11 +175,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${spaceGrotesk.className} ${bebasNeue.variable} ${playfairDisplay.variable}`}>
-        <BackgroundProvider>
-          <AnimatedBackground />
+        <Providers>
           {children}
-        </BackgroundProvider>
+        </Providers>
       </body>
     </html>
   );
 }
+

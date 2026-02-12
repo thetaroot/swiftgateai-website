@@ -38,11 +38,11 @@ export default function PersonalSection() {
       <div style={{
         position: 'relative',
         zIndex: 10,
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '80px 20px'
+        padding: '60px 20px'
       }}>
         <motion.div
           style={{ width: '100%', maxWidth: '400px' }}
@@ -59,8 +59,8 @@ export default function PersonalSection() {
           }}>
             {/* Image */}
             <div style={{
-              width: '300px',
-              height: '380px',
+              width: 'min(calc(100vw - 40px), 320px)',
+              height: 'min(calc((100vw - 40px) * 1.27), 400px)',
               background: 'linear-gradient(145deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%)',
               border: '2px solid rgba(26, 77, 46, 0.3)',
               borderRadius: '8px',
@@ -98,15 +98,15 @@ export default function PersonalSection() {
                 margin: 0,
                 textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)'
               }}>
-                <span style={{ display: 'inline-block', fontSize: '32px' }}>KI kann Code</span><br />
-                <span style={{ display: 'inline-block', fontSize: '31px' }}>produzieren aber</span><br />
-                <span style={{ display: 'inline-block', fontSize: '30px' }}>deinem Projekt</span><br />
-                <span style={{ display: 'inline-block', fontSize: '29px' }}>keine Geschichte</span><br />
-                <span style={{ display: 'inline-block', fontSize: '28px' }}>und kein Gesicht</span><br />
-                <span style={{ display: 'inline-block', fontSize: '27px' }}>geben.</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(24px, 8vw, 32px)' }}>KI kann Code</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(23px, 7.8vw, 31px)' }}>produzieren aber</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(22px, 7.6vw, 30px)' }}>deinem Projekt</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(21px, 7.4vw, 29px)' }}>keine Geschichte</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(20px, 7.2vw, 28px)' }}>und kein Gesicht</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(19px, 7vw, 27px)' }}>geben.</span><br />
                 <br />
-                <span style={{ display: 'inline-block', fontSize: '26px' }}>Ich setze auf</span><br />
-                <span style={{ display: 'inline-block', fontSize: '26px' }}>Mensch zu Mensch.</span>
+                <span style={{ display: 'inline-block', fontSize: 'clamp(18px, 6.8vw, 26px)' }}>Ich setze auf</span><br />
+                <span style={{ display: 'inline-block', fontSize: 'clamp(18px, 6.8vw, 26px)' }}>Mensch zu Mensch.</span>
               </h2>
 
               <div style={{
@@ -149,7 +149,7 @@ export default function PersonalSection() {
                 >
                   <span>Mehr über mich</span>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
 
@@ -221,7 +221,7 @@ export default function PersonalSection() {
               >
                 <span>Mehr über mich</span>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 

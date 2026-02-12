@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface WelcomeScreenProps {
   onComplete: () => void;
@@ -24,6 +25,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [phase, setPhase] = useState<'loading' | 'logo' | 'exit' | 'done'>('loading');
   const [shouldShow, setShouldShow] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const show = isFirstVisit();
@@ -168,7 +170,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                 animate={{ opacity: [0.4, 0.8, 0.4] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
-                LOADING
+                {t.welcome.loading}
               </motion.span>
             </motion.div>
           )}
@@ -226,7 +228,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                     color: '#34150F',
                     lineHeight: 0.85,
                     textTransform: 'uppercase',
-                    marginLeft: '15%',
+                    marginLeft: typeof window !== 'undefined' && window.innerWidth < 768 ? '8%' : '15%',
                   }}
                 >
                   GATE
@@ -265,7 +267,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
               {/* Decorative Corner Elements */}
               <motion.div
-                className="absolute top-8 left-8"
+                className="absolute top-4 left-4 md:top-8 md:left-8"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
@@ -277,7 +279,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                 }}
               />
               <motion.div
-                className="absolute bottom-8 right-8"
+                className="absolute bottom-4 right-4 md:bottom-8 md:right-8"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
@@ -308,7 +310,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
           textTransform: 'uppercase',
         }}
       >
-        Skip
+        {t.welcome.skip}
       </motion.p>
 
       {/* Exit Transition Overlay */}

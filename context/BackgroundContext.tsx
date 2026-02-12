@@ -13,10 +13,8 @@ interface BackgroundContextType {
   setColors: (colors: BackgroundColors) => void;
   isChatExpanded: boolean;
   setIsChatExpanded: (expanded: boolean) => void;
-  canScrollToPortfolio: boolean;
-  setCanScrollToPortfolio: (can: boolean) => void;
-  isPageScrollUnlocked: boolean;
-  setIsPageScrollUnlocked: (unlocked: boolean) => void;
+  chatVisible: boolean;
+  setChatVisible: (visible: boolean) => void;
 }
 
 const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
@@ -31,8 +29,7 @@ const DEFAULT_COLORS: BackgroundColors = {
 export function BackgroundProvider({ children }: { children: ReactNode }) {
   const [colors, setColorsState] = useState<BackgroundColors>(DEFAULT_COLORS);
   const [isChatExpanded, setIsChatExpandedState] = useState(false);
-  const [canScrollToPortfolio, setCanScrollToPortfolioState] = useState(false);
-  const [isPageScrollUnlocked, setIsPageScrollUnlockedState] = useState(false);
+  const [chatVisible, setChatVisibleState] = useState(false);
 
   // Memoized setters to prevent unnecessary re-renders
   const setColors = useCallback((newColors: BackgroundColors) => {
@@ -51,12 +48,8 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
     setIsChatExpandedState(expanded);
   }, []);
 
-  const setCanScrollToPortfolio = useCallback((can: boolean) => {
-    setCanScrollToPortfolioState(can);
-  }, []);
-
-  const setIsPageScrollUnlocked = useCallback((unlocked: boolean) => {
-    setIsPageScrollUnlockedState(unlocked);
+  const setChatVisible = useCallback((visible: boolean) => {
+    setChatVisibleState(visible);
   }, []);
 
   // Memoize context value to prevent re-renders
@@ -65,11 +58,9 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
     setColors,
     isChatExpanded,
     setIsChatExpanded,
-    canScrollToPortfolio,
-    setCanScrollToPortfolio,
-    isPageScrollUnlocked,
-    setIsPageScrollUnlocked,
-  }), [colors, setColors, isChatExpanded, setIsChatExpanded, canScrollToPortfolio, setCanScrollToPortfolio, isPageScrollUnlocked, setIsPageScrollUnlocked]);
+    chatVisible,
+    setChatVisible,
+  }), [colors, setColors, isChatExpanded, setIsChatExpanded, chatVisible, setChatVisible]);
 
   return (
     <BackgroundContext.Provider value={contextValue}>
