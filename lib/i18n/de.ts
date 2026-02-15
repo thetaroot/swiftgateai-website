@@ -214,6 +214,14 @@ export const de: Dictionary = {
         placeholder: 'Fragen Sie mich etwas...',
         enterHint: 'Enter zum Senden',
         exitHint: 'Scrollen um Chat zu verlassen',
+        suggestions: [
+            'Wie kann KI mein Unternehmen skalieren?',
+            'Was kostet eine KI-Integration?',
+            'Welche Prozesse kann ich automatisieren?',
+            'Wie starte ich mit SwiftGate AI?',
+            'Was unterscheidet euch von anderen Agenturen?',
+        ],
+        overlayTitle: 'SwiftGate AI',
         demo: [
             { role: 'user', content: 'Hallo! Können Sie mir mehr über Ihre Services erzählen?' },
             { role: 'assistant', content: 'Gerne! Ich biete Strategie, KI-Integration und Full-Stack Webentwicklung. Mein Fokus liegt auf skalierbaren Lösungen, die echten geschäftlichen Mehrwert bieten.' },

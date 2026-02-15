@@ -214,6 +214,14 @@ export const en: Dictionary = {
         placeholder: 'Ask me something...',
         enterHint: 'Press Enter to send',
         exitHint: 'Scroll to exit chat',
+        suggestions: [
+            'How can AI scale my business?',
+            'What does an AI integration cost?',
+            'Which processes can I automate?',
+            'How do I get started with SwiftGate AI?',
+            'What sets you apart from other agencies?',
+        ],
+        overlayTitle: 'SwiftGate AI',
         demo: [
             { role: 'user', content: 'Hello! Can you tell me more about your services?' },
             { role: 'assistant', content: 'Sure! I offer Strategy, AI Integration, and Full-Stack Web Development. My focus is on scalable solutions that provide real business value.' },

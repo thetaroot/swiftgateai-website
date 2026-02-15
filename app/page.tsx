@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import ChatWindow from '@/components/ChatWindow';
+import { motion } from 'framer-motion';
+import ChatInput from '@/components/ChatInput';
+import ChatOverlay from '@/components/ChatOverlay';
+import ChatBubble from '@/components/ChatBubble';
 import PortfolioPreview from '@/components/PortfolioPreview';
 import Footer from '@/components/Footer';
 import WelcomeScreen from '@/components/WelcomeScreen';
-import BrutalistNav from '@/components/BrutalistNav';
 import BrutalistTextBlock from '@/components/BrutalistTextBlock';
 import WhatIDoSection from '@/components/WhatIDoSection';
 import { useBackgroundContext } from '@/context/BackgroundContext';
@@ -21,16 +22,14 @@ export default function Home() {
   const isMobile = useMobile();
   const [introComplete, setIntroComplete] = useState(false);
   const [isInDarkSection, setIsInDarkSection] = useState(false);
-  const [showScrollUpHint, setShowScrollUpHint] = useState(false);
   const [isPastFirstSection, setIsPastFirstSection] = useState(false);
 
-  const { isChatExpanded, chatVisible, setChatVisible } = useBackgroundContext();
+  const { isChatOpen } = useBackgroundContext();
 
   const pageScrollRef = useRef<HTMLDivElement>(null);
-  const topScrollAccumulator = useRef(0);
+  const chatSectionRef = useRef<HTMLElement>(null);
 
   const handleScrollTo = (id: string) => {
-    // Special case for services to hit the anchor deep inside component
     const targetId = id === 'services' ? 'services-anchor' : id;
     const element = document.getElementById(targetId);
     if (element) {
@@ -52,7 +51,6 @@ export default function Home() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Check if any dark section is intersecting the top area
         let anyDarkVisible = false;
         for (const entry of entries) {
           if (entry.isIntersecting) {
@@ -64,7 +62,6 @@ export default function Home() {
       },
       {
         root: container,
-        // Only trigger when section enters the top 20% of the viewport
         rootMargin: '0px 0px -80% 0px',
         threshold: 0,
       }
@@ -89,78 +86,6 @@ export default function Home() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Chat re-entry: scrolling up at scrollTop=0 (only when chat was expanded and scrolled out)
-  useEffect(() => {
-    const container = pageScrollRef.current;
-    if (!container || chatVisible || !isChatExpanded) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (container.scrollTop > 0 || e.deltaY >= 0) {
-        topScrollAccumulator.current = 0;
-        if (showScrollUpHint) setShowScrollUpHint(false);
-        return;
-      }
-
-      // Scrolling up at top
-      topScrollAccumulator.current += Math.abs(e.deltaY);
-
-      if (!showScrollUpHint && topScrollAccumulator.current > 30) {
-        setShowScrollUpHint(true);
-      }
-
-      if (topScrollAccumulator.current > 150) {
-        setChatVisible(true);
-        setShowScrollUpHint(false);
-        topScrollAccumulator.current = 0;
-      }
-    };
-
-    container.addEventListener('wheel', handleWheel, { passive: true });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, [chatVisible, setChatVisible, showScrollUpHint, isChatExpanded]);
-
-  // Touch support for chat re-entry
-  useEffect(() => {
-    const container = pageScrollRef.current;
-    if (!container || chatVisible || !isChatExpanded) return;
-
-    let touchStartY = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (container.scrollTop > 0) return;
-
-      const deltaY = touchStartY - e.changedTouches[0].clientY;
-      // Swiping down (pulling content down = negative deltaY = scrolling up)
-      if (deltaY < -80) {
-        if (showScrollUpHint) {
-          setChatVisible(true);
-          setShowScrollUpHint(false);
-        } else {
-          setShowScrollUpHint(true);
-        }
-      }
-    };
-
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-    return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [chatVisible, setChatVisible, showScrollUpHint, isChatExpanded]);
-
-  // Reset scroll up hint when chat becomes visible
-  useEffect(() => {
-    if (chatVisible) {
-      setShowScrollUpHint(false);
-      topScrollAccumulator.current = 0;
-    }
-  }, [chatVisible]);
-
   return (
     <>
       {/* Welcome Screen */}
@@ -173,7 +98,6 @@ export default function Home() {
         animate={{ opacity: introComplete ? 1 : 0 }}
         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       >
-        {/* ... (rest of the component content remains the same, just unindented or inside fragment) ... */}
         {/* Sticky Header */}
         <motion.div
           className="fixed top-0 left-0 right-0"
@@ -203,83 +127,65 @@ export default function Home() {
                 </span>
               </motion.div>
 
-              {/* Navigation & Settings - hide when chat overlay is showing */}
-              {!isChatExpanded && (
-                <div className="flex items-center gap-3 md:gap-8">
-                  {/* Desktop Nav Links */}
-                  <motion.nav
-                    className="hidden md:flex items-center gap-8"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.3 }}
-                  >
-                    {[
-                      { key: 'services', label: t.common.services },
-                      { key: 'portfolio', label: t.common.portfolio, disabled: true },
-                      { key: 'kontakt', label: t.common.contact }
-                    ].map((item, index) => (
-                      <motion.button
-                        key={item.key}
-                        className="cursor-pointer transition-all duration-300"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                        onClick={() => !item.disabled && handleScrollTo(item.key.toLowerCase())}
-                        tabIndex={item.disabled ? -1 : 0}
-                        style={{
-                          fontFamily: '"Courier New", monospace',
-                          fontSize: 'clamp(12px, 1.5vw, 16px)',
-                          fontWeight: 400,
-                          color: isInDarkSection ? '#EACEAA' : '#34150F',
-                          letterSpacing: '0.05em',
-                          background: 'none',
-                          border: 'none',
-                          padding: '4px 0',
-                          borderBottom: '1px solid transparent',
-                          ...(item.disabled ? { opacity: 0.25, pointerEvents: 'none' as const, cursor: 'default' } : {}),
-                        }}
-                        whileHover={item.disabled ? {} : {
-                          borderBottomColor: isInDarkSection ? '#EACEAA' : '#34150F',
-                        }}
-                      >
-                        [ {item.label} ]
-                      </motion.button>
-                    ))}
-                  </motion.nav>
+              {/* Navigation & Settings */}
+              <div className="flex items-center gap-3 md:gap-8">
+                {/* Desktop Nav Links */}
+                <motion.nav
+                  className="hidden md:flex items-center gap-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                >
+                  {[
+                    { key: 'services', label: t.common.services },
+                    { key: 'portfolio', label: t.common.portfolio, disabled: true },
+                    { key: 'kontakt', label: t.common.contact }
+                  ].map((item, index) => (
+                    <motion.button
+                      key={item.key}
+                      className="cursor-pointer transition-all duration-300"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                      onClick={() => !item.disabled && handleScrollTo(item.key.toLowerCase())}
+                      tabIndex={item.disabled ? -1 : 0}
+                      style={{
+                        fontFamily: '"Courier New", monospace',
+                        fontSize: 'clamp(12px, 1.5vw, 16px)',
+                        fontWeight: 400,
+                        color: isInDarkSection ? '#EACEAA' : '#34150F',
+                        letterSpacing: '0.05em',
+                        background: 'none',
+                        border: 'none',
+                        padding: '4px 0',
+                        borderBottom: '1px solid transparent',
+                        ...(item.disabled ? { opacity: 0.25, pointerEvents: 'none' as const, cursor: 'default' } : {}),
+                      }}
+                      whileHover={item.disabled ? {} : {
+                        borderBottomColor: isInDarkSection ? '#EACEAA' : '#34150F',
+                      }}
+                    >
+                      [ {item.label} ]
+                    </motion.button>
+                  ))}
+                </motion.nav>
 
-                  {/* Settings Trigger */}
-                  <div className={isInDarkSection ? 'text-[#EACEAA]' : 'text-[#34150F]'}>
-                    <SettingsModal />
-                  </div>
-
-                  {/* Mobile Hamburger */}
-                  <div className="md:hidden">
-                    <MobileMenu isInDarkSection={isInDarkSection} onScrollTo={handleScrollTo} />
-                  </div>
+                {/* Settings Trigger */}
+                <div className={isInDarkSection ? 'text-[#EACEAA]' : 'text-[#34150F]'}>
+                  <SettingsModal />
                 </div>
-              )}
+
+                {/* Mobile Hamburger */}
+                <div className="md:hidden">
+                  <MobileMenu isInDarkSection={isInDarkSection} onScrollTo={handleScrollTo} />
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Vertical Nav when chat expanded */}
-        <AnimatePresence>
-          {chatVisible && isChatExpanded && (
-            <motion.div
-              className="fixed top-24 left-6"
-              style={{ zIndex: 55 }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.4 }}
-            >
-              <BrutalistNav isVertical />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Brutalist Text Block - Fixed on desktop, hidden on mobile (shown inline in ChatWindow) */}
-        {!isMobile && !isChatExpanded && !isPastFirstSection && !chatVisible && (
+        {/* Brutalist Text Block - Fixed on desktop, hidden on mobile (shown inline in hero) */}
+        {!isMobile && !isPastFirstSection && (
           <div
             className="fixed bottom-6 right-6"
             style={{ zIndex: 55 }}
@@ -306,12 +212,13 @@ export default function Home() {
         >
           {/* Chat Section - Light */}
           <section
+            ref={chatSectionRef}
             data-section="light"
             className="relative"
             style={{ background: '#EACEAA', contain: 'layout style', minHeight: isMobile ? '100dvh' : '100vh' }}
           >
             {/* Mobile Hero — vertical stacked layout */}
-            {isMobile && !isChatExpanded && !chatVisible ? (
+            {isMobile ? (
               <div
                 className="flex flex-col items-center"
                 style={{
@@ -370,7 +277,7 @@ export default function Home() {
                   transition={{ duration: 0.7, delay: 0.5 }}
                   className="w-full"
                 >
-                  <ChatWindow />
+                  <ChatInput />
                 </motion.div>
 
                 {/* Scroll Down Indicator */}
@@ -392,7 +299,7 @@ export default function Home() {
                 </motion.div>
               </div>
             ) : (
-              <ChatWindow />
+              <ChatInput />
             )}
           </section>
 
@@ -424,9 +331,13 @@ export default function Home() {
             <Footer />
           </div>
         </div>
-
-        {/* Scroll Up Hint — DISABLED FOR BASIS LAUNCH (chat is disabled) */}
       </motion.div>
+
+      {/* Chat Overlay (portal) */}
+      <ChatOverlay />
+
+      {/* Chat Bubble (floating button) */}
+      <ChatBubble chatSectionRef={chatSectionRef} />
     </>
   );
 }

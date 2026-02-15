@@ -16,12 +16,10 @@ export interface ChatMessage {
 interface BackgroundContextType {
   colors: BackgroundColors;
   setColors: (colors: BackgroundColors) => void;
-  isChatExpanded: boolean;
-  setIsChatExpanded: (expanded: boolean) => void;
-  chatVisible: boolean;
-  setChatVisible: (visible: boolean) => void;
   chatMessages: ChatMessage[];
   setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>;
+  isChatOpen: boolean;
+  setIsChatOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
@@ -35,9 +33,8 @@ const DEFAULT_COLORS: BackgroundColors = {
 
 export function BackgroundProvider({ children }: { children: ReactNode }) {
   const [colors, setColorsState] = useState<BackgroundColors>(DEFAULT_COLORS);
-  const [isChatExpanded, setIsChatExpandedState] = useState(false);
-  const [chatVisible, setChatVisibleState] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Memoized setters to prevent unnecessary re-renders
   const setColors = useCallback((newColors: BackgroundColors) => {
@@ -52,25 +49,15 @@ export function BackgroundProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const setIsChatExpanded = useCallback((expanded: boolean) => {
-    setIsChatExpandedState(expanded);
-  }, []);
-
-  const setChatVisible = useCallback((visible: boolean) => {
-    setChatVisibleState(visible);
-  }, []);
-
   // Memoize context value to prevent re-renders
   const contextValue = useMemo(() => ({
     colors,
     setColors,
-    isChatExpanded,
-    setIsChatExpanded,
-    chatVisible,
-    setChatVisible,
     chatMessages,
     setChatMessages,
-  }), [colors, setColors, isChatExpanded, setIsChatExpanded, chatVisible, setChatVisible, chatMessages]);
+    isChatOpen,
+    setIsChatOpen,
+  }), [colors, setColors, chatMessages, isChatOpen]);
 
   return (
     <BackgroundContext.Provider value={contextValue}>

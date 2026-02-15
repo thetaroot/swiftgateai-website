@@ -90,6 +90,8 @@ export interface Dictionary {
         placeholder: string;
         enterHint: string;
         exitHint: string;
+        suggestions: string[];
+        overlayTitle: string;
         demo: {
             role: 'user' | 'assistant';
             content: string;
