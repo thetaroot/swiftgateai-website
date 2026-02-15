@@ -93,7 +93,7 @@ function ServicesAccordion() {
                         fontFamily: '"Space Grotesk", -apple-system, sans-serif',
                         fontSize: isMobile ? 'clamp(22px, 7vw, 36px)' : 'clamp(32px, 6vw, 72px)',
                         fontWeight: 700,
-                        color: '#34150F',
+                        color: 'var(--text-primary)', // Use global var for better contrast control
                         letterSpacing: '-0.03em',
                         lineHeight: 1,
                         margin: 0,
@@ -190,10 +190,10 @@ function ServicesAccordion() {
                                 fontFamily: '"Space Grotesk", -apple-system, sans-serif',
                                 fontSize: 'clamp(15px, 1.8vw, 18px)',
                                 lineHeight: 1.7,
-                                color: 'rgba(52, 21, 15, 0.85)',
+                                color: 'var(--text-primary)', // Darker, uses global var
                                 margin: 0,
                                 marginBottom: pIdx < service.description.split('\n\n').length - 1 ? '16px' : '0',
-                                fontWeight: pIdx === 0 ? 600 : 400,
+                                fontWeight: pIdx === 0 ? 700 : 500, // Increased weight for summary
                               }}
                             >
                               {paragraph}
@@ -225,20 +225,21 @@ function ServicesAccordion() {
                                 display: 'flex',
                                 alignItems: 'flex-start',
                                 gap: '12px',
-                                fontFamily: '"Courier New", monospace',
-                                fontSize: 'clamp(13px, 1.5vw, 15px)',
-                                lineHeight: 1.6,
-                                color: 'rgba(52, 21, 15, 0.7)',
+                                fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                                fontSize: 'clamp(14px, 1.6vw, 16px)',
+                                lineHeight: 1.65,
+                                color: '#34150F',
+                                fontWeight: 500,
                               }}
                             >
                               <span
                                 style={{
                                   flexShrink: 0,
-                                  width: '6px',
-                                  height: '6px',
+                                  width: '7px',
+                                  height: '7px',
                                   background: '#D39858',
                                   borderRadius: '50%',
-                                  marginTop: '8px',
+                                  marginTop: '9px',
                                 }}
                               />
                               {bullet}

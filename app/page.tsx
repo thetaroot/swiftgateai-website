@@ -112,9 +112,13 @@ export default function Home() {
           >
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               {/* Logo — hidden on mobile (brand heading shown in hero instead) */}
-              <motion.div className="select-none hidden md:block">
+              {/* Logo — clickable and scroll to top */}
+              <motion.button
+                className="select-none hidden md:block bg-transparent border-none cursor-pointer"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
                 <span
-                  className="transition-colors duration-500"
+                  className="transition-colors duration-500 hover:opacity-80"
                   style={{
                     fontFamily: '"Courier New", monospace',
                     fontSize: 'clamp(14px, 1.8vw, 18px)',
@@ -125,7 +129,7 @@ export default function Home() {
                 >
                   [ SWIFTGATEAI ]
                 </span>
-              </motion.div>
+              </motion.button>
 
               {/* Navigation & Settings */}
               <div className="flex items-center gap-3 md:gap-8">
@@ -138,7 +142,7 @@ export default function Home() {
                 >
                   {[
                     { key: 'services', label: t.common.services },
-                    { key: 'portfolio', label: t.common.portfolio, disabled: true },
+                    { key: 'portfolio', label: t.common.portfolio, disabled: false },
                     { key: 'kontakt', label: t.common.contact }
                   ].map((item, index) => (
                     <motion.button
@@ -217,75 +221,79 @@ export default function Home() {
             className="relative"
             style={{ background: '#EACEAA', contain: 'layout style', minHeight: isMobile ? '100dvh' : '100vh' }}
           >
-            {/* Mobile Hero — vertical stacked layout */}
+            {/* Mobile Hero — centered vertical layout */}
             {isMobile ? (
               <div
-                className="flex flex-col items-center"
+                className="flex flex-col h-full"
                 style={{
                   minHeight: '100dvh',
-                  padding: '72px 20px 24px',
+                  padding: '80px 24px 32px', // Standard padding + header height
                 }}
               >
-                {/* Brand Heading */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
-                  className="text-center mb-2 mt-4"
-                >
-                  <h1
-                    style={{
-                      fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif',
-                      fontSize: 'clamp(52px, 14vw, 72px)',
-                      fontWeight: 400,
-                      color: '#34150F',
-                      letterSpacing: '0.06em',
-                      lineHeight: 0.95,
-                      margin: 0,
-                    }}
+                {/* Centered Content Wrapper */}
+                <div className="flex-1 flex flex-col items-center justify-center w-full">
+                  {/* Brand Heading — desktop-style with AI INTELLIGENCE subtitle */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.1 }}
+                    className="text-center mb-8"
                   >
-                    SWIFTGATE
-                  </h1>
-                  <span
-                    style={{
-                      fontFamily: '"Courier New", monospace',
-                      fontSize: '11px',
-                      color: 'rgba(52, 21, 15, 0.45)',
-                      letterSpacing: '0.25em',
-                      textTransform: 'uppercase',
-                    }}
+                    <h1
+                      style={{
+                        fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif',
+                        fontSize: 'clamp(56px, 16vw, 80px)',
+                        fontWeight: 400,
+                        color: '#34150F',
+                        letterSpacing: '0.05em',
+                        lineHeight: 0.9,
+                        margin: 0,
+                      }}
+                    >
+                      SWIFTGATE
+                    </h1>
+                    <span
+                      style={{
+                        fontFamily: '"Courier New", monospace',
+                        fontSize: '12px',
+                        color: 'rgba(52, 21, 15, 0.45)',
+                        letterSpacing: '0.3em',
+                        textTransform: 'uppercase',
+                        display: 'block',
+                        marginTop: '6px',
+                      }}
+                    >
+                      AI INTELLIGENCE
+                    </span>
+                  </motion.div>
+
+                  {/* Chat Input — centered */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.3 }}
+                    className="w-full mb-10"
                   >
-                    AI
-                  </span>
-                </motion.div>
+                    <ChatInput />
+                  </motion.div>
 
-                {/* Description Text */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.3 }}
-                  className="w-full flex justify-center"
-                  style={{ flex: '1 1 0', display: 'flex', alignItems: 'center' }}
-                >
-                  <BrutalistTextBlock isVisible />
-                </motion.div>
-
-                {/* Chat Input */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.5 }}
-                  className="w-full"
-                >
-                  <ChatInput />
-                </motion.div>
+                  {/* Description Text */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.5 }}
+                    className="w-full flex justify-center"
+                  >
+                    <BrutalistTextBlock isVisible />
+                  </motion.div>
+                </div>
 
                 {/* Scroll Down Indicator */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.2, duration: 0.8 }}
-                  className="mt-6 mb-2"
+                  className="pt-6 pb-2"
                 >
                   <motion.div
                     animate={{ y: [0, 6, 0] }}
@@ -299,8 +307,56 @@ export default function Home() {
                 </motion.div>
               </div>
             ) : (
-              <ChatInput />
+              <div className="flex flex-col items-center justify-center w-full h-full max-w-4xl mx-auto px-4" style={{ minHeight: '100vh', paddingTop: '80px' }}>
+                {/* Desktop Hero Layout: Clean Center Stack */}
+
+                {/* 1. Large Brand Heading (Optional, users usually want logo + clear text. The prompt says "swiftgate logo -> chat -> text") */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="mb-12 text-center"
+                >
+                  <h1
+                    style={{
+                      fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif',
+                      fontSize: 'clamp(60px, 8vw, 100px)',
+                      color: 'var(--text-primary)',
+                      letterSpacing: '0.05em',
+                      lineHeight: 0.9,
+                      margin: 0,
+                    }}
+                  >
+                    SWIFTGATE
+                  </h1>
+                  <span
+                    style={{
+                      fontFamily: '"Courier New", monospace',
+                      fontSize: '14px',
+                      color: 'rgba(52, 21, 15, 0.45)',
+                      letterSpacing: '0.35em',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      marginTop: '8px'
+                    }}
+                  >
+                    AI INTELLIGENCE
+                  </span>
+                </motion.div>
+
+                {/* 2. Chat Input - CENTRAL FOCUS */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="w-full max-w-2xl mb-12 relative z-20"
+                >
+                  <ChatInput />
+                </motion.div>
+
+              </div>
             )}
+
           </section>
 
           {/* Services Section - has internal dark/light data-section attributes */}

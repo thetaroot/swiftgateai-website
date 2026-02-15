@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { X, Send } from 'lucide-react';
 import { useBackgroundContext, ChatMessage } from '@/context/BackgroundContext';
@@ -326,12 +326,7 @@ function ChatOverlay() {
   }, [scrollToBottom]);
 
   // Mobile swipe-to-dismiss
-  const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const sheetHeight = sheetRef.current?.offsetHeight ?? window.innerHeight;
-    if (info.offset.y > sheetHeight * 0.3 || info.velocity.y > 500) {
-      handleClose();
-    }
-  }, [handleClose]);
+
 
   if (!mounted) return null;
 
@@ -415,7 +410,7 @@ function ChatOverlay() {
 
   // ─── SHARED INPUT BAR ───
   const renderInputBar = () => (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 w-full">
       <textarea
         ref={textareaRef}
         value={message}
@@ -493,7 +488,7 @@ function ChatOverlay() {
     </div>
   );
 
-  // ─── MOBILE: BOTTOM SHEET ───
+  // ─── MOBILE: APPLE GLASS MODAL ───
   if (isMobile) {
     return createPortal(
       <AnimatePresence>
@@ -501,83 +496,101 @@ function ChatOverlay() {
           <>
             {/* Backdrop */}
             <motion.div
-              className="fixed inset-0"
-              style={{ zIndex: 9998, background: 'rgba(0,0,0,0.5)' }}
+              className="fixed inset-0 z-[9998]"
+              style={{
+                background: 'rgba(0,0,0,0.4)',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: 0.2 }}
               onClick={handleClose}
             />
 
-            {/* Sheet */}
-            <motion.div
-              ref={sheetRef}
-              className="fixed left-0 right-0 flex flex-col"
+            {/* Modal Container */}
+            <div
+              className="fixed inset-0 z-[9999] flex flex-col pointer-events-none"
               style={{
-                zIndex: 9999,
-                top: 'calc(env(safe-area-inset-top, 0px) + 12px)',
-                bottom: 0,
-                borderRadius: '28px 28px 0 0',
-                background: 'rgba(255, 255, 255, 0.97)',
-                boxShadow: '0 -8px 30px rgba(0, 0, 0, 0.15)',
-                overflow: 'hidden',
+                padding: '12px',
+                paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+                paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + ${keyboardOffset > 0 ? keyboardOffset + 'px' : '12px'})`,
               }}
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={
-                prefersReducedMotion
-                  ? { duration: 0.01 }
-                  : { type: 'spring', stiffness: 250, damping: 28 }
-              }
             >
-              {/* Drag Handle - separate draggable area */}
               <motion.div
-                className="flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing touch-none"
-                drag="y"
-                dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={{ top: 0, bottom: 0.4 }}
-                onDragEnd={handleDragEnd}
-                dragMomentum={false}
-                style={{ touchAction: 'none' }}
+                ref={sheetRef}
+                className="pointer-events-auto relative w-full flex-1 flex flex-col overflow-hidden rounded-[32px] border border-white/20"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.75)', // Slightly more opaque for better legibility
+                  backdropFilter: 'blur(30px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0,0,0,0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                }}
+                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 10 }}
+                transition={
+                  prefersReducedMotion
+                    ? { duration: 0.1 }
+                    : { type: 'spring', stiffness: 350, damping: 25 }
+                }
+                onClick={(e) => e.stopPropagation()}
               >
-                <div style={{
-                  width: '40px',
-                  height: '4px',
-                  borderRadius: '9999px',
-                  background: 'rgba(0,0,0,0.2)',
-                }} />
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-white/10">
+                  <span style={{
+                    fontFamily: '"Courier New", monospace',
+                    fontSize: '13px',
+                    color: '#1d1d1f',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                  }}>
+                    {t.chat.overlayTitle}
+                  </span>
+                  <button
+                    onClick={handleClose}
+                    className="p-2 rounded-full hover:bg-black/5 transition-colors text-[#1d1d1f]/60"
+                    style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                  >
+                    <X size={18} color="#1d1d1f" />
+                  </button>
+                </div>
+
+                {/* Messages */}
+                <div
+                  ref={messagesContainerRef}
+                  className="flex-1 overflow-y-auto"
+                  style={{
+                    padding: '16px 16px 8px',
+                    WebkitOverflowScrolling: 'touch',
+                    overscrollBehavior: 'contain',
+                  }}
+                >
+                  {renderMessages()}
+                </div>
+
+                {/* Input — glass pill */}
+                <div
+                  className="border-t border-white/10"
+                  style={{ padding: '10px 12px 12px' }}
+                >
+                  <div
+                    className="flex items-center rounded-2xl"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.6)',
+                      border: '1px solid rgba(255, 255, 255, 0.5)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.03) inset',
+                      padding: '4px 6px 4px 14px',
+                    }}
+                  >
+                    {renderInputBar()}
+                  </div>
+                </div>
               </motion.div>
-
-              {/* Header */}
-              {renderHeader()}
-
-              {/* Messages */}
-              <div
-                ref={messagesContainerRef}
-                className="flex-1 overflow-y-auto"
-                style={{
-                  padding: '16px 16px 8px',
-                  WebkitOverflowScrolling: 'touch',
-                  overscrollBehavior: 'contain',
-                }}
-              >
-                {renderMessages()}
-              </div>
-
-              {/* Input */}
-              <div
-                className="border-t border-white/10"
-                style={{
-                  padding: '8px 16px',
-                  paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + ${keyboardOffset > 0 ? keyboardOffset + 'px' : '8px'})`,
-                  background: 'rgba(255, 255, 255, 0.97)',
-                }}
-              >
-                {renderInputBar()}
-              </div>
-            </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>,

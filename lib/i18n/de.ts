@@ -221,6 +221,13 @@ export const de: Dictionary = {
             'Wie starte ich mit SwiftGate AI?',
             'Was unterscheidet euch von anderen Agenturen?',
         ],
+        mobileSuggestions: [
+            'Was kann KI für mich tun?',
+            'Was kostet das?',
+            'Was automatisiert ihr?',
+            'Wie starte ich?',
+            'Was macht euch besonders?',
+        ],
         overlayTitle: 'SwiftGate AI',
         demo: [
             { role: 'user', content: 'Hallo! Können Sie mir mehr über Ihre Services erzählen?' },
@@ -260,6 +267,8 @@ export const de: Dictionary = {
         accessibility: 'Barrierefreiheit',
         highContrast: 'Hoher Kontrast',
         largeText: 'Große Schrift',
+        colorBlind: 'Farbenblind-Modus',
+        comingSoon: 'Bald verfügbar',
     },
     ai: {
         error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',

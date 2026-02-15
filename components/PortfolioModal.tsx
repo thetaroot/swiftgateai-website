@@ -14,6 +14,7 @@ export default function PortfolioModal({ isOpen, onClose }: PortfolioModalProps)
     const { t, language } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState<string>('All');
+    const [_isExiting, setIsExiting] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     // Initial Active Category when opening? Default is 'All' (translated potentially, but let's use key or English default)
@@ -60,7 +61,7 @@ export default function PortfolioModal({ isOpen, onClose }: PortfolioModalProps)
         onClose();
         setTimeout(() => setSelectedId(null), 500); // Reset after close
     };
-    const [isExiting, setIsExiting] = useState(false);
+
 
     // Tech filter derivation (optional enhancement)
     // const allTech = useMemo(() => Array.from(new Set(projects.flatMap(p => p.tech))), [projects]);

@@ -61,14 +61,16 @@ function BrutalistTextBlock({ isVisible = true }: BrutalistTextBlockProps) {
             {/* Text content */}
             <p
               style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: isMobile ? '12px' : 'clamp(11px, 1.3vw, 14px)',
-                lineHeight: 1.7,
-                color: '#34150F',
+                fontFamily: isMobile ? '"Space Grotesk", -apple-system, sans-serif' : '"Courier New", monospace',
+                fontSize: isMobile ? '14px' : 'clamp(11px, 1.3vw, 14px)',
+                lineHeight: isMobile ? 1.6 : 1.7,
+                fontWeight: isMobile ? 400 : undefined,
+                color: isMobile ? 'rgba(52, 21, 15, 0.75)' : '#34150F',
                 margin: 0,
-                padding: isMobile ? '0 4px' : '12px 16px',
-                textAlign: isMobile ? 'center' : 'justify',
+                padding: isMobile ? '0 8px' : '12px 16px',
+                textAlign: 'center',
                 hyphens: 'auto',
+                letterSpacing: isMobile ? '-0.01em' : undefined,
               }}
             >
               {t.hero.textBlock}

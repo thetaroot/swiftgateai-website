@@ -91,6 +91,7 @@ export interface Dictionary {
         enterHint: string;
         exitHint: string;
         suggestions: string[];
+        mobileSuggestions: string[];
         overlayTitle: string;
         demo: {
             role: 'user' | 'assistant';
@@ -128,6 +129,8 @@ export interface Dictionary {
         accessibility: string;
         highContrast: string;
         largeText: string;
+        colorBlind: string;
+        comingSoon: string;
     };
     ai: {
         error: string;

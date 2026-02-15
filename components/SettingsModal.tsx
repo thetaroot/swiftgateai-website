@@ -6,7 +6,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const SettingsModal = () => {
-    const { language, setLanguage, highContrast, setHighContrast, largeText, setLargeText } = useSettings();
+    const { language, setLanguage } = useSettings();
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
 
@@ -16,7 +16,7 @@ const SettingsModal = () => {
         <>
             {/* Trigger Button - subtle gear icon, adaptive color */}
             <motion.button
-                className="relative group p-2 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0071e3]"
+                className="relative group p-2 rounded-full cursor-pointer focus:outline-none"
                 onClick={toggleModal}
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
@@ -99,42 +99,37 @@ const SettingsModal = () => {
                                 <div>
                                     <label className="block text-[10px] font-bold text-[#86868b] mb-2 tracking-widest uppercase">{t.settings.accessibility}</label>
                                     <div className="space-y-3 bg-white/40 rounded-xl p-3 border border-white/40">
-                                        {/* High Contrast */}
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-[#1d1d1f] font-medium">{t.settings.highContrast}</span>
-                                            <button
-                                                onClick={() => setHighContrast(!highContrast)}
-                                                className={`
-                          relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none 
-                          ${highContrast ? 'bg-[#0071e3]' : 'bg-[#e5e5ea]'}
-                        `}
-                                            >
-                                                <span
-                                                    className={`
-                            absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 shadow-sm
-                            ${highContrast ? 'translate-x-5' : 'translate-x-0'}
-                          `}
-                                                />
-                                            </button>
+                                        {/* High Contrast - Coming Soon */}
+                                        <div className="flex items-center justify-between opacity-40">
+                                            <div>
+                                                <span className="text-sm text-[#1d1d1f] font-medium">{t.settings.highContrast}</span>
+                                                <span className="block text-[9px] text-[#86868b] font-semibold tracking-wider uppercase mt-0.5">{t.settings.comingSoon}</span>
+                                            </div>
+                                            <div className="relative w-11 h-6 rounded-full bg-[#e5e5ea] cursor-not-allowed">
+                                                <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm" />
+                                            </div>
                                         </div>
 
-                                        {/* Large Text */}
-                                        <div className="flex items-center justify-between border-t border-black/5 pt-3">
-                                            <span className="text-sm text-[#1d1d1f] font-medium">{t.settings.largeText}</span>
-                                            <button
-                                                onClick={() => setLargeText(!largeText)}
-                                                className={`
-                          relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none 
-                          ${largeText ? 'bg-[#0071e3]' : 'bg-[#e5e5ea]'}
-                        `}
-                                            >
-                                                <span
-                                                    className={`
-                            absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 shadow-sm
-                            ${largeText ? 'translate-x-5' : 'translate-x-0'}
-                          `}
-                                                />
-                                            </button>
+                                        {/* Large Text - Coming Soon */}
+                                        <div className="flex items-center justify-between border-t border-black/5 pt-3 opacity-40">
+                                            <div>
+                                                <span className="text-sm text-[#1d1d1f] font-medium">{t.settings.largeText}</span>
+                                                <span className="block text-[9px] text-[#86868b] font-semibold tracking-wider uppercase mt-0.5">{t.settings.comingSoon}</span>
+                                            </div>
+                                            <div className="relative w-11 h-6 rounded-full bg-[#e5e5ea] cursor-not-allowed">
+                                                <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm" />
+                                            </div>
+                                        </div>
+
+                                        {/* Color Blind Friendly - Coming Soon */}
+                                        <div className="flex items-center justify-between border-t border-black/5 pt-3 opacity-40">
+                                            <div>
+                                                <span className="text-sm text-[#1d1d1f] font-medium">{t.settings.colorBlind}</span>
+                                                <span className="block text-[9px] text-[#86868b] font-semibold tracking-wider uppercase mt-0.5">{t.settings.comingSoon}</span>
+                                            </div>
+                                            <div className="relative w-11 h-6 rounded-full bg-[#e5e5ea] cursor-not-allowed">
+                                                <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

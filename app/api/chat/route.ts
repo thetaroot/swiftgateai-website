@@ -107,9 +107,7 @@ export async function POST(request: Request) {
         }
 
         // Build contents array from history
-        let trimmedHistory = history.slice(-(MAX_HISTORY_LENGTH));
-
-        // Sanitize all history messages
+        const trimmedHistory = history.slice(-10); // Keep last 10 messages for context
         const sanitizedHistory: GeminiContent[] = [];
         for (const msg of trimmedHistory) {
             if (msg.role !== 'user' && msg.role !== 'model') continue;

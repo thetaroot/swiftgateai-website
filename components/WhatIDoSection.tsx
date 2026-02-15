@@ -68,9 +68,9 @@ function WhatIDoSection() {
           <div className="relative">
             {/* WORD 1 */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
               <h2
@@ -89,11 +89,11 @@ function WhatIDoSection() {
             </motion.div>
 
             {/* WORD 2 - with Portrait integrated */}
-            <div className={`relative flex items-end ${isMobile ? 'gap-3 my-1' : 'gap-4 md:gap-8 my-2 md:my-4'}`}>
+            <div className={`relative flex items-center ${isMobile ? 'gap-4 my-2' : 'gap-4 md:gap-8 my-2 md:my-4'}`}>
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
+                viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               >
                 <h2
@@ -105,6 +105,8 @@ function WhatIDoSection() {
                     letterSpacing: '-0.04em',
                     lineHeight: 0.85,
                     margin: 0,
+                    marginBottom: isMobile ? '4px' : '20px',
+                    marginTop: isMobile ? '4px' : '20px',
                   }}
                 >
                   {t.whatIDo.bigTitle.word2}
@@ -141,23 +143,25 @@ function WhatIDoSection() {
                 style={{
                   width: isMobile ? '70px' : 'clamp(80px, 20vw, 180px)',
                   height: isMobile ? '88px' : 'clamp(100px, 24vw, 220px)',
+                  top: isMobile ? '4px' : '0', // Slight offset adjustment for mobile visual centering
                 }}
               >
-                {/* Frame decoration */}
+                {/* Frame decoration - fixed to match organic shape */}
                 <div
-                  className="absolute -inset-2 rounded-[20px]"
+                  className="absolute -inset-2"
                   style={{
                     background: 'linear-gradient(135deg, rgba(211, 152, 88, 0.3) 0%, rgba(133, 67, 30, 0.1) 100%)',
                     filter: 'blur(20px)',
+                    borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
                   }}
                 />
 
-                {/* Image container with organic shape */}
+                {/* Image container with organic shape - border removed */}
                 <div
                   className="relative w-full h-full overflow-hidden"
                   style={{
                     borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
-                    border: '2px solid rgba(211, 152, 88, 0.3)',
+                    // border: '2px solid rgba(211, 152, 88, 0.3)', // Removed as requested
                   }}
                 >
                   <Image
@@ -191,9 +195,9 @@ function WhatIDoSection() {
 
             {/* WORD 3 */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <h2
@@ -218,7 +222,7 @@ function WhatIDoSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="mt-8"
+                className="mt-12 max-w-[90%]"
               >
                 <div>
                   <motion.p
@@ -317,7 +321,7 @@ function WhatIDoSection() {
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
             className={isMobile
-              ? 'mt-10 max-w-full'
+              ? 'mt-16 max-w-[95%]'
               : 'absolute right-4 md:right-12 bottom-[-100px] md:bottom-[-80px] z-10 max-w-[280px]'
             }
           >
@@ -387,7 +391,7 @@ function WhatIDoSection() {
               fontFamily: '"Space Grotesk", -apple-system, sans-serif',
               fontSize: isMobile ? 'clamp(60px, 20vw, 100px)' : 'clamp(120px, 22vw, 320px)',
               fontWeight: 800,
-              color: isMobile ? '#EACEAA' : '#34150F',
+              color: '#34150F',
               letterSpacing: '-0.04em',
               lineHeight: 0.85,
               textAlign: 'center',

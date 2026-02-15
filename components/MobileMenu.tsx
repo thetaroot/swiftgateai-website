@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface MobileMenuProps {
@@ -9,226 +10,206 @@ interface MobileMenuProps {
     onScrollTo: (id: string) => void;
 }
 
+const modalVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: { type: 'spring', stiffness: 300, damping: 30 }
+    },
+    exit: {
+        opacity: 0,
+        scale: 0.95,
+        y: 20,
+        transition: { duration: 0.2 }
+    }
+};
+
 function MobileMenu({ isInDarkSection, onScrollTo }: MobileMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
 
+    // Client-side mount check for portal
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const navItems = [
-        { key: 'services', label: t.common.services, disabled: false },
-        { key: 'portfolio', label: t.common.portfolio, disabled: true },
-        { key: 'kontakt', label: t.common.contact, disabled: false },
+        { key: 'services', label: t.common.services },
+        { key: 'portfolio', label: t.common.portfolio },
+        { key: 'kontakt', label: t.common.contact },
     ];
 
     const handleNavClick = useCallback((item: typeof navItems[0]) => {
-        if (item.disabled) return;
         setIsOpen(false);
-        setTimeout(() => onScrollTo(item.key), 350);
+        setTimeout(() => onScrollTo(item.key), 300);
     }, [onScrollTo]);
 
     const toggleMenu = useCallback(() => {
         setIsOpen(prev => !prev);
     }, []);
 
-    const lineColor = isInDarkSection ? '#EACEAA' : '#34150F';
+    const iconColor = isInDarkSection ? '#EACEAA' : '#34150F';
 
     return (
         <>
-            {/* Hamburger Button */}
-            <button
+            {/* Menu Button — "Navigation" glass pill */}
+            <motion.button
                 onClick={toggleMenu}
-                className="relative z-[200] flex flex-col items-center justify-center"
+                className="relative z-[200] flex items-center justify-center rounded-full overflow-hidden"
+                whileTap={{ scale: 0.95 }}
                 style={{
-                    width: '44px',
-                    height: '44px',
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                    WebkitTapHighlightColor: 'transparent',
+                    padding: '8px 16px',
+                    height: '42px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    color: iconColor,
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
                 }}
                 aria-label={isOpen ? 'Close menu' : 'Open menu'}
             >
-                <motion.span
-                    animate={{
-                        rotate: isOpen ? 45 : 0,
-                        y: isOpen ? 0 : -5,
-                        backgroundColor: isOpen ? '#34150F' : lineColor,
-                    }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                <span
                     style={{
-                        display: 'block',
-                        width: '22px',
-                        height: '2px',
-                        borderRadius: '1px',
-                        position: 'absolute',
-                        transformOrigin: 'center',
+                        fontFamily: '"Courier New", monospace',
+                        fontSize: '12px',
+                        letterSpacing: '0.1em',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
                     }}
-                />
-                <motion.span
-                    animate={{
-                        opacity: isOpen ? 0 : 1,
-                        scaleX: isOpen ? 0 : 1,
-                        backgroundColor: lineColor,
-                    }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                        display: 'block',
-                        width: '22px',
-                        height: '2px',
-                        borderRadius: '1px',
-                        position: 'absolute',
-                    }}
-                />
-                <motion.span
-                    animate={{
-                        rotate: isOpen ? -45 : 0,
-                        y: isOpen ? 0 : 5,
-                        backgroundColor: isOpen ? '#34150F' : lineColor,
-                    }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    style={{
-                        display: 'block',
-                        width: '22px',
-                        height: '2px',
-                        borderRadius: '1px',
-                        position: 'absolute',
-                        transformOrigin: 'center',
-                    }}
-                />
-            </button>
+                >
+                    NAVIGATION
+                </span>
+            </motion.button>
 
-            {/* Fullscreen Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        className="fixed inset-0"
-                        style={{ zIndex: 150 }}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35 }}
-                    >
-                        {/* Glassmorphism Backdrop */}
-                        <motion.div
-                            className="absolute inset-0"
-                            style={{
-                                background: 'linear-gradient(160deg, rgba(234, 206, 170, 0.92) 0%, rgba(220, 190, 155, 0.95) 40%, rgba(210, 178, 140, 0.97) 100%)',
-                                backdropFilter: 'blur(30px) saturate(150%)',
-                                WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-                            }}
-                            onClick={() => setIsOpen(false)}
-                        />
+            {/* Modal — Apple Glass style, matching GlossyModal */}
+            {mounted && createPortal(
+                <AnimatePresence>
+                    {isOpen && (
+                        <>
+                            {/* Backdrop */}
+                            <motion.div
+                                className="fixed inset-0 z-[9999]"
+                                style={{
+                                    background: 'rgba(0,0,0,0.4)',
+                                    backdropFilter: 'blur(4px)',
+                                    WebkitBackdropFilter: 'blur(4px)',
+                                }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                onClick={() => setIsOpen(false)}
+                            />
 
-                        {/* Menu Content */}
-                        <div className="relative h-full flex flex-col justify-between px-8 py-20">
-                            {/* Nav Links — left-aligned, large type */}
-                            <nav className="flex flex-col gap-1 mt-8">
-                                {navItems.map((item, index) => (
-                                    <motion.button
-                                        key={item.key}
-                                        initial={{ opacity: 0, x: 40 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        transition={{
-                                            duration: 0.5,
-                                            delay: 0.08 + index * 0.07,
-                                            ease: [0.22, 1, 0.36, 1],
-                                        }}
-                                        onClick={() => handleNavClick(item)}
-                                        disabled={item.disabled}
-                                        className="text-left group"
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            padding: '14px 0',
-                                            cursor: item.disabled ? 'default' : 'pointer',
-                                            WebkitTapHighlightColor: 'transparent',
-                                        }}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            {/* Left accent line */}
-                                            <motion.div
-                                                initial={{ scaleY: 0 }}
-                                                animate={{ scaleY: 1 }}
-                                                transition={{ delay: 0.3 + index * 0.07, duration: 0.4 }}
-                                                style={{
-                                                    width: '2px',
-                                                    height: '28px',
-                                                    background: item.disabled
-                                                        ? 'rgba(52, 21, 15, 0.08)'
-                                                        : 'rgba(52, 21, 15, 0.3)',
-                                                    borderRadius: '1px',
-                                                    transformOrigin: 'top',
-                                                }}
-                                            />
-                                            <div>
-                                                <span
+                            {/* Modal Container */}
+                            <div className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-none p-6">
+                                <motion.div
+                                    className="pointer-events-auto relative w-full max-w-sm overflow-hidden rounded-[32px] border border-white/20"
+                                    style={{
+                                        background: 'rgba(255, 255, 255, 0.65)',
+                                        backdropFilter: 'blur(24px) saturate(180%)',
+                                        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                                    }}
+                                    variants={modalVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/10">
+                                        <span
+                                            style={{
+                                                fontFamily: '"Courier New", monospace',
+                                                fontSize: '13px',
+                                                color: '#1d1d1f',
+                                                letterSpacing: '0.1em',
+                                                textTransform: 'uppercase',
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            Navigation
+                                        </span>
+                                        <button
+                                            onClick={() => setIsOpen(false)}
+                                            className="p-2 rounded-full hover:bg-black/5 transition-colors text-[#1d1d1f]/60 hover:text-[#1d1d1f]"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18" />
+                                                <line x1="6" y1="6" x2="18" y2="18" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    {/* Nav Items */}
+                                    <div className="p-6">
+                                        <nav className="flex flex-col gap-1">
+                                            {navItems.map((item, index) => (
+                                                <motion.button
+                                                    key={item.key}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        delay: 0.05 + index * 0.06,
+                                                        ease: [0.22, 1, 0.36, 1],
+                                                    }}
+                                                    onClick={() => handleNavClick(item)}
+                                                    className="text-left rounded-2xl px-4 py-4 active:bg-black/5 transition-colors"
                                                     style={{
-                                                        fontFamily: '"Courier New", monospace',
-                                                        fontSize: '26px',
-                                                        fontWeight: 400,
-                                                        color: item.disabled ? 'rgba(52, 21, 15, 0.18)' : '#34150F',
-                                                        letterSpacing: '0.04em',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        WebkitTapHighlightColor: 'transparent',
                                                     }}
                                                 >
-                                                    {item.label}
-                                                </span>
-                                                {item.disabled && (
-                                                    <motion.span
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        transition={{ delay: 0.5 }}
+                                                    <span
                                                         style={{
-                                                            display: 'block',
-                                                            fontSize: '9px',
-                                                            color: 'rgba(52, 21, 15, 0.25)',
-                                                            fontFamily: '"Courier New", monospace',
+                                                            fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                                                            fontSize: '22px',
                                                             fontWeight: 600,
-                                                            letterSpacing: '0.2em',
-                                                            marginTop: '4px',
-                                                            textTransform: 'uppercase',
+                                                            color: '#1d1d1f',
+                                                            letterSpacing: '-0.02em',
                                                         }}
                                                     >
-                                                        COMING SOON
-                                                    </motion.span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </motion.button>
-                                ))}
-                            </nav>
+                                                        {item.label}
+                                                    </span>
+                                                </motion.button>
+                                            ))}
+                                        </nav>
 
-                            {/* Bottom — location + decorative element */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ delay: 0.4, duration: 0.5 }}
-                                className="flex flex-col items-start gap-4"
-                            >
-                                <div
-                                    style={{
-                                        width: '32px',
-                                        height: '1px',
-                                        background: 'rgba(52, 21, 15, 0.15)',
-                                    }}
-                                />
-                                <span
-                                    style={{
-                                        fontFamily: '"Courier New", monospace',
-                                        fontSize: '10px',
-                                        color: 'rgba(52, 21, 15, 0.35)',
-                                        letterSpacing: '0.15em',
-                                        textTransform: 'uppercase',
-                                    }}
-                                >
-                                    [ ESSEN, DEUTSCHLAND ]
-                                </span>
-                            </motion.div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                        {/* Bottom — location */}
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.35, duration: 0.4 }}
+                                            className="mt-8 pt-4 border-t border-black/5"
+                                        >
+                                            <span
+                                                style={{
+                                                    fontFamily: '"Courier New", monospace',
+                                                    fontSize: '10px',
+                                                    color: 'rgba(0, 0, 0, 0.3)',
+                                                    letterSpacing: '0.15em',
+                                                    textTransform: 'uppercase',
+                                                }}
+                                            >
+                                                [ ESSEN, DEUTSCHLAND ]
+                                            </span>
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </>
     );
 }

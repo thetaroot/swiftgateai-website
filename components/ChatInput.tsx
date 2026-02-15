@@ -25,7 +25,7 @@ function ChatInput() {
 
   const typewriterEnabled = !isFocused && message.length === 0;
   const { displayText, cursorVisible } = useTypewriter({
-    texts: t.chat.suggestions,
+    texts: isMobile ? t.chat.mobileSuggestions : t.chat.suggestions,
     typingSpeed: 50,
     deletingSpeed: 25,
     pauseAfterType: 3000,
@@ -208,24 +208,24 @@ function ChatInput() {
   // ─── DESKTOP DESIGN ───
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ zIndex: 50, paddingBottom: '80px' }}
+      className="w-full flex justify-center pointer-events-auto"
+      style={{ zIndex: 50 }}
     >
       <motion.div
-        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ ...quickSpring, duration: 0.8 }}
-        className="w-full max-w-xl px-6 pointer-events-auto"
+        transition={{ ...quickSpring, duration: 0.6 }}
+        className="w-full max-w-xl px-0"
       >
         <motion.div
           className="relative"
-          whileHover={prefersReducedMotion ? {} : { y: -4, scale: 1.01 }}
+          whileHover={prefersReducedMotion ? {} : { y: -2, scale: 1.01 }}
           transition={quickSpring}
         >
           {/* Glow */}
           <motion.div
             className="absolute -inset-4 rounded-[32px]"
-            animate={{ opacity: hasText ? 0.8 : 0.4 }}
+            animate={{ opacity: hasText ? 0.7 : 0.3 }}
             style={{
               background: 'radial-gradient(ellipse at center, rgba(211, 152, 88, 0.15) 0%, transparent 70%)',
               filter: 'blur(30px)',
