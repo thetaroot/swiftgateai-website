@@ -39,19 +39,19 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://swiftgateai.de'),
   title: {
-    default: "SwiftGate AI - Webentwicklung & KI-Lösungen | Essen, NRW",
+    default: "SwiftGate AI - Agentic AI & Autonome Systeme | Essen, NRW",
     template: "%s | SwiftGate AI"
   },
-  description: "Professionelle Webentwicklung und KI-Integration aus Essen (NRW). Spezialisiert auf React, Next.js und maßgeschneiderte Softwarelösungen für Unternehmen.",
+  description: "Spezialisiert auf Agentic AI, kognitive Automatisierung und die Integration von autonomen Softwaresystemen in Unternehmensprozesse.",
   keywords: [
-    "Webentwicklung Essen",
-    "Webdesign NRW",
-    "Next.js Agentur",
-    "React Entwickler",
-    "KI Lösungen",
-    "Softwareentwicklung",
-    "Frontend Development",
-    "Fullstack Developer",
+    "Agentic AI",
+    "Autonome Systeme",
+    "KI Agenten",
+    "Künstliche Intelligenz Essen",
+    "KI Integration NRW",
+    "Kognitive Prozessautomatisierung",
+    "Enterprise AI",
+    "LLM Integration",
     "SwiftGate AI",
     "Luis Guenther"
   ],
@@ -74,21 +74,21 @@ export const metadata: Metadata = {
     locale: 'de_DE',
     url: 'https://swiftgateai.de',
     siteName: 'SwiftGate AI',
-    title: 'SwiftGate AI - Webentwicklung der nächsten Generation',
-    description: 'Wir entwickeln hochperformante Webanwendungen und integrieren KI-Lösungen, die Ihr Business voranbringen.',
+    title: 'SwiftGate AI - Agentic AI & Autonome Systeme',
+    description: 'Wir integrieren intelligente KI-Agenten und autonome Softwaresysteme, die eigenständig und proaktiv Ihre Wertschöpfungsketten optimieren.',
     images: [
       {
         url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'SwiftGate AI - Future-Ready Web Development',
+        alt: 'SwiftGate AI - Autonomous AI Systems',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SwiftGate AI - Webentwicklung & KI',
-    description: 'Maßgeschneiderte Web-Lösungen und KI-Integrationen für moderne Unternehmen.',
+    title: 'SwiftGate AI - Autonome KI Systeme',
+    description: 'Maßgeschneiderte Agentic AI-Lösungen für zukunftsorientierte Unternehmen.',
     images: ['/og-image.svg'],
   },
   alternates: {
@@ -108,7 +108,7 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
     name: 'SwiftGate AI',
-    description: 'Full-Service Webentwicklung und KI-Integration.',
+    description: 'Entwicklung und Integration von Agentic AI und autonomen Softwaresystemen.',
     url: 'https://swiftgateai.de',
     logo: 'https://swiftgateai.de/icon.svg',
     image: 'https://swiftgateai.de/og-image.svg',
@@ -133,30 +133,30 @@ export default function RootLayout({
     ],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
-      name: 'Web Development Services',
+      name: 'AI Integration Services',
       itemListElement: [
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Webentwicklung',
-            description: 'Entwicklung moderner Webanwendungen mit Next.js und React.',
+            name: 'Agentic AI Systems',
+            description: 'Architektur und Deployment von proaktiven, autonomen KI-Agenten.',
           },
         },
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'KI-Integration',
-            description: 'Integration von künstlicher Intelligenz in Geschäftsprozesse.',
+            name: 'Kognitive Automatisierung',
+            description: 'Intelligente Vernetzung von Wertschöpfungsketten durch kognitive Software.',
           },
         },
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'SEO & Performance',
-            description: 'Suchmaschinenoptimierung und Performance-Tuning.',
+            name: 'Infrastruktur & Sicherheit',
+            description: 'Sichere On-Premise und Cloud-Architekturen für sensible KI-Prozesse.',
           },
         },
       ],
