@@ -45,6 +45,11 @@ export interface Dictionary {
             p1: string;
             p2: string;
             sub: string;
+            sections?: {
+                id: string;
+                title: string;
+                text: string;
+            }[];
         };
     };
     services: {

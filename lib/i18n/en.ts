@@ -15,8 +15,8 @@ export const en: Dictionary = {
         skip: 'Skip',
     },
     hero: {
-        chatPlaceholder: 'How can AI scale my business?',
-        textBlock: 'Swiftgate develops tailored AI solutions for modern enterprises. We automate processes with intelligent workflows and create scalable systems. From strategy to integration – we are your partner for digital transformation.',
+        chatPlaceholder: 'Which processes in my company can be automated?',
+        textBlock: 'We build your AI systems together with you—ensuring they are EU-compliant, scalable, and feel like a true employee rather than just another tool.',
         location: '[ ESSEN, GERMANY ]',
     },
     aboutMe: {
@@ -44,66 +44,81 @@ export const en: Dictionary = {
             cta: 'Learn more',
         },
         sideText: {
-            p1: "It doesn't have to be hard,",
-            p2: 'to keep up with 2026.',
-            sub: 'AI & Business Integrations',
+            p1: 'AI as an Employee.',
+            p2: '',
+            sub: '',
+            sections: [
+                {
+                    id: '01',
+                    title: 'Autonomous AI & Agentic Systems',
+                    text: 'Conventional software waits for commands—an AI agent acts. We are not talking about simple chat windows, but systems that independently map out, plan, and execute complex tasks. Agentic AI means the machine operates as a proactive, digital employee, rather than just a reactive tool.'
+                },
+                {
+                    id: '02',
+                    title: 'Flexibility Over Rigid Rules',
+                    text: 'Traditional automation breaks the moment reality deviates from the predefined process flow. AI agents, however, possess cognitive flexibility. They understand context, correct errors iteratively, and independently seek alternatives when facing obstacles. The result is robust workflows that scale without constant manual intervention.'
+                },
+                {
+                    id: '03',
+                    title: 'Data Sovereignty & EU AI Act',
+                    text: 'Progress must not come at the expense of security. We develop systems that uncompromisingly meet the strict requirements of the GDPR and the upcoming EU AI Act. Whether deployed on-premise in your data centers or in secure European cloud environments: your corporate data and intellectual property remain 100% under your control.'
+                },
+                {
+                    id: '04',
+                    title: 'Seamless Implementation',
+                    text: 'Implementation does not require a radical overhaul of your existing infrastructure. We begin with the bottlenecks that cost your team the most time. Through APIs, we organically integrate agents into your existing processes—whether ERP, CRM, or internal communication. The transformation is step-by-step and measurable.'
+                },
+                {
+                    id: '05',
+                    title: 'Who is it for?',
+                    text: 'Agentic AI is not a gimmick, but the solution for forward-thinking enterprises reaching the limits of manual scalability. We work with teams seeking freedom from repetitive cognitive load. While the AI handles operational execution in the background, your employees can refocus on strategy, creativity, and genuine growth.'
+                }
+            ]
         },
     },
     services: {
         items: [
             {
-                title: 'Strategy & Consulting',
-                description: 'Technology only delivers results when it fits the business — not the other way around.\n\nBefore a single line of code is written, we work together to analyze where your company stands today and where it wants to go. We identify the processes that cost the most time, money, and energy — and show you exactly which ones can be immediately optimized through AI and automation.\n\nNo tech jargon. No generic recommendations. Instead, an honest analysis with a clear roadmap: What delivers the biggest impact? What is realistically implementable? And what makes sense in the long run?\n\nThe result: A tailor-made strategy that you understand, that you stand behind — and that we can implement right away.',
+                title: 'Consulting & Analysis',
+                description: 'Any serious software integration requires a precise understanding of your existing operational procedures. Before we map out the first system architecture, we analyze your processes in detail to pinpoint exactly where manual, repetitive work is unnecessarily slowing your team down. We do not view your operations as isolated tasks, but as connected value chains that can be intelligently linked through software. Our goal is a clear, data-driven implementation concept that demonstrates how cognitive software systems can be integrated to provide genuine, measurable workload relief from day one.',
                 features: [
-                    'Analysis of existing business processes & workflows',
-                    'Identification of automation potential',
-                    'Technology roadmap with concrete priorities',
-                    'Cost-benefit evaluation before every implementation',
-                    'Competitive analysis: Where is your industry already using AI?',
+                    'Holistic Process Analysis and Vulnerability Assessment',
+                    'Identification of Concrete Automation Opportunities',
+                    'Planning for Seamless System Integration into Daily Operations'
                 ],
             },
             {
-                title: 'AI & Automation',
-                description: 'Artificial intelligence is no longer a future topic — it is the tool your competition is already using.\n\nWe integrate cutting-edge AI models directly into your existing systems and workflows. No isolated solutions, no gimmicks — but automations that measurably save time and costs from day one. From intelligent chatbots that answer your customer inquiries around the clock, to automated data processing, to complete workflow chains that fully replace manual labor.\n\nWe use the best available language models and tailor them precisely to your company\'s requirements — with your data, your tone of voice, your processes. You don\'t get an off-the-shelf standard solution, but a system that feels as if it were developed in-house.',
+                title: 'Server Landscape & Security',
+                description: 'The foundation for any independently acting software system is an uncompromisingly secure server architecture. Your corporate data is your most valuable asset and must be treated with strict confidentiality at all times. We design and maintain infrastructures that withstand the high standards of the General Data Protection Regulation (GDPR) and upcoming EU regulations. Whether fully isolated on your own servers (on-premise) in your data center, or in strictly certified European cloud solutions: We ensure that your data and trade secrets never leave your company unnoticed. The technology works exclusively for you.',
                 features: [
-                    'Integration of AI language models into existing business processes',
-                    'Automation of recurring tasks & workflows',
-                    'Intelligent chatbots & customer communication',
-                    'Automated data capture, processing & analysis',
-                    'Connecting your existing tools into seamless automation chains',
-                    'Custom AI solutions, trained on your industry and your data',
+                    'Operation on Proprietary Servers or GDPR-Compliant Cloud Solutions',
+                    'Fully Encrypted and Privacy-Compliant Processing',
+                    'Highly Available and Failsafe System Architecture'
                 ],
             },
             {
-                title: 'Development & Infrastructure',
-                description: 'AI needs a home — we build it. Anywhere, no matter how complex.\n\nEvery AI solution is only as good as the technical foundation it runs on. We develop everything your system needs to function: web applications, cloud architectures, local software solutions, interfaces between your existing tools — or complete platforms from scratch.\n\nWe adapt to your reality, not the other way around. Your data needs to stay local? No problem. You work entirely in the cloud? Also no problem. You need a combination of both? Even less of a problem. We write the code that makes your AI solutions run — and build the environment in which they work reliably.\n\nWhether website, internal application, database, API, or a system that doesn\'t exist yet: If it needs to be built, we build it.',
+                title: 'System Capabilities',
+                description: 'We do not develop simple dialogue systems only capable of providing standardized answers. We build cognitive software solutions that can independently follow courses of action, deeply understand contextual meaning, and reliably make complex decisions. Such software is capable, for example, of independently reading incoming inquiries, simultaneously searching for the matching customer data in your systems, grasping the content of relevant email attachments, and subsequently launching the necessary business process fully automatically. The system autonomously detects logical errors and corrects them in a timely manner—just as a well-trained clerk would do.',
                 features: [
-                    'Web applications, platforms & enterprise websites',
-                    'Cloud infrastructure & deployment',
-                    'Local software solutions & on-premise systems',
-                    'API development & system integration',
-                    'Databases, backend architecture & data pipelines',
-                    'Custom dashboards, internal tools & admin panels',
-                    'Technical foundation for all AI & automation solutions',
+                    'Content Processing of Documents, Emails, and Receipts',
+                    'Direct Connection to Existing Management Systems',
+                    'Self-Correcting Logic Chains for Complex Tasks'
                 ],
             },
             {
-                title: 'Ongoing Support & Maintenance',
-                description: 'We don\'t deliver and disappear — we stay.\n\nMost agencies hand over a finished project and are hard to reach afterwards. At SwiftgateAI, things are different. We see ourselves as your external IT team: reliable, reachable, and invested in your long-term success.\n\nWhether it\'s a technical issue on the weekend, a spontaneous adjustment, or the next big idea — you have a dedicated contact person who knows your system, your processes, and your goals. No waiting queues, no ticket systems, no rotating contacts. Instead, a partner who thinks ahead and works alongside you as if they were part of your team.\n\nYou don\'t need to build your own IT team. You already have one.',
+                title: 'Investment & Operating Costs',
+                description: 'The use of intelligent software must pay off like a reliable workforce, rather than becoming a burden through hidden license costs. Instead of relying on opaque subscriptions with usage-based fees, we focus on honest cost structures and genuine added value. We calculate using clearly defined project phases and a predetermined fixed price for the entire software development. In subsequent operations, you only pay the actual, predictable server and maintenance costs. This grants you full financial oversight, predictable initial costs, and leads to sustainable savings as soon as the systems become active.',
                 features: [
-                    'Dedicated contact person with full system understanding',
-                    'Ongoing maintenance, updates & security patches',
-                    'Fast response times — even outside business hours',
-                    'Proactive optimization suggestions instead of just problem-solving',
-                    'Flexible support packages, scalable with your growth',
-                    'Monthly reports & transparent communication',
+                    'Guaranteed Cost Certainty throughout the Entire Development Phase',
+                    'Predictable, Resource-Based Server Costs without Hidden Fees',
+                    'Sustainable Cost Reduction via a Digital Workforce'
                 ],
             },
         ],
     },
     portfolio: {
-        title: 'Intelligent Automations',
-        subtitle: 'Real results, no gimmicks. We build systems that deliver measurable value and transform businesses.',
+        title: 'Active Systems Showcase',
+        subtitle: 'What we build is now, not tomorrow. Autonomous AI systems like these are already operating as active AI employees in the field.',
         cta: 'View Portfolio',
         modal: {
             title: 'Project Archive',
@@ -215,17 +230,17 @@ export const en: Dictionary = {
         enterHint: 'Press Enter to send',
         exitHint: 'Scroll to exit chat',
         suggestions: [
-            'How can AI scale my business?',
+            'How can an AI employee lighten the load on our support team?',
+            'Which processes in my company can be automated?',
+            'How do I build an EU-compliant AI system?',
             'What does an AI integration cost?',
-            'Which processes can I automate?',
-            'How do I get started with SwiftGate AI?',
-            'What sets you apart from other agencies?',
+            'What sets you apart from standard chatbots?',
         ],
         mobileSuggestions: [
-            'What can AI do for me?',
-            'What does it cost?',
-            'What do you automate?',
-            'How do I start?',
+            'How does AI help support?',
+            'What can be automated?',
+            'Build EU-compliant AI?',
+            'Integration costs?',
             'What makes you different?',
         ],
         overlayTitle: 'SwiftGate AI',
@@ -238,8 +253,8 @@ export const en: Dictionary = {
     },
     contact: {
         label: 'Outreach',
-        headline: 'Ready for the Next Step?',
-        subheadline: 'Efficiency through intelligence. We transform your vision into future-proof technology.',
+        headline: 'Take the first step.',
+        subheadline: 'Inquiries are completely free, and we are happy to advise you on your AI potential.',
         mailBtn: {
             title: 'Direct Mail',
             desc: 'Direct contact via email.',

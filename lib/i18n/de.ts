@@ -15,8 +15,8 @@ export const de: Dictionary = {
         skip: 'Überspringen',
     },
     hero: {
-        chatPlaceholder: 'Wie kann KI mein Unternehmen skalieren?',
-        textBlock: 'Swiftgate entwickelt maßgeschneiderte KI-Lösungen für moderne Unternehmen. Wir automatisieren Prozesse mit intelligenten Workflows und schaffen skalierbare Systeme. Von der Strategie bis zur Integration – wir sind Ihr Partner für digitale Transformation.',
+        chatPlaceholder: 'Welche Prozesse in meinem Unternehmen lassen sich automatisieren?',
+        textBlock: 'Wir entwickeln mit Ihnen zusammen Ihre KI-Systeme, welche sich EU-rechtskonform, skalierbar und wie ein echter Mitarbeiter statt einem weiteren Tool anfühlen.',
         location: '[ ESSEN, DEUTSCHLAND ]',
     },
     aboutMe: {
@@ -44,66 +44,81 @@ export const de: Dictionary = {
             cta: 'Mehr erfahren',
         },
         sideText: {
-            p1: 'Es muss nicht schwierig sein,',
-            p2: '2026 mitzuhalten.',
-            sub: 'AI & Business-Integrationen',
+            p1: 'KI als Mitarbeiter.',
+            p2: '',
+            sub: '',
+            sections: [
+                {
+                    id: '01',
+                    title: 'Autonome KI & Agentic Systems',
+                    text: 'Normale Software wartet auf Befehle – ein KI-Agent handelt. Wir sprechen nicht von simplen Chatfenstern, sondern von Systemen, die komplexe Aufgaben selbstständig durchdenken, planen und ausführen. Agentic AI bedeutet: Die Maschine agiert als proaktiver, digitaler Mitarbeiter, nicht nur als reaktives Werkzeug.'
+                },
+                {
+                    id: '02',
+                    title: 'Überlegene Flexibilität',
+                    text: 'Klassische Automatisierung scheitert, sobald die Realität vom gezeichneten Prozessfluss abweicht. KI-Agenten hingegen besitzen kognitive Flexibilität. Sie verstehen Kontext, korrigieren Fehler iterativ und suchen bei Hindernissen selbstständig nach Alternativen. Das Ergebnis sind robuste Workflows, die ohne ständiges manuelles Eingreifen skalieren.'
+                },
+                {
+                    id: '03',
+                    title: 'Souveränität & EU AI Act',
+                    text: 'Fortschritt darf nicht auf Kosten der Sicherheit gehen. Wir entwickeln Systeme, die den strengen Anforderungen der DSGVO und des EU AI Acts kompromisslos gerecht werden. Ob On-Premise in Ihren Rechenzentren oder in abgesicherten europäischen Cloud-Umgebungen: Ihre Unternehmensdaten und Ihr geistiges Eigentum bleiben zu 100% in Ihrer Hand.'
+                },
+                {
+                    id: '04',
+                    title: 'Die Implementierung',
+                    text: 'Eine Einführung erfordert keinen radikalen Umbruch Ihrer bestehenden IT-Architektur. Wir beginnen mit den Flaschenhälsen, die Ihr Team am meisten Zeit kosten. Über Schnittstellen (APIs) integrieren wir die Agenten organisch in Ihre vorhandenen Prozesse – sei es Ihr ERP, CRM oder die interne Kommunikation. Der Wandel geschieht schrittweise und messbar.'
+                },
+                {
+                    id: '05',
+                    title: 'Für wen wir das bauen',
+                    text: 'Agentic AI ist keine Spielerei, sondern die Lösung für zukunftsgewandte Mittelständler und Konzerne, die an die Grenzen manueller Skalierbarkeit stoßen. Wir arbeiten mit Teams, die sich von repetitiver Last befreien möchten. Während die KI die operative Ausführung übernimmt, konzentrieren sich Ihre Mitarbeiter wieder auf Strategie, Kreativität und echtes Wachstum.'
+                }
+            ]
         },
     },
     services: {
         items: [
             {
-                title: 'Strategie & Beratung',
-                description: 'Technologie bringt nur dann Ergebnisse, wenn sie zum Geschäft passt — nicht umgekehrt.\n\nBevor eine einzige Zeile Code geschrieben wird, analysieren wir gemeinsam, wo Ihr Unternehmen heute steht und wo es hinwill. Wir identifizieren die Prozesse, die am meisten Zeit, Geld und Nerven kosten — und zeigen Ihnen konkret, welche davon sich durch KI und Automatisierung sofort optimieren lassen.\n\nKein Technik-Jargon. Keine generischen Empfehlungen. Stattdessen eine ehrliche Analyse mit klarem Fahrplan: Was bringt den größten Hebel? Was ist realistisch umsetzbar? Und was ergibt langfristig Sinn?\n\nDas Ergebnis: Eine maßgeschneiderte Strategie, die Sie verstehen, hinter der Sie stehen — und die wir direkt umsetzen können.',
+                title: 'Beratung & Analyse',
+                description: 'Jede ernsthafte Integration in ein Unternehmen erfordert ein genaues Verständnis der bestehenden Abläufe. Bevor wir die erste Systemarchitektur planen, analysieren wir Ihre Prozesse im Detail, um genau die Stellen zu finden, an denen manuelle, wiederkehrende Arbeiten Ihr Team unnötig ausbremsen. Wir betrachten Ihre Arbeitsabläufe nicht als isolierte Aufgabenstaus, sondern als zusammenhängende Wertschöpfungsketten, die durch Software intelligent vernetzt werden können. Unser Ziel ist ein klares, datenbasiertes Umsetzungskonzept, das aufzeigt, wie kognitive Softwaresysteme so integriert werden, dass sie vom ersten Tag an echte, messbare Arbeitserleichterung schaffen.',
                 features: [
-                    'Analyse bestehender Geschäftsprozesse & Workflows',
-                    'Identifikation von Automatisierungspotenzialen',
-                    'Technologie-Roadmap mit konkreten Prioritäten',
-                    'Kosten-Nutzen-Bewertung vor jeder Umsetzung',
-                    'Wettbewerbsanalyse: Wo setzt Ihre Branche bereits KI ein?',
+                    'Ganzheitliche Prozessanalyse und Schwachstellenprüfung',
+                    'Identifikation von konkreten Automatisierungs-Chancen',
+                    'Planung einer nahtlosen Systemintegration in den Betrieb'
                 ],
             },
             {
-                title: 'AI & Automation',
-                description: 'Künstliche Intelligenz ist kein Zukunftsthema mehr — sie ist das Werkzeug, das Ihre Konkurrenz bereits nutzt.\n\nWir integrieren modernste KI-Modelle direkt in Ihre bestehenden Systeme und Abläufe. Keine Insellösungen, keine Spielereien — sondern Automatisierungen, die ab Tag eins messbar Zeit und Kosten sparen. Von intelligenten Chatbots, die Ihre Kundenanfragen rund um die Uhr beantworten, über automatisierte Datenverarbeitung bis hin zu kompletten Workflow-Ketten, die manuelle Arbeit vollständig ersetzen.\n\nWir nutzen die besten verfügbaren Sprachmodelle und passen sie exakt an die Anforderungen Ihres Unternehmens an — mit Ihren Daten, Ihrem Tonfall, Ihren Prozessen. Sie bekommen keine Standardlösung von der Stange, sondern ein System, das sich anfühlt, als wäre es intern entwickelt worden.',
+                title: 'Serverlandschaft & Sicherheit',
+                description: 'Die Grundlage für eigenständig handelnde Softwaresysteme ist eine kompromisslos sichere Serverarchitektur. Ihre Unternehmensdaten sind Ihr wertvollstes Gut und müssen zu jedem Zeitpunkt streng vertraulich behandelt werden. Wir entwerfen und betreuen Infrastrukturen, die den hohen Standards der europäischen Datenschutz-Grundverordnung sowie kommenden EU-Regulierungen standhalten. Ob vollständig isoliert auf eigenen Servern (On-Premise) in Ihrem Rechenzentrum oder in streng zertifizierten europäischen Cloud-Lösungen: Wir stellen sicher, dass Ihre Daten und Ihr Geschäftsgeheimnis Ihr Unternehmen niemals unbemerkt verlassen. Die Technologie arbeitet ausschließlich für Sie.',
                 features: [
-                    'Integration von KI-Sprachmodellen in bestehende Geschäftsprozesse',
-                    'Automatisierung wiederkehrender Aufgaben & Workflows',
-                    'Intelligente Chatbots & Kundenkommunikation',
-                    'Automatisierte Datenerfassung, -verarbeitung & -analyse',
-                    'Verknüpfung Ihrer bestehenden Tools zu nahtlosen Automatisierungsketten',
-                    'Individuelle KI-Lösungen, trainiert auf Ihre Branche und Ihre Daten',
+                    'Betrieb auf eigenen Servern oder in DSGVO-Cloudlösungen',
+                    'Vollständig verschlüsselte und datenschutzkonforme Verarbeitung',
+                    'Hochverfügbare und ausfallsichere Systemarchitektur'
                 ],
             },
             {
-                title: 'Entwicklung & Infrastruktur',
-                description: 'KI braucht ein Zuhause — wir bauen es. Egal wo, egal wie komplex.\n\nJede KI-Lösung ist nur so gut wie die technische Grundlage, auf der sie läuft. Wir entwickeln alles, was Ihr System braucht, um zu funktionieren: Webanwendungen, Cloud-Architekturen, lokale Softwarelösungen, Schnittstellen zwischen Ihren bestehenden Tools — oder komplette Plattformen von Null auf.\n\nDabei passen wir uns an Ihre Realität an, nicht umgekehrt. Ihre Daten müssen lokal bleiben? Kein Problem. Sie arbeiten vollständig in der Cloud? Auch kein Problem. Sie brauchen eine Kombination aus beidem? Erst recht kein Problem. Wir schreiben den Code, der Ihre KI-Lösungen zum Laufen bringt — und bauen die Umgebung, in der sie zuverlässig arbeiten.\n\nOb Website, interne Anwendung, Datenbank, API oder ein System, das es so noch nicht gibt: Wenn es gebaut werden muss, bauen wir es.',
+                title: 'Systemfähigkeiten',
+                description: 'Wir entwickeln keine einfachen Dialogsysteme, die nur standardisierte Antworten geben können. Wir bauen kognitive Softwarelösungen, die eigenständig Handlungsstränge verfolgen, den inhaltlichen Kontext tiefgreifend verstehen und komplexe Entscheidungen sicher treffen. Eine solche Software vermag es beispielsweise, eingehende Anfragen eigenständig zu lesen, zeitgleich die passenden Kundendaten in Ihren Systemen zu suchen, relevante E-Mail-Anhänge inhaltlich zu erfassen und daraufhin vollautomatisch den notwendigen Geschäftsprozess zu starten. Das System erkennt eigenständig logische Fehler und korrigiert diese rechtzeitig – so wie es ein gut geschulter Sachbearbeiter tun würde.',
                 features: [
-                    'Webanwendungen, Plattformen & Unternehmenswebsites',
-                    'Cloud-Infrastruktur & Deployment',
-                    'Lokale Softwarelösungen & On-Premise-Systeme',
-                    'API-Entwicklung & Systemintegration',
-                    'Datenbanken, Backend-Architektur & Datenpipelines',
-                    'Individuelle Dashboards, interne Tools & Admin-Panels',
-                    'Technische Grundlage für alle KI- & Automatisierungslösungen',
+                    'Inhaltliche Verarbeitung von Dokumenten, E-Mails und Belegen',
+                    'Direkte Anbindung an bestehende Verwaltungssysteme',
+                    'Selbstkorrigierende Logikketten bei komplexen Aufgabenstellungen'
                 ],
             },
             {
-                title: 'Laufender Support & Betreuung',
-                description: 'Wir liefern nicht ab und verschwinden — wir bleiben.\n\nDie meisten Agenturen übergeben ein fertiges Projekt und sind danach schwer erreichbar. Bei SwiftgateAI ist das anders. Wir verstehen uns als Ihr externes IT-Team: zuverlässig, erreichbar und langfristig an Ihrem Erfolg interessiert.\n\nOb technisches Problem am Wochenende, eine spontane Anpassung oder die nächste große Idee — Sie haben einen festen Ansprechpartner, der Ihr System, Ihre Prozesse und Ihre Ziele kennt. Keine Warteschleifen, keine Ticket-Systeme, keine wechselnden Kontaktpersonen. Stattdessen ein Partner, der mitdenkt und mitarbeitet, als wäre er Teil Ihres Teams.\n\nSie brauchen kein eigenes IT-Team aufzubauen. Sie haben bereits eins.',
+                title: 'Investition & Betriebskosten',
+                description: 'Der Einsatz einer intelligenten Software muss sich wie eine verlässliche Arbeitskraft rentieren, statt durch versteckte Lizenzkosten zur Belastung zu werden. Anstatt auf undurchsichtige Abonnements mit nutzungsabhängigen Gebühren zu setzen, fokussieren wir uns auf ehrliche Kostenstrukturen und einen echten Mehrwert. Wir kalkulieren mit klar definierten Projektphasen und einem zuvor festgelegten Fixpreis für die gesamte Softwareentwicklung. Im anschließenden Betrieb zahlen Sie lediglich die tatsächlichen, planbaren Server- und Wartungskosten. Das gewährt Ihnen die volle finanzielle Übersicht, planbare Initialkosten und führt zu nachhaltigen Einsparungen, sobald die Systeme aktiv sind.',
                 features: [
-                    'Fester Ansprechpartner mit vollem Systemverständnis',
-                    'Laufende Wartung, Updates & Sicherheitspatches',
-                    'Schnelle Reaktionszeiten — auch außerhalb der Geschäftszeiten',
-                    'Proaktive Optimierungsvorschläge statt nur Problemlösung',
-                    'Flexible Betreuungspakete, skalierbar mit Ihrem Wachstum',
-                    'Monatliche Reports & transparente Kommunikation',
+                    'Garantierte Kostensicherheit während der gesamten Entwicklungsphase',
+                    'Planbare, ressourcenbasierte Serverkosten ohne versteckte Gebühren',
+                    'Nachhaltige Kostensenkung durch eine digitale Arbeitskraft'
                 ],
             },
         ],
     },
     portfolio: {
-        title: 'Intelligente Automationen',
-        subtitle: 'Echte Ergebnisse statt Spielerei. Wir bauen Systeme, die messbaren Mehrwert liefern und Unternehmen transformieren.',
+        title: 'Aktive Systeme als Showcase',
+        subtitle: 'Was wir machen ist jetzt und nicht morgen. Autonome AI Systeme wie diese laufen bereits aktiv als KI-Mitarbeiter im Einsatz.',
         cta: 'Portfolio ansehen',
         modal: {
             title: 'Projekt Archiv',
@@ -215,17 +230,17 @@ export const de: Dictionary = {
         enterHint: 'Enter zum Senden',
         exitHint: 'Scrollen um Chat zu verlassen',
         suggestions: [
-            'Wie kann KI mein Unternehmen skalieren?',
+            'Wie kann ein KI-Mitarbeiter unseren Support entlasten?',
+            'Welche Prozesse in meinem Unternehmen lassen sich automatisieren?',
+            'Wie baue ich ein EU-konformes KI-System auf?',
             'Was kostet eine KI-Integration?',
-            'Welche Prozesse kann ich automatisieren?',
-            'Wie starte ich mit SwiftGate AI?',
-            'Was unterscheidet euch von anderen Agenturen?',
+            'Was unterscheidet euch von Standard-Chatbots?',
         ],
         mobileSuggestions: [
-            'Was kann KI für mich tun?',
-            'Was kostet das?',
-            'Was automatisiert ihr?',
-            'Wie starte ich?',
+            'Wie entlastet KI unseren Support?',
+            'Was lässt sich automatisieren?',
+            'EU-konforme KI aufbauen?',
+            'Kosten einer Integration?',
             'Was macht euch besonders?',
         ],
         overlayTitle: 'SwiftGate AI',
@@ -238,8 +253,8 @@ export const de: Dictionary = {
     },
     contact: {
         label: 'Outreach',
-        headline: 'Bereit für den nächsten Schritt?',
-        subheadline: 'Effizienz durch Intelligenz. Wir transformieren Ihre Vision in zukunftsfähige Technologie.',
+        headline: 'Gehen Sie den ersten Schritt.',
+        subheadline: 'Eine Anfrage kostet nichts und wir beraten Sie gerne unverbindlich zu Ihren KI-Potenzialen.',
         mailBtn: {
             title: 'Direct Mail',
             desc: 'Direkter Kontakt via E-Mail.',

@@ -14,12 +14,6 @@ const smoothSpring = {
   mass: 1,
 };
 
-const quickSpring = {
-  type: "spring" as const,
-  stiffness: 250,
-  damping: 30,
-  mass: 0.8,
-};
 
 // Cards data
 const CARDS = [

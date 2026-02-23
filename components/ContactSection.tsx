@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useState, memo, useCallback } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useState, memo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
 import { useBackgroundContext } from '@/context/BackgroundContext';
@@ -15,19 +15,12 @@ const smoothSpring = {
 };
 
 function ContactSection() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ['start end', 'end start'],
-    });
     const { t } = useTranslation();
     const { language } = useSettings();
     const isMobile = useMobile();
     const { chatMessages } = useBackgroundContext();
 
-    const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-    const [hoveredButton, setHoveredButton] = useState<string | null>(null);
-    const [copied, setCopied] = useState(false);
+
     const [isGenerating, setIsGenerating] = useState(false);
     const [clipboardNotice, setClipboardNotice] = useState(false);
 
@@ -41,8 +34,7 @@ function ContactSection() {
     const handleCopy = (e: React.MouseEvent) => {
         e.preventDefault();
         navigator.clipboard.writeText(email);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => { }, 2000);
         window.location.href = `mailto:${email}`;
     };
 
@@ -187,8 +179,6 @@ function ContactSection() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.4 }}
                         onClick={handleCopy}
-                        onMouseEnter={() => setHoveredButton('mail')}
-                        onMouseLeave={() => setHoveredButton(null)}
                         className={`group relative flex-1 ${isMobile ? 'w-full' : 'min-w-[280px] max-w-[400px]'} h-auto p-1 rounded-3xl`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}

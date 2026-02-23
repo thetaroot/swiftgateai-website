@@ -215,12 +215,12 @@ function ServicesAccordion() {
                             gap: '12px',
                           }}
                         >
-                          {service.bullets.map((bullet, bulletIndex) => (
+                          {service.features?.map((feature: string, featureIndex: number) => (
                             <motion.li
-                              key={bulletIndex}
+                              key={featureIndex}
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: 0.3 + bulletIndex * 0.08 }}
+                              transition={{ duration: 0.3, delay: 0.3 + featureIndex * 0.08 }}
                               style={{
                                 display: 'flex',
                                 alignItems: 'flex-start',
@@ -242,7 +242,7 @@ function ServicesAccordion() {
                                   marginTop: '9px',
                                 }}
                               />
-                              {bullet}
+                              {feature}
                             </motion.li>
                           ))}
                         </motion.ul>

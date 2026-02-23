@@ -70,7 +70,7 @@ export default function CardIndexNavigation() {
           const textColor = isDark ? '#EACEAA' : '#150C0C';
           const borderColor = isDark ? 'rgba(234, 206, 170, 0.25)' : 'rgba(21, 12, 12, 0.2)';
           const activeBorderColor = isDark ? 'rgba(234, 206, 170, 0.5)' : 'rgba(21, 12, 12, 0.4)';
-          const numberColor = isDark ? 'rgba(234, 206, 170, 0.15)' : 'rgba(21, 12, 12, 0.15)';
+
 
           return (
             <motion.button

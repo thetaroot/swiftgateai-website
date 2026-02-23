@@ -13,8 +13,6 @@ import {
 
 export const maxDuration = 30;
 
-const MAX_HISTORY_LENGTH = 20;
-
 const FALLBACK_REPLY = 'SwiftGate AI steht Ihnen für Fragen zu unseren Services gerne zur Verfügung. Kontaktieren Sie uns unter hello@swiftgateai.de.';
 
 interface ChatMessage {

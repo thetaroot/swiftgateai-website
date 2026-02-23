@@ -1,16 +1,14 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ChatInput from '@/components/ChatInput';
 import ChatOverlay from '@/components/ChatOverlay';
 import ChatBubble from '@/components/ChatBubble';
 import PortfolioPreview from '@/components/PortfolioPreview';
 import Footer from '@/components/Footer';
-import WelcomeScreen from '@/components/WelcomeScreen';
 import BrutalistTextBlock from '@/components/BrutalistTextBlock';
 import WhatIDoSection from '@/components/WhatIDoSection';
-import { useBackgroundContext } from '@/context/BackgroundContext';
 import ContactSection from '@/components/ContactSection';
 import MobileMenu from '@/components/MobileMenu';
 import SettingsModal from '@/components/SettingsModal';
@@ -20,12 +18,8 @@ import { useMobile } from '@/hooks/useMobile';
 export default function Home() {
   const { t } = useTranslation();
   const isMobile = useMobile();
-  const [introComplete, setIntroComplete] = useState(false);
   const [isInDarkSection, setIsInDarkSection] = useState(false);
   const [isPastFirstSection, setIsPastFirstSection] = useState(false);
-
-  const { isChatOpen } = useBackgroundContext();
-
   const pageScrollRef = useRef<HTMLDivElement>(null);
   const chatSectionRef = useRef<HTMLElement>(null);
 
@@ -36,10 +30,6 @@ export default function Home() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
-  const handleIntroComplete = useCallback(() => {
-    setIntroComplete(true);
-  }, []);
 
   // IntersectionObserver for nav color switching
   useEffect(() => {
@@ -70,7 +60,7 @@ export default function Home() {
     darkSections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, [introComplete]);
+  }, []);
 
   // Track scroll position to hide BrutalistTextBlock once past first section
   useEffect(() => {
@@ -88,15 +78,9 @@ export default function Home() {
 
   return (
     <>
-      {/* Welcome Screen */}
-      <WelcomeScreen onComplete={handleIntroComplete} />
-
       {/* Main Content */}
-      <motion.div
+      <div
         style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 10, background: '#EACEAA' }}
-        initial={{ opacity: introComplete ? 1 : 0 }}
-        animate={{ opacity: introComplete ? 1 : 0 }}
-        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       >
         {/* Sticky Header */}
         <motion.div
@@ -263,7 +247,7 @@ export default function Home() {
                         marginTop: '6px',
                       }}
                     >
-                      AI INTELLIGENCE
+                      AI SYSTEMS
                     </span>
                   </motion.div>
 
@@ -340,7 +324,7 @@ export default function Home() {
                       marginTop: '8px'
                     }}
                   >
-                    AI INTELLIGENCE
+                    AI SYSTEMS
                   </span>
                 </motion.div>
 
@@ -382,12 +366,11 @@ export default function Home() {
             <ContactSection />
           </div>
 
-          {/* Footer - also mark as dark for nav color sensing */}
           <div id="footer" data-section="dark">
             <Footer />
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Chat Overlay (portal) */}
       <ChatOverlay />

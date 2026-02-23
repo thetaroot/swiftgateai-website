@@ -11,10 +11,10 @@ interface PortfolioModalProps {
 }
 
 export default function PortfolioModal({ isOpen, onClose }: PortfolioModalProps) {
-    const { t, language } = useTranslation();
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState<string>('All');
-    const [_isExiting, setIsExiting] = useState(false);
+
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     // Initial Active Category when opening? Default is 'All' (translated potentially, but let's use key or English default)
@@ -53,14 +53,6 @@ export default function PortfolioModal({ isOpen, onClose }: PortfolioModalProps)
     const selectedProject = useMemo(() =>
         projects.find(p => p.id === selectedId),
         [projects, selectedId]);
-
-    const handleClose = () => {
-        setIsExiting(true);
-        // Delay callback handled by GlossyModal usually, but here we just pass onClose.
-        // If we want internal animation, we handle it.
-        onClose();
-        setTimeout(() => setSelectedId(null), 500); // Reset after close
-    };
 
 
     // Tech filter derivation (optional enhancement)

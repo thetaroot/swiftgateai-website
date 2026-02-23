@@ -13,6 +13,8 @@ function WhatIDoSection() {
   const { t } = useTranslation();
   const isMobile = useMobile();
 
+  // Removed useScroll for performance optimizations. Now using whileInView.
+
   return (
     <section className="relative w-full">
       {/* Creative Dark Divider with Rounded Top */}
@@ -64,37 +66,17 @@ function WhatIDoSection() {
         {/* Content Container */}
         <div className={`relative max-w-7xl mx-auto ${isMobile ? 'px-5 py-16' : 'px-6 md:px-12 py-24 md:py-32'}`}>
 
-          {/* Main Typography Block */}
-          <div className="relative">
-            {/* WORD 1 */}
-            <motion.div
-              initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <h2
-                style={{
-                  fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                  fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                  letterSpacing: '-0.04em',
-                  lineHeight: 0.85,
-                  margin: 0,
-                }}
-              >
-                {t.whatIDo.bigTitle.word1}
-              </h2>
-            </motion.div>
+          {/* MAIN HEADER ROW */}
+          <div className="relative w-full flex flex-col items-center lg:items-start z-10">
+            {/* BIG TITLE BLOCK */}
+            <div className={`w-full lg:w-max relative z-10 ${isMobile ? 'mb-16' : 'mb-8'}`}>
 
-            {/* WORD 2 - with Portrait integrated */}
-            <div className={`relative flex items-center ${isMobile ? 'gap-4 my-2' : 'gap-4 md:gap-8 my-2 md:my-4'}`}>
+              {/* WORD 1 */}
               <motion.div
                 initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
-                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 <h2
                   style={{
@@ -105,243 +87,282 @@ function WhatIDoSection() {
                     letterSpacing: '-0.04em',
                     lineHeight: 0.85,
                     margin: 0,
-                    marginBottom: isMobile ? '4px' : '20px',
-                    marginTop: isMobile ? '4px' : '20px',
                   }}
                 >
-                  {t.whatIDo.bigTitle.word2}
+                  {t.whatIDo.bigTitle.word1}
                 </h2>
               </motion.div>
 
-              {/* Asterisk Symbol */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-4 md:mb-8"
-              >
-                <span
+              {/* WORD 2 - with Portrait integrated */}
+              <div className={`relative flex items-center ${isMobile ? 'gap-4 my-2' : 'gap-4 md:gap-8 my-2 md:my-4'}`}>
+                <motion.div
+                  initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
+                  transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                      fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
+                      fontWeight: 700,
+                      color: '#FFFFFF',
+                      letterSpacing: '-0.04em',
+                      lineHeight: 0.85,
+                      margin: 0,
+                      marginBottom: isMobile ? '4px' : '20px',
+                      marginTop: isMobile ? '4px' : '20px',
+                    }}
+                  >
+                    {t.whatIDo.bigTitle.word2}
+                  </h2>
+                </motion.div>
+
+                {/* Asterisk Symbol */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="mb-4 md:mb-8"
+                >
+                  <span
+                    style={{
+                      fontFamily: '"Space Grotesk", sans-serif',
+                      fontSize: 'clamp(30px, 8vw, 80px)',
+                      fontWeight: 700,
+                      color: '#D39858',
+                    }}
+                  >
+                    *
+                  </span>
+                </motion.div>
+
+                {/* Portrait Image */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className={`relative ${isMobile ? 'mb-1' : 'mb-2 md:mb-4'}`}
                   style={{
-                    fontFamily: '"Space Grotesk", sans-serif',
-                    fontSize: 'clamp(30px, 8vw, 80px)',
-                    fontWeight: 700,
-                    color: '#D39858',
+                    width: isMobile ? '70px' : 'clamp(80px, 20vw, 180px)',
+                    height: isMobile ? '88px' : 'clamp(100px, 24vw, 220px)',
+                    top: isMobile ? '4px' : '0',
                   }}
                 >
-                  *
-                </span>
-              </motion.div>
-
-              {/* Portrait Image */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className={`relative ${isMobile ? 'mb-1' : 'mb-2 md:mb-4'}`}
-                style={{
-                  width: isMobile ? '70px' : 'clamp(80px, 20vw, 180px)',
-                  height: isMobile ? '88px' : 'clamp(100px, 24vw, 220px)',
-                  top: isMobile ? '4px' : '0', // Slight offset adjustment for mobile visual centering
-                }}
-              >
-                {/* Frame decoration - fixed to match organic shape */}
-                <div
-                  className="absolute -inset-2"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(211, 152, 88, 0.3) 0%, rgba(133, 67, 30, 0.1) 100%)',
-                    filter: 'blur(20px)',
-                    borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
-                  }}
-                />
-
-                {/* Image container with organic shape - border removed */}
-                <div
-                  className="relative w-full h-full overflow-hidden"
-                  style={{
-                    borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
-                    // border: '2px solid rgba(211, 152, 88, 0.3)', // Removed as requested
-                  }}
-                >
-                  <Image
-                    src="/pictures/portrait.jpg"
-                    alt="Portrait"
-                    fill
-                    priority
-                    className="object-cover"
-                    style={{ filter: 'contrast(1.05) saturate(0.9)' }}
+                  {/* Frame decoration */}
+                  <div
+                    className="absolute -inset-2"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(211, 152, 88, 0.3) 0%, rgba(133, 67, 30, 0.1) 100%)',
+                      filter: 'blur(20px)',
+                      borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
+                    }}
                   />
 
-                  {/* Clickable Overlay for Portrait */}
+                  {/* Image container */}
                   <button
                     onClick={() => setShowAboutMe(true)}
-                    className="absolute inset-0 z-10 cursor-pointer opacity-0 hover:opacity-10 transition-opacity bg-white"
-                    aria-label="About Me"
-                  />
-
-                  {/* Subtle overlay */}
-                  <div
-                    className="absolute inset-0"
+                    className="relative w-full h-full overflow-hidden group cursor-pointer"
                     style={{
-                      background: 'linear-gradient(180deg, transparent 60%, rgba(10, 10, 10, 0.4) 100%)',
+                      borderRadius: '60% 40% 50% 50% / 50% 60% 40% 50%',
+                      border: 'none',
+                      padding: 0,
+                      margin: 0,
+                      background: 'none',
+                      display: 'block'
                     }}
-                  />
-                </div>
+                    aria-label="About Me"
+                  >
+                    <Image
+                      src="/pictures/portrait.jpg"
+                      alt="Portrait"
+                      fill
+                      priority
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      style={{ filter: 'contrast(1.05) saturate(0.9)' }}
+                    />
+                    {/* Dark hover overlay */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out flex items-center justify-center backdrop-blur-[2px]">
+                      <span className="text-white font-mono text-sm tracking-widest font-semibold flex items-center gap-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                        {t.whatIDo.teaser.cta} <span className="text-[#D39858]">→</span>
+                      </span>
+                    </div>
+                  </button>
+                </motion.div>
+              </div>
 
-
+              {/* WORD 3 */}
+              <motion.div
+                initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
+                transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h2
+                  style={{
+                    fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                    fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
+                    fontWeight: 700,
+                    color: '#FFFFFF',
+                    letterSpacing: '-0.04em',
+                    lineHeight: 0.85,
+                    margin: 0,
+                  }}
+                >
+                  {t.whatIDo.bigTitle.word3}
+                </h2>
               </motion.div>
             </div>
 
-            {/* WORD 3 */}
-            <motion.div
-              initial={isMobile ? { opacity: 0, x: -30 } : { opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: isMobile ? "0px" : "-100px" }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <h2
-                style={{
-                  fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                  fontSize: isMobile ? 'clamp(48px, 15vw, 70px)' : 'clamp(60px, 18vw, 200px)',
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                  letterSpacing: '-0.04em',
-                  lineHeight: 0.85,
-                  margin: 0,
-                }}
-              >
-                {t.whatIDo.bigTitle.word3}
-              </h2>
-            </motion.div>
+            {/* Removed old disjointed SVG connector */}
 
-            {/* Text block - Right Side on desktop, below on mobile */}
-            {isMobile ? (
-              <motion.div
+            {/* "KI als Mitarbeiter" Title */}
+            <div className="w-full flex justify-center mt-12 lg:mt-24 mb-12 lg:mb-24 relative z-10">
+              <motion.h3
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="mt-12 max-w-[90%]"
+                viewport={{ once: true }}
+                style={{
+                  fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                  fontSize: isMobile ? '36px' : 'clamp(42px, 5vw, 64px)',
+                  fontWeight: 600,
+                  color: '#D39858',
+                  lineHeight: 1.1,
+                  letterSpacing: '-0.02em',
+                  margin: 0,
+                  textAlign: 'center',
+                }}
               >
-                <div>
-                  <motion.p
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    style={{
-                      fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                      fontSize: '18px',
-                      fontWeight: 500,
-                      color: 'rgba(255, 255, 255, 0.85)',
-                      lineHeight: 1.4,
-                      margin: 0,
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {t.whatIDo.sideText.p1}
-                    <br />
-                    <span style={{ color: '#D39858', fontWeight: 600 }}>{t.whatIDo.sideText.p2}</span>
-                  </motion.p>
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.7 }}
-                    style={{
-                      fontFamily: '"Courier New", monospace',
-                      fontSize: '12px',
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      lineHeight: 1.6,
-                      margin: 0,
-                      marginTop: '8px',
-                      letterSpacing: '0.08em',
-                    }}
-                  >
-                    {t.whatIDo.sideText.sub}
-                  </motion.p>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="absolute right-0 md:right-8 bottom-0 md:-bottom-8 flex flex-col items-end"
-                style={{ maxWidth: '380px' }}
-              >
-                <div style={{ textAlign: 'right' }}>
-                  <motion.p
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    style={{
-                      fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-                      fontSize: 'clamp(18px, 2.5vw, 26px)',
-                      fontWeight: 500,
-                      color: 'rgba(255, 255, 255, 0.85)',
-                      lineHeight: 1.4,
-                      margin: 0,
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {t.whatIDo.sideText.p1}
-                    <br />
-                    <span style={{ color: '#D39858', fontWeight: 600 }}>{t.whatIDo.sideText.p2}</span>
-                  </motion.p>
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.7 }}
-                    style={{
-                      fontFamily: '"Courier New", monospace',
-                      fontSize: 'clamp(12px, 1.4vw, 15px)',
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      lineHeight: 1.6,
-                      margin: 0,
-                      marginTop: '8px',
-                      letterSpacing: '0.08em',
-                    }}
-                  >
-                    {t.whatIDo.sideText.sub}
-                  </motion.p>
-                </div>
-              </motion.div>
-            )}
+                {t.whatIDo.sideText.p1}
+              </motion.h3>
+            </div>
           </div>
 
-          {/* New About Me Teaser Block - repositioned for mobile */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className={isMobile
-              ? 'mt-16 max-w-[95%]'
-              : 'absolute right-4 md:right-12 bottom-[-100px] md:bottom-[-80px] z-10 max-w-[280px]'
-            }
-          >
-            <div className="p-4 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 shadow-lg">
-              <p className="text-[#D39858] text-xs font-mono mb-2 tracking-widest uppercase">{t.whatIDo.teaser.label}</p>
-              <p className="text-white/80 text-sm font-medium leading-relaxed mb-3">
-                {t.whatIDo.teaser.text}
-              </p>
-              <button
-                onClick={() => setShowAboutMe(true)}
-                className="text-xs font-bold text-white flex items-center gap-2 group"
-              >
-                {t.whatIDo.teaser.cta}
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </button>
-            </div>
-          </motion.div>
+          {/* TIMELINE GRID SECTION */}
+          <div className="relative w-full pt-8 pb-20 px-4 md:px-0">
+            {/* Desktop 3-Column Grid */}
+            {!isMobile && (
+              <div className="grid grid-cols-[1fr_80px_1fr] w-full max-w-[1200px] mx-auto gap-0">
+                {t.whatIDo.sideText.sections?.map((section: { id: string; title: string; text: string }, idx: number) => {
+                  const isLeft = idx % 2 === 0;
+                  return (
+                    <div key={idx} className="contents group">
+                      {/* Left Col */}
+                      <div className={`flex w-full h-full items-center py-16 lg:py-24 ${isLeft ? 'justify-end pr-[48px]' : ''}`}>
+                        {isLeft && <TimelineCard section={section} isLeft={true} isMobile={false} />}
+                      </div>
 
-          {/* Side annotation */}
+                      {/* Center Spine Col */}
+                      <div className="relative w-full h-full flex justify-center">
+                        <svg
+                          className="absolute inset-0 w-full h-full overflow-visible pointer-events-none"
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="none"
+                        >
+                          <path
+                            d={isLeft
+                              ? "M 50 -2 C 50 25, 0 40, 0 50 C 0 60, 50 75, 50 102"
+                              : "M 50 -2 C 50 25, 100 40, 100 50 C 100 60, 50 75, 50 102"
+                            }
+                            vectorEffect="non-scaling-stroke"
+                            fill="none"
+                            stroke="#D39858"
+                            strokeWidth="3.5"
+                            strokeLinecap="round"
+                            style={{ filter: 'drop-shadow(0 0 6px rgba(211,152,88,0.5))' }}
+                          />
+                        </svg>
 
+                        {/* Node Dot exactly at the curve's apex */}
+                        <div
+                          className="absolute z-10 w-[22px] h-[22px] rounded-full bg-[#0A0A0A] border-[3px] border-[#D39858] shadow-[0_0_15px_rgba(211,152,88,0.8)]"
+                          style={{
+                            top: '50%',
+                            left: isLeft ? '0%' : '100%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        />
+
+                        {/* The Horizontal Connector Branch to the Card */}
+                        <div
+                          className="absolute h-[2px] top-1/2 z-0"
+                          style={{
+                            width: '48px',
+                            background: isLeft ? 'linear-gradient(to left, rgba(211,152,88,0.1), #D39858)' : 'linear-gradient(to right, rgba(211,152,88,0.1), #D39858)',
+                            [isLeft ? 'right' : 'left']: '100%',
+                            transform: 'translateY(-50%)'
+                          }}
+                        />
+                      </div>
+
+                      {/* Right Col */}
+                      <div className={`flex w-full h-full items-center py-16 lg:py-24 ${!isLeft ? 'justify-start pl-[48px]' : ''}`}>
+                        {!isLeft && <TimelineCard section={section} isLeft={false} isMobile={false} />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Mobile 2-Column Grid */}
+            {isMobile && (
+              <div className="grid grid-cols-[40px_1fr] w-full gap-4 max-w-lg mx-auto">
+                {t.whatIDo.sideText.sections?.map((section: { id: string; title: string; text: string }, idx: number) => {
+                  return (
+                    <div key={idx} className="contents group">
+                      {/* Spine Col */}
+                      <div className="relative w-full h-full">
+                        <svg
+                          className="absolute inset-0 w-full h-full overflow-visible pointer-events-none"
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="none"
+                        >
+                          <path
+                            d="M 50 -2 C 50 25, 100 40, 100 50 C 100 60, 50 75, 50 102"
+                            vectorEffect="non-scaling-stroke"
+                            fill="none"
+                            stroke="#D39858"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            style={{ filter: 'drop-shadow(0 0 4px rgba(211,152,88,0.5))' }}
+                          />
+                        </svg>
+
+                        {/* Node Dot exactly at the curve's apex */}
+                        <div
+                          className="absolute z-10 w-[18px] h-[18px] rounded-full bg-[#0A0A0A] border-[2px] border-[#D39858] shadow-[0_0_10px_rgba(211,152,88,0.8)]"
+                          style={{
+                            top: '50%',
+                            left: '100%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        />
+
+                        {/* Mobile Horizontal Connector */}
+                        <div
+                          className="absolute h-[2px] top-1/2 z-0"
+                          style={{
+                            width: '24px',
+                            background: 'linear-gradient(to right, #D39858, rgba(211,152,88,0.1))',
+                            left: '100%',
+                            transform: 'translateY(-50%)'
+                          }}
+                        />
+                      </div>
+
+                      {/* Card Col */}
+                      <div className="flex w-full h-full items-center py-10 pl-[24px]">
+                        <TimelineCard section={section} isLeft={false} isMobile={true} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Spacer for text overflow */}
@@ -433,3 +454,23 @@ function WhatIDoSection() {
 }
 
 export default memo(WhatIDoSection);
+
+const TimelineCard = ({ section, isLeft, isMobile }: { section: { id: string; title: string; text: string }, isLeft: boolean, isMobile: boolean }) => (
+  <div
+    className={`w-full ${isMobile ? 'max-w-md' : 'max-w-xl'} bg-[#13100e]/80 backdrop-blur-md border border-[#D39858]/10 hover:border-[#D39858]/40 p-6 md:p-10 rounded-[2rem] hover:-translate-y-1 transition-all duration-300 relative group`}
+    style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}
+  >
+    <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-[#D39858]/0 to-[#D39858]/0 group-hover:from-[#D39858]/5 group-hover:to-transparent transition-colors duration-500 pointer-events-none" />
+    <h4 className="flex items-center gap-4 mb-5 relative z-10">
+      <span className="font-mono text-[14px] md:text-[15px] tracking-widest text-[#D39858] font-bold bg-[#D39858]/10 px-3 py-1.5 rounded-lg border border-[#D39858]/30">
+        {section.id}
+      </span>
+      <span className="font-bold text-[22px] md:text-[26px] text-white/95 tracking-tight leading-tight">
+        {section.title}
+      </span>
+    </h4>
+    <p className="font-medium text-white/70 leading-[1.7] text-[16px] md:text-[18px] relative z-10">
+      {section.text}
+    </p>
+  </div>
+);
