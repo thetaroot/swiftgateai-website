@@ -2,11 +2,12 @@
 
 import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { Mail, MessageCircle, BarChart3, Calendar, CheckSquare, Brain } from 'lucide-react';
 import PortfolioModal from './PortfolioModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
 
-// Apple-like spring config
 const smoothSpring = {
   type: "spring" as const,
   stiffness: 150,
@@ -14,69 +15,85 @@ const smoothSpring = {
   mass: 1,
 };
 
-
-// Cards data
-const CARDS = [
-  { id: 0, title: 'AI Workflow 1', tech: 'n8n' },
-  { id: 1, title: 'AI Workflow 2', tech: 'OpenAI' },
-  { id: 2, title: 'AI Workflow 3', tech: 'Supabase' },
-] as const;
-
-// Duplicate cards to ensure seamless loop
-// We need enough copies to fill the screen width + buffer for smooth looping
-const MARQUEE_CARDS = [...CARDS, ...CARDS, ...CARDS, ...CARDS];
+const INTEGRATIONS = [
+  { label: 'Email', Icon: Mail, delay: 0, color: '#3B82F6' },
+  { label: 'Telegram', Icon: MessageCircle, delay: 0.6, color: '#0EA5E9' },
+  { label: 'CRM', Icon: BarChart3, delay: 1.2, color: '#8B5CF6' },
+  { label: 'Calendar', Icon: Calendar, delay: 0.3, color: '#F59E0B' },
+  { label: 'Tasks', Icon: CheckSquare, delay: 0.9, color: '#22C55E' },
+  { label: 'Knowledge', Icon: Brain, delay: 1.5, color: '#EC4899' },
+];
 
 function PortfolioPreview() {
-  const [isModalOpen] = useState(false); // === DISABLED FOR BASIS LAUNCH ===
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialProjectId, setInitialProjectId] = useState<number | null>(null);
   const { t } = useTranslation();
   const isMobile = useMobile();
+  const router = useRouter();
+
+  const project = t.portfolio.projects[0];
+
+  const handleCardClick = () => {
+    setInitialProjectId(project.id);
+    setIsModalOpen(true);
+  };
 
   return (
     <section
-      className="relative flex flex-col items-center justify-center overflow-hidden"
+      className="relative flex flex-col items-center justify-center"
       style={{
         minHeight: isMobile ? 'auto' : '100vh',
         width: '100%',
-        padding: isMobile ? '60px 0 40px' : '100px 0',
+        padding: isMobile ? '60px 20px 40px' : '100px 0',
       }}
     >
-      {/* === DISABLED OVERLAY FOR BASIS LAUNCH === */}
-      <div
-        className="absolute inset-0 z-20"
-        style={{ pointerEvents: 'all' }}
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-        onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-      />      {/* Content Container */}
-      <div className={`relative z-10 text-center max-w-3xl ${isMobile ? 'px-5 mb-10' : 'px-6 mb-16'}`} style={{ opacity: 0.3, filter: 'grayscale(60%)' }}>
-        {/* Heading */}
+      {/* Heading */}
+      <div className={`relative z-10 text-center max-w-2xl ${isMobile ? 'px-2 mb-10' : 'px-6 mb-14'}`}>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ ...smoothSpring, delay: 0.05 }}
+          style={{
+            fontSize: '13px',
+            fontWeight: 700,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            color: '#D39858',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            marginBottom: '16px',
+          }}
+        >
+          Portfolio
+        </motion.p>
+
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ ...smoothSpring, delay: 0.1 }}
           style={{
-            fontSize: 'clamp(32px, 6vw, 56px)',
-            fontWeight: 600,
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif',
-            color: '#EACEAA',
+            fontSize: 'clamp(28px, 5vw, 48px)',
+            fontWeight: 700,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            color: 'rgba(255, 255, 255, 0.95)',
             marginBottom: '16px',
             letterSpacing: '-0.03em',
-            lineHeight: '1.1',
+            lineHeight: '1.15',
           }}
         >
           {t.portfolio.title}
         </motion.h2>
 
-        {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ ...smoothSpring, delay: 0.2 }}
           style={{
-            fontSize: 'clamp(16px, 2vw, 20px)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
-            color: 'rgba(234, 206, 170, 0.7)',
+            fontSize: 'clamp(15px, 1.8vw, 18px)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            color: 'rgba(255, 255, 255, 0.5)',
             lineHeight: '1.6',
             fontWeight: 400,
           }}
@@ -85,146 +102,222 @@ function PortfolioPreview() {
         </motion.p>
       </div>
 
-      {/* Infinite Marquee Carousel */}
-      <div className={`w-full overflow-hidden ${isMobile ? 'mb-10' : 'mb-16'} relative`} style={{ opacity: 0.3, filter: 'grayscale(60%)', pointerEvents: 'none' }}>
-
-        {/* Gradient Masks for fade effect */}
-        <div className={`absolute left-0 top-0 bottom-0 ${isMobile ? 'w-16' : 'w-32'} z-10 bg-gradient-to-r from-black to-transparent pointer-events-none`} />
-        <div className={`absolute right-0 top-0 bottom-0 ${isMobile ? 'w-16' : 'w-32'} z-10 bg-gradient-to-l from-black to-transparent pointer-events-none`} />
-
-        <motion.div
-          className={`flex ${isMobile ? 'gap-4' : 'gap-6'} w-max`}
-          animate={{
-            x: ["0%", "-25%"], // Move by 25% (since we quadrupled the list, 25% is one full set)
-          }}
-          transition={{
-            x: {
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: 20, // Adjust speed here
-              ease: "linear",
-            },
-          }}
-        >
-          {MARQUEE_CARDS.map((card, index) => (
-            <div
-              key={`${card.id}-${index}`}
-              className="flex-shrink-0 p-5 rounded-2xl cursor-pointer hover:brightness-110 transition-all"
-              style={{
-                width: isMobile ? '200px' : '260px',
-                background: 'linear-gradient(135deg, rgba(234, 206, 170, 0.12) 0%, rgba(234, 206, 170, 0.06) 100%)',
-                backdropFilter: 'blur(20px) saturate(150%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(150%)',
-                border: '1px solid rgba(234, 206, 170, 0.15)',
-                boxShadow: `
-                            0 0 0 1px rgba(234, 206, 170, 0.08) inset,
-                            0 4px 16px rgba(0, 0, 0, 0.2),
-                            0 8px 32px rgba(0, 0, 0, 0.15)
-                        `,
-              }}
-            >
-              {/* Placeholder */}
-              <div
-                className="mb-4 rounded-xl"
-                style={{
-                  height: isMobile ? '90px' : '120px',
-                  background: 'linear-gradient(135deg, rgba(234, 206, 170, 0.08) 0%, rgba(234, 206, 170, 0.04) 100%)',
-                  border: '1px solid rgba(234, 206, 170, 0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: 'rgba(234, 206, 170, 0.35)',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                FLOW
-              </div>
-
-              <h3
-                style={{
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  marginBottom: '8px',
-                  color: 'rgba(234, 206, 170, 0.9)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                }}
-              >
-                {card.title}
-              </h3>
-
-              <div
-                className="inline-block px-3 py-1 rounded-lg"
-                style={{
-                  background: 'rgba(211, 153, 88, 0.2)',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: 'rgba(234, 206, 170, 0.7)',
-                  letterSpacing: '0.05em',
-                }}
-              >
-                {card.tech}
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* CTA Button — DISABLED */}
+      {/* Project Card */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ ...smoothSpring, delay: 0.6 }}
-        className="flex flex-col items-center gap-4"
+        transition={{ ...smoothSpring, delay: 0.3 }}
+        className={`relative ${isMobile ? 'w-full' : ''} cursor-pointer group`}
+        style={{ maxWidth: isMobile ? '100%' : '520px', width: '100%' }}
+        onClick={handleCardClick}
       >
-        <motion.button
-          disabled
-          tabIndex={-1}
-          className="group relative"
+        <div
+          className="relative overflow-hidden rounded-3xl transition-all duration-500 group-hover:scale-[1.01]"
           style={{
-            padding: isMobile ? '14px 28px' : '18px 40px',
-            fontSize: isMobile ? '14px' : '16px',
-            fontWeight: 600,
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-            color: 'rgba(21, 12, 12, 0.3)',
-            background: 'linear-gradient(135deg, rgba(234, 206, 170, 0.3) 0%, rgba(211, 152, 88, 0.3) 100%)',
-            border: 'none',
-            borderRadius: '16px',
-            cursor: 'default',
-            pointerEvents: 'none',
-            boxShadow: 'none',
-            letterSpacing: '-0.01em',
-            filter: 'grayscale(60%)',
-            opacity: 0.35,
+            background: 'rgba(255, 255, 255, 0.04)',
+            backdropFilter: 'blur(40px) saturate(150%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
           }}
         >
-          <span className="relative flex items-center gap-2">
-            {t.portfolio.cta}
-          </span>
-        </motion.button>
+          {/* Integration Icons Grid */}
+          <div
+            className="relative px-6 pt-6 pb-4"
+            style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
+          >
+            <div className={`grid ${isMobile ? 'grid-cols-3 gap-3' : 'grid-cols-6 gap-4'} justify-items-center`}>
+              {INTEGRATIONS.map((item, i) => (
+                <motion.div
+                  key={item.label}
+                  className="flex flex-col items-center gap-1.5"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{
+                    duration: 3 + i * 0.4,
+                    repeat: Infinity,
+                    delay: item.delay,
+                    ease: 'easeInOut',
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-2xl"
+                    style={{
+                      width: isMobile ? '44px' : '48px',
+                      height: isMobile ? '44px' : '48px',
+                      background: `${item.color}15`,
+                      border: `1px solid ${item.color}25`,
+                      boxShadow: `0 2px 12px ${item.color}10`,
+                    }}
+                  >
+                    <item.Icon
+                      size={isMobile ? 20 : 22}
+                      strokeWidth={1.8}
+                      style={{ color: item.color }}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      color: 'rgba(255, 255, 255, 0.35)',
+                      letterSpacing: '0.02em',
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
-        {/* Coming Soon Badge */}
-        <span
-          style={{
-            fontSize: '11px',
-            color: 'rgba(234, 206, 170, 0.5)',
-            fontFamily: '"Courier New", monospace',
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            padding: '6px 14px',
-            border: '1px solid rgba(234, 206, 170, 0.2)',
-            borderRadius: '8px',
-            background: 'rgba(234, 206, 170, 0.05)',
-          }}
-        >
-          [ COMING SOON ]
-        </span>
+          {/* Card Content */}
+          <div className="px-6 py-5">
+            {/* Category + Year */}
+            <div className="flex items-center justify-between mb-3">
+              <span
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
+                style={{
+                  background: 'rgba(211, 152, 88, 0.12)',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#D39858',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)' }} />
+                {project.category}
+              </span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.3)', fontFamily: 'monospace' }}>
+                {project.year}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3
+              style={{
+                fontSize: isMobile ? '22px' : '24px',
+                fontWeight: 700,
+                marginBottom: '8px',
+                color: 'rgba(255, 255, 255, 0.92)',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {project.title}
+            </h3>
+
+            {/* Description */}
+            <p
+              style={{
+                fontSize: '14px',
+                color: 'rgba(255, 255, 255, 0.45)',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                lineHeight: '1.55',
+                marginBottom: '16px',
+              }}
+            >
+              {t.portfolio.cardSubtitle}
+            </p>
+
+            {/* Tech Badges */}
+            <div className="flex flex-wrap gap-1.5">
+              {project.tech.map(tech => (
+                <span
+                  key={tech}
+                  className="px-2.5 py-1 rounded-lg"
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Hover Arrow */}
+          <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+        </div>
       </motion.div>
 
-      <PortfolioModal isOpen={isModalOpen} onClose={() => { /* disabled for basis launch */ }} />
+      {/* CTA Buttons */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ ...smoothSpring, delay: 0.5 }}
+        className={`flex ${isMobile ? 'flex-col w-full' : 'flex-row'} items-center gap-3 mt-8`}
+        style={{ maxWidth: isMobile ? '100%' : '520px', width: '100%' }}
+      >
+        {/* Details Button */}
+        <motion.button
+          onClick={handleCardClick}
+          className="group relative"
+          style={{
+            padding: '14px 32px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            color: 'rgba(255, 255, 255, 0.7)',
+            background: 'rgba(255, 255, 255, 0.06)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '14px',
+            cursor: 'pointer',
+            letterSpacing: '-0.01em',
+            flex: isMobile ? undefined : 1,
+            width: isMobile ? '100%' : undefined,
+          }}
+          whileHover={{ scale: 1.02, background: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.2)' }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {t.portfolio.cta}
+        </motion.button>
+
+        {/* Live Demo Button */}
+        <motion.button
+          onClick={() => router.push('/demo')}
+          className="group relative"
+          style={{
+            padding: '14px 32px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            color: '#fff',
+            background: 'linear-gradient(135deg, #D39858 0%, #B07830 100%)',
+            border: 'none',
+            borderRadius: '14px',
+            cursor: 'pointer',
+            letterSpacing: '-0.01em',
+            flex: isMobile ? undefined : 1,
+            width: isMobile ? '100%' : undefined,
+          }}
+          whileHover={{ scale: 1.02, boxShadow: '0 8px 32px rgba(211, 152, 88, 0.3)' }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <span className="flex items-center justify-center gap-2">
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px rgba(74, 222, 128, 0.6)' }} />
+            {t.portfolio.demoCta}
+          </span>
+        </motion.button>
+      </motion.div>
+
+      <PortfolioModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setInitialProjectId(null); }}
+        initialProjectId={initialProjectId}
+      />
     </section>
   );
 }

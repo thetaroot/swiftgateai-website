@@ -62,15 +62,17 @@ export interface Dictionary {
     portfolio: {
         title: string;
         subtitle: string;
+        cardSubtitle: string;
         cta: string;
+        demoCta: string;
         modal: {
             title: string;
-            searchPlaceholder: string;
             backToOverview: string;
-            visitProject: string;
             noResults: string;
             challenge: string;
             results: string;
+            startDemo: string;
+            liveDemo: string;
         };
         projects: {
             id: number;
@@ -78,18 +80,11 @@ export interface Dictionary {
             category: string;
             tech: string[];
             description: string;
-            details: string[]; // Detailed paragraphs
-            results: string[]; // Bullet points
+            details: string[];
+            results: string[];
             year: string;
+            demoUrl?: string;
         }[];
-        categories: {
-            all: string;
-            automation: string;
-            chatbot: string;
-            integration: string;
-            content: string;
-            analytics: string;
-        };
     };
     chat: {
         placeholder: string;
@@ -147,5 +142,35 @@ export interface Dictionary {
         clipboardBody: string;
         mailError: string;
         mailNoHistory: string;
+    };
+    demo: {
+        title: string;
+        subtitle: string;
+        back: string;
+        tabChat: string;
+        tabActivity: string;
+        inputPlaceholder: string;
+        scenarioEmail: string;
+        scenarioCalendar: string;
+        scenarioTask: string;
+        scenarioCrm: string;
+        scenarioKnowledge: string;
+        pipelineCeo: string;
+        pipelineDelegating: string;
+        activityLog: string;
+        appPreview: string;
+        introTitle: string;
+        introText: string;
+        introDisclaimer: string;
+        introCta: string;
+        agentOverview: string;
+        agentLiveActivity: string;
+        agentCeo: string;
+        agentComms: string;
+        agentCalendar: string;
+        agentTasks: string;
+        agentKnowledge: string;
+        agentSystem: string;
+        crossoverHint: string;
     };
 }

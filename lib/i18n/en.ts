@@ -117,113 +117,42 @@ export const en: Dictionary = {
         ],
     },
     portfolio: {
-        title: 'Active Systems Showcase',
-        subtitle: 'What we build is now, not tomorrow. Autonomous AI systems like these are already operating as active AI employees in the field.',
-        cta: 'View Portfolio',
+        title: 'Our Own System',
+        subtitle: 'This is not a concept. This multi-agent system manages our entire business operations — autonomously, 24/7, on our own EU server.',
+        cardSubtitle: 'Emails, CRM, calendar, tasks and company knowledge — fully managed by AI',
+        cta: 'View Details',
+        demoCta: 'Live Demo',
         modal: {
             title: 'Project Archive',
-            searchPlaceholder: 'Search projects by title, tech stack or description...',
             backToOverview: 'Back to Overview',
-            visitProject: 'Visit Project',
             noResults: 'No projects found.',
-            challenge: 'Challenge & Solution',
-            results: 'Results',
+            challenge: 'Architecture & How It Works',
+            results: 'Results in Production',
+            startDemo: 'Start Live Demo',
+            liveDemo: 'Live Demo available',
         },
         projects: [
             {
                 id: 1,
-                title: 'AI Workflow Automation',
-                category: 'Automation',
-                tech: ['n8n', 'Python', 'OpenAI'],
-                description: 'Automated data processing for e-commerce.',
+                title: 'Our AI Employee',
+                category: 'Production System',
+                tech: ['Python', 'LLM Orchestration', 'Docker', 'FastAPI', 'PostgreSQL', 'Qdrant'],
+                description: 'We use this system ourselves — every day. It reads our emails, maintains our CRM, schedules our meetings and manages our tasks. Fully autonomous on a hardened EU VPS.',
                 details: [
-                    'Implemented end-to-end automation for a leading e-commerce retailer, analyzing incoming order data and automatically transferring it to the ERP system.',
-                    'The system uses AI-powered classification to detect return reasons and proactively inform customer service.'
+                    'A CEO agent orchestrates six specialized agents: Communications (email + CRM), Calendar (iCloud CalDAV), Tasks (Vikunja), Knowledge (RAG vector database), System (server monitoring) and Code (sandboxed execution). Each agent has its own tools and decision logic — the CEO delegates, supervises and reports via Telegram.',
+                    'The system is event-driven: incoming emails automatically trigger a processing chain. The CEO analyzes the content, delegates to the responsible agent, which reads the email, checks the sender in the CRM, retrieves relevant company knowledge from the vector database and prepares a fact-based reply.',
+                    '18 Docker containers on a dedicated VPS in Germany: Moltbot-Core, Worker, Daemon, PostgreSQL, Redis, Qdrant, Twenty CRM, Vikunja, Sandbox-Runner, Nginx, n8n, Prometheus, Grafana, Loki and more. Every service isolated, Redis password-protected, database users separated, code execution without root. TLS everywhere, daily encrypted backups.',
                 ],
                 results: [
-                    '90% reduction in manual data entry',
-                    '24/7 operation with no downtime',
-                    'Error rate reduced by 99%'
+                    'Email triage in under 5 seconds — instead of manual review',
+                    'CRM contacts are automatically created and enriched with company data',
+                    'Intelligent scheduling — conflict detection and automatic optimization',
+                    'Company knowledge semantically searchable in ~50ms via vector database',
                 ],
-                year: '2025'
-            },
-            {
-                id: 2,
-                title: 'Intelligent Support Bot',
-                category: 'Chatbot',
-                tech: ['OpenAI', 'Vector DB', 'React'],
-                description: 'Customer support bot with context memory.',
-                details: [
-                    'A sophisticated chatbot trained on the company\'s entire knowledge base. It understands context, remembers past interactions, and resolves complex support tickets autonomously.',
-                    'By integrating a Vector Database (Pinecone), answers are always precise and hallucination-free.'
-                ],
-                results: [
-                    '60% fewer First-Level-Support tickets',
-                    'Response time reduced from 4h to 2s',
-                    'NPS score increased by 15 points'
-                ],
-                year: '2025'
-            },
-            {
-                id: 3,
-                title: 'CRM Realtime Sync',
-                category: 'Integration',
-                tech: ['Supabase', 'React', 'Edge Functions'],
-                description: 'Real-time synchronization of CRM data.',
-                details: [
-                    'Development of middleware that keeps customer data synchronized between HubSpot, Salesforce, and an internal database in real-time.',
-                    'Conflict resolution happens automatically based on defined "Source of Truth" logic.'
-                ],
-                results: [
-                    'Complete data consistency across all systems',
-                    'Elimination of data silos',
-                    'Real-time dashboard for sales team realized'
-                ],
-                year: '2024'
-            },
-            {
-                id: 4,
-                title: 'SEO Content Engine',
-                category: 'Content',
-                tech: ['GPT-4', 'Next.js', 'Vercel'],
-                description: 'SEO-optimized blog posts at the push of a button.',
-                details: [
-                    'An internal tool for marketing agencies that generates complete, SEO-optimized blog articles based on keywords and competitor analysis.',
-                    'The system integrates current trends and adapts writing style to the brand voice.'
-                ],
-                results: [
-                    'Content output increased 10x',
-                    'Organic traffic +200% in 3 months',
-                    'Editorial costs halved'
-                ],
-                year: '2024'
-            },
-            {
-                id: 5,
-                title: 'Predictive Sales Analytics',
-                category: 'Analytics',
-                tech: ['TensorFlow', 'Python', 'Dashboard'],
-                description: 'Sales volume prediction using ML.',
-                details: [
-                    'Implementation of a Machine Learning model that correlates seasonal trends, marketing spend, and market data to predict sales figures for the coming quarter.',
-                    'The dashboard enables scenario planning ("What happens if we invest budget X?").'
-                ],
-                results: [
-                    'Forecast accuracy of 94%',
-                    'Optimized inventory management (less overstock)',
-                    'Data-driven budget allocation'
-                ],
-                year: '2023'
+                year: '2025–2026',
+                demoUrl: '/demo',
             },
         ],
-        categories: {
-            all: 'All',
-            automation: 'Automation',
-            chatbot: 'Chatbot',
-            integration: 'Integration',
-            content: 'Content',
-            analytics: 'Analytics',
-        },
     },
     chat: {
         placeholder: 'Ask me something...',
@@ -295,5 +224,35 @@ export const en: Dictionary = {
         clipboardBody: 'Please paste the copied text.',
         mailError: 'The email could not be created. Please try again.',
         mailNoHistory: 'Please have a conversation in the chat first.',
+    },
+    demo: {
+        title: 'Live Demo',
+        subtitle: 'Experience the AI employee in action',
+        back: 'Back',
+        tabChat: 'Chat',
+        tabActivity: 'Activity',
+        inputPlaceholder: 'Type a message...',
+        scenarioEmail: 'New Inquiries',
+        scenarioCalendar: 'Weekly Planning',
+        scenarioTask: 'Task Check',
+        scenarioCrm: 'Lead Management',
+        scenarioKnowledge: 'Company Knowledge',
+        pipelineCeo: 'CEO Agent',
+        pipelineDelegating: 'Delegating to',
+        activityLog: 'Activity Log',
+        appPreview: 'Preview',
+        introTitle: 'Welcome to the Live Demo',
+        introText: 'See how an autonomous AI employee handles emails, schedules meetings, manages CRM data, and searches company knowledge — all without manual intervention.',
+        introDisclaimer: 'This is a pre-scripted demo. No real API calls are made and no tokens are consumed.',
+        introCta: 'Start Demo',
+        agentOverview: 'Agent Overview',
+        agentLiveActivity: 'Live Activity',
+        agentCeo: 'CEO Agent',
+        agentComms: 'Communications',
+        agentCalendar: 'Calendar',
+        agentTasks: 'Tasks',
+        agentKnowledge: 'Knowledge',
+        agentSystem: 'System',
+        crossoverHint: 'Tip: Ask about',
     },
 };

@@ -24,7 +24,7 @@ export default function Home() {
   const chatSectionRef = useRef<HTMLElement>(null);
 
   const handleScrollTo = (id: string) => {
-    const targetId = id === 'services' ? 'services-anchor' : id;
+    const targetId = id === 'services' ? 'services-anchor' : id === 'portfolio' ? 'portfolio-anchor' : id;
     const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -357,7 +357,7 @@ export default function Home() {
                 background: 'linear-gradient(to bottom, #EACEAA 0%, #c8a87a 25%, #8b6b45 50%, #3d2a1a 75%, #0A0A0A 100%)',
               }}
             />
-
+            <div id="portfolio-anchor" style={{ scrollMarginTop: '60px' }} />
             <PortfolioPreview />
           </div>
 
