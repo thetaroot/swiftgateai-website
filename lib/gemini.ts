@@ -59,7 +59,7 @@ const API_KEYS = [
     process.env.GEMINI_API_KEY_3,
     process.env.GEMINI_API_KEY_4,
     process.env.GEMINI_API_KEY, // Legacy/Fallback
-].filter((key): key is string => Boolean(key) && !key.startsWith('your-') && !key.startsWith('AIzaSy...'));
+].filter((key): key is string => typeof key === 'string' && key.length > 0 && !key.startsWith('your-') && !key.startsWith('AIzaSy...'));
 
 let currentKeyIndex = 0;
 
