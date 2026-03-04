@@ -15,6 +15,9 @@ export const maxDuration = 30;
 
 const FALLBACK_REPLY = 'SwiftGate AI steht Ihnen für Fragen zu unseren Services gerne zur Verfügung. Kontaktieren Sie uns unter hello@swiftgateai.de.';
 
+const MOLTBOT_API_URL = process.env.MOLTBOT_API_URL;
+const MOLTBOT_PUBLIC_CHAT_TOKEN = process.env.MOLTBOT_PUBLIC_CHAT_TOKEN;
+
 interface ChatMessage {
     role: 'user' | 'model';
     content: string;
@@ -33,6 +36,47 @@ function isValidBody(body: unknown): body is ChatRequestBody {
     if (!Array.isArray(obj.history)) return false;
     if (obj.language !== 'DE' && obj.language !== 'EN') return false;
     return true;
+}
+
+/**
+ * Try VPS backend first (has RAG + key rotation).
+ * Returns the reply string on success, or null on any failure.
+ */
+async function callVPS(
+    message: string,
+    history: ChatMessage[],
+    language: string,
+): Promise<string | null> {
+    if (!MOLTBOT_API_URL || !MOLTBOT_PUBLIC_CHAT_TOKEN) return null;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+
+    try {
+        const res = await fetch(`${MOLTBOT_API_URL}/api/public/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': MOLTBOT_PUBLIC_CHAT_TOKEN,
+            },
+            signal: controller.signal,
+            body: JSON.stringify({ message, history, language }),
+        });
+
+        clearTimeout(timeout);
+
+        if (!res.ok) {
+            console.warn(`[Chat API] VPS returned ${res.status}`);
+            return null;
+        }
+
+        const data = await res.json();
+        return data.reply || null;
+    } catch (error) {
+        clearTimeout(timeout);
+        console.warn('[Chat API] VPS call failed, falling back to Gemini:', error instanceof Error ? error.message : error);
+        return null;
+    }
 }
 
 export async function OPTIONS(request: Request) {
@@ -104,8 +148,18 @@ export async function POST(request: Request) {
             );
         }
 
-        // Build contents array from history
-        const trimmedHistory = history.slice(-10); // Keep last 10 messages for context
+        // === Primary: VPS backend (has RAG + key rotation) ===
+        const vpsReply = await callVPS(sanitized.cleaned, history, language);
+        if (vpsReply) {
+            const reply = validateOutput(vpsReply);
+            return NextResponse.json(
+                { reply },
+                { status: 200, headers: rateLimitHeaders }
+            );
+        }
+
+        // === Fallback: Direct Gemini call ===
+        const trimmedHistory = history.slice(-10);
         const sanitizedHistory: GeminiContent[] = [];
         for (const msg of trimmedHistory) {
             if (msg.role !== 'user' && msg.role !== 'model') continue;
@@ -117,7 +171,6 @@ export async function POST(request: Request) {
             });
         }
 
-        // Ensure contents alternates user/model and starts with user
         const contents: GeminiContent[] = [];
         let expectedRole: 'user' | 'model' = 'user';
         for (const msg of sanitizedHistory) {
@@ -127,17 +180,13 @@ export async function POST(request: Request) {
             }
         }
 
-        // Layer 4: Prompt sandwich — append current message with reinforcement
         const userMessageWithReinforcement = sanitized.cleaned + '\n\n' + CHAT_REINFORCEMENT;
         contents.push({
             role: 'user',
             parts: [{ text: userMessageWithReinforcement }],
         });
 
-        // Call Gemini
         const rawReply = await callGemini(CHAT_SYSTEM_PROMPT, contents);
-
-        // Layer 5: Output validator
         const reply = validateOutput(rawReply);
 
         return NextResponse.json(
