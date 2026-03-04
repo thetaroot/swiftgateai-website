@@ -63,13 +63,6 @@ const API_KEYS = [
 
 let currentKeyIndex = 0;
 
-function getNextKey(): string | null {
-    if (API_KEYS.length === 0) return null;
-    const key = API_KEYS[currentKeyIndex];
-    currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-    return key;
-}
-
 // ── API Client ──
 
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
@@ -85,7 +78,7 @@ export async function callGemini(
         throw new Error('GEMINI_API_KEY not configured');
     }
 
-    let lastError: any = null;
+    let lastError: unknown = null;
 
     for (let attempt = 0; attempt < MAX_RETRIES + 1; attempt++) {
         const apiKey = API_KEYS[currentKeyIndex];
