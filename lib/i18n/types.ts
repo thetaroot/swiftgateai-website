@@ -3,6 +3,7 @@ export interface Dictionary {
         services: string;
         portfolio: string;
         contact: string;
+        architecture: string;
         imprint: string;
         privacy: string;
         scrollHint: string;
@@ -142,6 +143,19 @@ export interface Dictionary {
         clipboardBody: string;
         mailError: string;
         mailNoHistory: string;
+    };
+    architecture: {
+        title: string;
+        subtitle: string;
+        guardrailDesc: string;
+        routerSmart: string;
+        routerEfficient: string;
+        observabilityDesc: string;
+        humanDesc: string;
+        badgeRouting: string;
+        badgePlanning: string;
+        badgeIsolated: string;
+        badgeParallel: string;
     };
     demo: {
         title: string;

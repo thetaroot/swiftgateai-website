@@ -4,6 +4,7 @@ import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ServicesAccordion from './ServicesAccordion';
+import ArchitectureSection from './ArchitectureSection';
 import AboutMeModal from './AboutMeModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
@@ -367,6 +368,9 @@ function WhatIDoSection() {
 
         {/* Spacer for text overflow */}
         <div className={isMobile ? 'h-8' : 'h-16 md:h-24'} style={{ background: '#0A0A0A' }} />
+
+        {/* Architecture Diagram Section */}
+        <ArchitectureSection />
 
         {/* Gradient transition zone with loopy arrow */}
         <div
