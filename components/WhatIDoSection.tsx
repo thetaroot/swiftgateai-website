@@ -220,8 +220,8 @@ function WhatIDoSection() {
             {/* Removed old disjointed SVG connector */}
 
             {/* "KI als Mitarbeiter" Title */}
-            <div id="ai-employee-anchor" style={{ scrollMarginTop: '80px' }} />
             <div className="w-full flex justify-center mt-12 lg:mt-24 mb-12 lg:mb-24 relative z-10">
+              <div id="ai-employee-anchor" style={{ position: 'absolute', top: '-10px', scrollMarginTop: '70px' }} />
               <motion.h3
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -369,89 +369,70 @@ function WhatIDoSection() {
 
         {/* Spacer for text overflow */}
         <div className={isMobile ? 'h-4' : 'h-6 md:h-8'} style={{ background: '#0A0A0A' }} />
-
-        {/* Architecture Diagram Section */}
-        <ArchitectureSection />
-
-        {/* Gradient transition zone with loopy arrow */}
-        <div
-          className="relative w-full"
-          style={{
-            height: isMobile ? 'clamp(200px, 40vw, 350px)' : 'clamp(400px, 60vw, 700px)',
-            background: 'linear-gradient(to bottom, #0A0A0A 0%, #1a1008 12%, #3d2514 26%, #6b3d1e 40%, #9b6235 52%, #c08a52 64%, #d4a56c 75%, #e2be8e 86%, #EACEAA 100%)',
-          }}
-        >
-          {/* Grain texture overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              opacity: 0.12,
-              mixBlendMode: 'overlay',
-              background: 'repeating-conic-gradient(rgba(255,255,255,0.15) 0% 25%, transparent 0% 50%) 0 0 / 3px 3px',
-            }}
-          />
-
-          {/* Arrow Removed as requested */}
-        </div>
       </div>
+
+      {/* Gradient transition: dark → light */}
+      <div
+        className="relative w-full"
+        style={{
+          height: isMobile ? 'clamp(80px, 18vw, 140px)' : 'clamp(120px, 18vw, 220px)',
+          background: 'linear-gradient(to bottom, #0A0A0A 0%, #1a1008 14%, #3d2514 28%, #6b3d1e 42%, #9b6235 56%, #c08a52 70%, #d4a56c 82%, #e2be8e 92%, #EACEAA 100%)',
+        }}
+      />
 
       {/* About Me Modal */}
       <AboutMeModal isOpen={showAboutMe} onClose={() => setShowAboutMe(false)} />
 
-      {/* SERVICES title wrapper - positioned to overlap gradient and light section */}
-      <div className="relative w-full" style={{ marginTop: '-1px' }}>
-        {/* SERVICES text - top portion visible, bottom hidden behind light bg */}
-        <motion.div
-          className="absolute left-0 right-0 flex justify-center pointer-events-none select-none overflow-hidden"
-          style={{
-            top: isMobile ? '-60px' : 'clamp(-450px, -20vw, -200px)',
-            zIndex: 1,
-          }}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <h2
-            style={{
-              fontFamily: '"Space Grotesk", -apple-system, sans-serif',
-              fontSize: isMobile ? 'clamp(60px, 20vw, 100px)' : 'clamp(120px, 22vw, 320px)',
-              fontWeight: 800,
-              color: '#34150F',
-              letterSpacing: '-0.04em',
-              lineHeight: 0.85,
-              textAlign: 'center',
-              opacity: isMobile ? 0.35 : 0.15,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {t.whatIDo.servicesTitle}
-          </h2>
-        </motion.div>
-
-        {/* Light section covers the bottom third of SERVICES */}
+      {/* Light section: Architecture + Services */}
+      <div
+        data-section="light"
+        className="relative w-full"
+        style={{ background: '#EACEAA' }}
+      >
+        {/* Subtle noise texture */}
         <div
-          data-section="light"
-          className="relative w-full"
-          style={{ background: '#EACEAA', zIndex: 2 }}
-        >
-          {/* Detailed Scroll Target for Nav */}
-          <div id="services-anchor" className="absolute -top-24" />
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            opacity: 0.03,
+            mixBlendMode: 'multiply',
+            background: 'repeating-conic-gradient(rgba(0,0,0,0.1) 0% 25%, transparent 0% 50%) 0 0 / 3px 3px',
+          }}
+        />
 
-          {/* Subtle noise for light section */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              opacity: 0.03,
-              mixBlendMode: 'multiply',
-              background: 'repeating-conic-gradient(rgba(0,0,0,0.1) 0% 25%, transparent 0% 50%) 0 0 / 3px 3px',
-            }}
-          />
+        {/* Architecture Diagram Section */}
+        <ArchitectureSection />
 
-          {/* Services Accordion */}
-          <div className="relative">
-            <ServicesAccordion />
-          </div>
+        {/* SERVICES watermark title */}
+        <div className="relative w-full overflow-hidden">
+          <div id="services-anchor" style={{ position: 'absolute', top: '-80px' }} />
+          <motion.div
+            className="flex justify-center pointer-events-none select-none"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <h2
+              style={{
+                fontFamily: '"Space Grotesk", -apple-system, sans-serif',
+                fontSize: isMobile ? 'clamp(60px, 20vw, 100px)' : 'clamp(120px, 22vw, 320px)',
+                fontWeight: 800,
+                color: '#1a0f0a',
+                letterSpacing: '-0.04em',
+                lineHeight: 0.85,
+                textAlign: 'center',
+                opacity: isMobile ? 0.15 : 0.07,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {t.whatIDo.servicesTitle}
+            </h2>
+          </motion.div>
+        </div>
+
+        {/* Services Accordion */}
+        <div className="relative">
+          <ServicesAccordion />
         </div>
       </div>
     </section>

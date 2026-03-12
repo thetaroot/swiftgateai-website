@@ -29,25 +29,26 @@ const TRIGGERS = [
 ];
 
 const AGENTS = [
-  { name: 'Communications', tools: 'Email \u00b7 CRM', icon: Mail, color: '#3B82F6' },
-  { name: 'Calendar', tools: 'CalDAV \u00b7 Scheduling', icon: Calendar, color: '#F59E0B' },
-  { name: 'Tasks', tools: 'Task Management', icon: CheckSquare, color: '#22C55E' },
-  { name: 'Knowledge', tools: 'Vector DB \u00b7 RAG', icon: Database, color: '#EC4899' },
-  { name: 'System', tools: 'Infrastructure \u00b7 Logs', icon: Terminal, color: '#8B5CF6' },
-  { name: 'Code', tools: 'Sandbox \u00b7 Testing', icon: Code2, color: '#F97316' },
+  { name: 'Communications', tools: 'Email \u00b7 CRM', icon: Mail, color: '#2563EB' },
+  { name: 'Calendar', tools: 'CalDAV \u00b7 Scheduling', icon: Calendar, color: '#D97706' },
+  { name: 'Tasks', tools: 'Task Management', icon: CheckSquare, color: '#16A34A' },
+  { name: 'Knowledge', tools: 'Vector DB \u00b7 RAG', icon: Database, color: '#DB2777' },
+  { name: 'System', tools: 'Infrastructure \u00b7 Logs', icon: Terminal, color: '#7C3AED' },
+  { name: 'Code', tools: 'Sandbox \u00b7 Testing', icon: Code2, color: '#EA580C' },
 ];
 
-// ── Shared Styles ──
+// ── Shared Styles (light theme) ──
 
 const glassCard: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.03)',
-  backdropFilter: 'blur(20px)',
-  WebkitBackdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.06)',
+  background: 'rgba(255, 255, 255, 0.45)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(52, 21, 15, 0.08)',
+  boxShadow: '0 2px 12px rgba(52, 21, 15, 0.06)',
 };
 
-const sfFont = '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif';
-const sfDisplay = '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
+const sfFont = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif';
+const sfDisplay = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif';
 
 // ── Sub-Components ──
 
@@ -61,7 +62,7 @@ const Connector = ({ height = 28 }: { height?: number }) => (
       style={{
         width: '2px',
         height: '100%',
-        background: 'linear-gradient(to bottom, rgba(211,152,88,0.5), rgba(211,152,88,0.08))',
+        background: 'linear-gradient(to bottom, #D39858, rgba(211,152,88,0.2))',
         transformOrigin: 'top',
       }}
     />
@@ -72,18 +73,18 @@ const FeatureBadge = ({ icon: Icon, label }: { icon: React.ElementType; label: s
   <motion.div
     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
     style={{
-      background: 'rgba(211,152,88,0.06)',
-      border: '1px solid rgba(211,152,88,0.12)',
+      background: 'rgba(211,152,88,0.1)',
+      border: '1px solid rgba(211,152,88,0.2)',
     }}
-    whileHover={{ scale: 1.05, borderColor: 'rgba(211,152,88,0.3)' }}
+    whileHover={{ scale: 1.05, borderColor: 'rgba(211,152,88,0.4)' }}
     transition={{ duration: 0.2 }}
   >
-    <Icon size={11} color="#D39858" strokeWidth={2.5} />
+    <Icon size={11} color="#9A6B3A" strokeWidth={2.5} />
     <span
       style={{
         fontSize: '11px',
         fontWeight: 600,
-        color: '#D39858',
+        color: '#7A5025',
         letterSpacing: '0.02em',
         fontFamily: sfFont,
       }}
@@ -100,21 +101,13 @@ function ArchitectureSection() {
   const isMobile = useMobile();
 
   return (
-    <div className="relative w-full" style={{ background: '#0A0A0A' }}>
+    <div className="relative w-full">
       <div id="architecture-anchor" style={{ position: 'absolute', top: '-80px' }} />
 
       <div
         className={`relative mx-auto ${isMobile ? 'px-5 py-16' : 'px-6 py-20 md:py-28'}`}
-        style={{ maxWidth: '860px' }}
+        style={{ maxWidth: '900px' }}
       >
-        {/* Subtle glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 30%, rgba(211,152,88,0.04) 0%, transparent 60%)',
-          }}
-        />
-
         {/* ── Header ── */}
         <div className="text-center mb-14 relative z-10">
           <motion.p
@@ -126,7 +119,7 @@ function ArchitectureSection() {
               fontSize: '13px',
               fontWeight: 700,
               fontFamily: sfFont,
-              color: '#D39858',
+              color: '#9A6B3A',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               marginBottom: '16px',
@@ -144,7 +137,7 @@ function ArchitectureSection() {
               fontSize: 'clamp(26px, 5vw, 44px)',
               fontWeight: 700,
               fontFamily: sfDisplay,
-              color: 'rgba(255,255,255,0.95)',
+              color: '#1a0f0a',
               marginBottom: '16px',
               letterSpacing: '-0.03em',
               lineHeight: '1.15',
@@ -161,7 +154,7 @@ function ArchitectureSection() {
             style={{
               fontSize: 'clamp(14px, 1.8vw, 17px)',
               fontFamily: sfFont,
-              color: 'rgba(255,255,255,0.45)',
+              color: 'rgba(52, 21, 15, 0.55)',
               lineHeight: '1.6',
               maxWidth: '540px',
               margin: '0 auto',
@@ -193,25 +186,26 @@ function ArchitectureSection() {
               >
                 <motion.div
                   style={{
-                    width: isMobile ? '38px' : '42px',
-                    height: isMobile ? '38px' : '42px',
+                    width: isMobile ? '38px' : '44px',
+                    height: isMobile ? '38px' : '44px',
                     borderRadius: '12px',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.5)',
+                    border: '1px solid rgba(52, 21, 15, 0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(52, 21, 15, 0.06)',
                   }}
                   whileHover={{
                     scale: 1.12,
-                    borderColor: 'rgba(211,152,88,0.3)',
-                    background: 'rgba(211,152,88,0.08)',
+                    borderColor: 'rgba(211,152,88,0.4)',
+                    boxShadow: '0 4px 16px rgba(211, 152, 88, 0.15)',
                   }}
                   transition={{ duration: 0.2 }}
                 >
                   <trigger.icon
                     size={isMobile ? 16 : 18}
-                    color="rgba(255,255,255,0.5)"
+                    color="#4a3020"
                     strokeWidth={1.8}
                   />
                 </motion.div>
@@ -219,7 +213,7 @@ function ArchitectureSection() {
                   style={{
                     fontSize: '10px',
                     fontWeight: 600,
-                    color: 'rgba(255,255,255,0.3)',
+                    color: 'rgba(52, 21, 15, 0.5)',
                     letterSpacing: '0.03em',
                     fontFamily: sfFont,
                   }}
@@ -246,12 +240,12 @@ function ArchitectureSection() {
               maxWidth: '520px',
             }}
           >
-            <Shield size={15} color="#D39858" strokeWidth={2} />
+            <Shield size={15} color="#9A6B3A" strokeWidth={2} />
             <span
               style={{
                 fontSize: '12px',
                 fontWeight: 700,
-                color: 'rgba(255,255,255,0.7)',
+                color: '#34150F',
                 fontFamily: sfFont,
               }}
             >
@@ -259,13 +253,13 @@ function ArchitectureSection() {
             </span>
             <span
               className="hidden sm:inline"
-              style={{ color: 'rgba(255,255,255,0.12)', margin: '0 4px' }}
+              style={{ color: 'rgba(52, 21, 15, 0.15)', margin: '0 4px' }}
             >
               &mdash;
             </span>
             <span
               className="hidden sm:inline"
-              style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontFamily: sfFont }}
+              style={{ fontSize: '11px', color: 'rgba(52, 21, 15, 0.45)', fontFamily: sfFont }}
             >
               {t.architecture.guardrailDesc}
             </span>
@@ -282,16 +276,17 @@ function ArchitectureSection() {
             className="w-full"
             style={{
               ...glassCard,
-              borderColor: 'rgba(211,152,88,0.12)',
+              background: 'rgba(255, 255, 255, 0.5)',
+              borderColor: 'rgba(211,152,88,0.2)',
               borderRadius: '24px',
               padding: isMobile ? '20px 16px' : '28px 32px',
-              maxWidth: '680px',
+              maxWidth: '720px',
               margin: '0 auto',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
-            {/* Animated golden accent line at top */}
+            {/* Golden accent line at top */}
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -303,8 +298,8 @@ function ArchitectureSection() {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: '60%',
-                height: '1px',
-                background: 'linear-gradient(90deg, transparent, rgba(211,152,88,0.4), transparent)',
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent, rgba(211,152,88,0.5), transparent)',
               }}
             />
 
@@ -317,22 +312,23 @@ function ArchitectureSection() {
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(255,255,255,0.5)',
+                  border: '1px solid rgba(52, 21, 15, 0.08)',
                   borderRadius: '16px',
                   padding: isMobile ? '14px 12px' : '16px 16px',
                   textAlign: 'center',
                   width: isMobile ? '100%' : undefined,
+                  boxShadow: '0 1px 6px rgba(52, 21, 15, 0.04)',
                 }}
                 whileHover={{
-                  borderColor: 'rgba(255,255,255,0.15)',
-                  background: 'rgba(255,255,255,0.05)',
+                  borderColor: 'rgba(211,152,88,0.3)',
+                  boxShadow: '0 4px 16px rgba(211, 152, 88, 0.1)',
                 }}
                 transition={{ duration: 0.2 }}
               >
                 <GitBranch
                   size={20}
-                  color="rgba(255,255,255,0.6)"
+                  color="#4a3020"
                   strokeWidth={1.8}
                   style={{ margin: '0 auto' }}
                 />
@@ -340,21 +336,21 @@ function ArchitectureSection() {
                   style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.85)',
+                    color: '#1a0f0a',
                     marginTop: '8px',
                     fontFamily: sfFont,
                   }}
                 >
                   Hybrid Planner
                 </div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(52, 21, 15, 0.45)', marginTop: '2px' }}>
                   DAG + ReAct
                 </div>
               </motion.div>
 
               {/* Connector */}
               {isMobile ? (
-                <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.3)' }} />
+                <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.4)' }} />
               ) : (
                 <motion.div
                   initial={{ scaleX: 0 }}
@@ -364,7 +360,7 @@ function ArchitectureSection() {
                   style={{
                     width: '20px',
                     height: '2px',
-                    background: 'rgba(211,152,88,0.3)',
+                    background: 'rgba(211,152,88,0.4)',
                     flexShrink: 0,
                   }}
                 />
@@ -375,8 +371,8 @@ function ArchitectureSection() {
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  background: 'rgba(211,152,88,0.08)',
-                  border: '1px solid rgba(211,152,88,0.2)',
+                  background: 'rgba(211,152,88,0.12)',
+                  border: '1.5px solid rgba(211,152,88,0.3)',
                   borderRadius: '16px',
                   padding: isMobile ? '14px 12px' : '16px 16px',
                   textAlign: 'center',
@@ -384,9 +380,9 @@ function ArchitectureSection() {
                 }}
                 animate={{
                   boxShadow: [
-                    '0 0 20px rgba(211,152,88,0.06)',
-                    '0 0 35px rgba(211,152,88,0.12)',
-                    '0 0 20px rgba(211,152,88,0.06)',
+                    '0 0 12px rgba(211,152,88,0.08)',
+                    '0 0 24px rgba(211,152,88,0.18)',
+                    '0 0 12px rgba(211,152,88,0.08)',
                   ],
                 }}
                 transition={{
@@ -395,13 +391,13 @@ function ArchitectureSection() {
                   ease: 'easeInOut',
                 }}
                 whileHover={{
-                  borderColor: 'rgba(211,152,88,0.4)',
-                  background: 'rgba(211,152,88,0.12)',
+                  borderColor: 'rgba(211,152,88,0.5)',
+                  background: 'rgba(211,152,88,0.18)',
                 }}
               >
                 <Brain
                   size={22}
-                  color="#D39858"
+                  color="#9A6B3A"
                   strokeWidth={1.8}
                   style={{ margin: '0 auto' }}
                 />
@@ -409,21 +405,21 @@ function ArchitectureSection() {
                   style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: '#D39858',
+                    color: '#7A5025',
                     marginTop: '8px',
                     fontFamily: sfFont,
                   }}
                 >
                   Orchestrator
                 </div>
-                <div style={{ fontSize: '11px', color: 'rgba(211,152,88,0.6)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(122, 80, 37, 0.7)', marginTop: '2px' }}>
                   Coordinator
                 </div>
               </motion.div>
 
               {/* Connector */}
               {isMobile ? (
-                <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.3)' }} />
+                <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.4)' }} />
               ) : (
                 <motion.div
                   initial={{ scaleX: 0 }}
@@ -433,7 +429,7 @@ function ArchitectureSection() {
                   style={{
                     width: '20px',
                     height: '2px',
-                    background: 'rgba(211,152,88,0.3)',
+                    background: 'rgba(211,152,88,0.4)',
                     flexShrink: 0,
                   }}
                 />
@@ -444,22 +440,23 @@ function ArchitectureSection() {
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(255,255,255,0.5)',
+                  border: '1px solid rgba(52, 21, 15, 0.08)',
                   borderRadius: '16px',
                   padding: isMobile ? '14px 12px' : '16px 16px',
                   textAlign: 'center',
                   width: isMobile ? '100%' : undefined,
+                  boxShadow: '0 1px 6px rgba(52, 21, 15, 0.04)',
                 }}
                 whileHover={{
-                  borderColor: 'rgba(255,255,255,0.15)',
-                  background: 'rgba(255,255,255,0.05)',
+                  borderColor: 'rgba(211,152,88,0.3)',
+                  boxShadow: '0 4px 16px rgba(211, 152, 88, 0.1)',
                 }}
                 transition={{ duration: 0.2 }}
               >
                 <ShieldCheck
                   size={20}
-                  color="rgba(255,255,255,0.6)"
+                  color="#4a3020"
                   strokeWidth={1.8}
                   style={{ margin: '0 auto' }}
                 />
@@ -467,14 +464,14 @@ function ArchitectureSection() {
                   style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.85)',
+                    color: '#1a0f0a',
                     marginTop: '8px',
                     fontFamily: sfFont,
                   }}
                 >
                   Critic & Validator
                 </div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(52, 21, 15, 0.45)', marginTop: '2px' }}>
                   Quality Gate
                 </div>
               </motion.div>
@@ -492,12 +489,12 @@ function ArchitectureSection() {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
               >
-                <RefreshCw size={12} color="rgba(211,152,88,0.5)" strokeWidth={2} />
+                <RefreshCw size={12} color="rgba(154, 107, 58, 0.6)" strokeWidth={2} />
               </motion.div>
               <span
                 style={{
                   fontSize: '11px',
-                  color: 'rgba(255,255,255,0.3)',
+                  color: 'rgba(52, 21, 15, 0.4)',
                   fontFamily: '"Courier New", monospace',
                   letterSpacing: '0.03em',
                 }}
@@ -510,14 +507,14 @@ function ArchitectureSection() {
             <motion.div
               className="mt-4"
               style={{
-                background: 'rgba(211,152,88,0.05)',
-                border: '1px solid rgba(211,152,88,0.1)',
+                background: 'rgba(211,152,88,0.08)',
+                border: '1px solid rgba(211,152,88,0.18)',
                 borderRadius: '12px',
                 padding: isMobile ? '10px 14px' : '11px 20px',
               }}
               whileHover={{
-                borderColor: 'rgba(211,152,88,0.25)',
-                background: 'rgba(211,152,88,0.08)',
+                borderColor: 'rgba(211,152,88,0.35)',
+                background: 'rgba(211,152,88,0.12)',
               }}
               transition={{ duration: 0.2 }}
             >
@@ -525,12 +522,12 @@ function ArchitectureSection() {
                 className={`flex ${isMobile ? 'flex-col gap-2' : 'items-center justify-center gap-5'}`}
               >
                 <div className="flex items-center gap-2">
-                  <Route size={13} color="#D39858" strokeWidth={2} />
+                  <Route size={13} color="#9A6B3A" strokeWidth={2} />
                   <span
                     style={{
                       fontSize: '12px',
                       fontWeight: 700,
-                      color: 'rgba(255,255,255,0.65)',
+                      color: '#34150F',
                       fontFamily: sfFont,
                     }}
                   >
@@ -540,13 +537,13 @@ function ArchitectureSection() {
                 <div
                   className={`flex ${isMobile ? 'flex-col gap-1' : 'items-center gap-4'}`}
                 >
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+                  <span style={{ fontSize: '11px', color: 'rgba(52, 21, 15, 0.5)' }}>
                     {t.architecture.routerSmart}
                   </span>
                   {!isMobile && (
-                    <span style={{ color: 'rgba(255,255,255,0.12)' }}>|</span>
+                    <span style={{ color: 'rgba(52, 21, 15, 0.15)' }}>|</span>
                   )}
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+                  <span style={{ fontSize: '11px', color: 'rgba(52, 21, 15, 0.5)' }}>
                     {t.architecture.routerEfficient}
                   </span>
                 </div>
@@ -568,10 +565,10 @@ function ArchitectureSection() {
 
           <Connector />
 
-          {/* TIER 4: Agent Grid */}
+          {/* TIER 4: Agent Grid — 3 columns for readable labels */}
           <div
-            className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 md:grid-cols-6'} gap-3 w-full`}
-            style={{ maxWidth: '680px' }}
+            className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-3 w-full`}
+            style={{ maxWidth: '720px' }}
           >
             {AGENTS.map((agent, idx) => (
               <motion.div
@@ -583,14 +580,16 @@ function ArchitectureSection() {
                 className="group relative overflow-hidden"
                 style={{
                   ...glassCard,
-                  borderColor: `${agent.color}15`,
+                  background: 'rgba(255, 255, 255, 0.5)',
+                  borderColor: `${agent.color}20`,
                   borderRadius: '16px',
-                  padding: isMobile ? '16px 10px' : '18px 12px',
+                  padding: isMobile ? '16px 10px' : '18px 14px',
                   textAlign: 'center',
                 }}
                 whileHover={{
                   y: -4,
-                  borderColor: `${agent.color}40`,
+                  borderColor: `${agent.color}50`,
+                  boxShadow: `0 8px 24px ${agent.color}15`,
                   transition: { duration: 0.2 },
                 }}
               >
@@ -602,8 +601,8 @@ function ArchitectureSection() {
                     left: '50%',
                     transform: 'translateX(-50%)',
                     width: '50%',
-                    height: '1px',
-                    background: `linear-gradient(90deg, transparent, ${agent.color}30, transparent)`,
+                    height: '2px',
+                    background: `linear-gradient(90deg, transparent, ${agent.color}50, transparent)`,
                   }}
                 />
 
@@ -612,8 +611,8 @@ function ArchitectureSection() {
                     width: isMobile ? '36px' : '40px',
                     height: isMobile ? '36px' : '40px',
                     borderRadius: '11px',
-                    background: `${agent.color}10`,
-                    border: `1px solid ${agent.color}18`,
+                    background: `${agent.color}12`,
+                    border: `1px solid ${agent.color}25`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -631,9 +630,9 @@ function ArchitectureSection() {
 
                 <div
                   style={{
-                    fontSize: isMobile ? '11px' : '12px',
+                    fontSize: isMobile ? '11px' : '13px',
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.85)',
+                    color: '#1a0f0a',
                     fontFamily: sfFont,
                     marginBottom: '3px',
                     lineHeight: '1.2',
@@ -644,8 +643,8 @@ function ArchitectureSection() {
 
                 <div
                   style={{
-                    fontSize: '9px',
-                    color: 'rgba(255,255,255,0.3)',
+                    fontSize: '10px',
+                    color: 'rgba(52, 21, 15, 0.4)',
                     fontFamily: '"Courier New", monospace',
                     letterSpacing: '0.02em',
                   }}
@@ -683,22 +682,23 @@ function ArchitectureSection() {
             <motion.div
               style={{
                 ...glassCard,
+                background: 'rgba(255, 255, 255, 0.45)',
                 borderRadius: '14px',
                 padding: '14px 16px',
               }}
               whileHover={{
-                borderColor: 'rgba(255,255,255,0.15)',
-                background: 'rgba(255,255,255,0.05)',
+                borderColor: 'rgba(52, 21, 15, 0.15)',
+                boxShadow: '0 4px 16px rgba(52, 21, 15, 0.08)',
               }}
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <Eye size={14} color="rgba(255,255,255,0.5)" strokeWidth={2} />
+                <Eye size={14} color="#4a3020" strokeWidth={2} />
                 <span
                   style={{
                     fontSize: '12px',
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.7)',
+                    color: '#34150F',
                     fontFamily: sfFont,
                   }}
                 >
@@ -708,7 +708,7 @@ function ArchitectureSection() {
               <span
                 style={{
                   fontSize: '11px',
-                  color: 'rgba(255,255,255,0.3)',
+                  color: 'rgba(52, 21, 15, 0.5)',
                   fontFamily: sfFont,
                 }}
               >
@@ -720,22 +720,23 @@ function ArchitectureSection() {
             <motion.div
               style={{
                 ...glassCard,
+                background: 'rgba(255, 255, 255, 0.45)',
                 borderRadius: '14px',
                 padding: '14px 16px',
               }}
               whileHover={{
-                borderColor: 'rgba(255,255,255,0.15)',
-                background: 'rgba(255,255,255,0.05)',
+                borderColor: 'rgba(52, 21, 15, 0.15)',
+                boxShadow: '0 4px 16px rgba(52, 21, 15, 0.08)',
               }}
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <UserCheck size={14} color="rgba(255,255,255,0.5)" strokeWidth={2} />
+                <UserCheck size={14} color="#4a3020" strokeWidth={2} />
                 <span
                   style={{
                     fontSize: '12px',
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.7)',
+                    color: '#34150F',
                     fontFamily: sfFont,
                   }}
                 >
@@ -745,7 +746,7 @@ function ArchitectureSection() {
               <span
                 style={{
                   fontSize: '11px',
-                  color: 'rgba(255,255,255,0.3)',
+                  color: 'rgba(52, 21, 15, 0.5)',
                   fontFamily: sfFont,
                 }}
               >
