@@ -185,6 +185,11 @@ export interface Dictionary {
         agentTasks: string;
         agentKnowledge: string;
         agentSystem: string;
+        appInbox: string;
+        appCalendar: string;
+        appCrm: string;
+        appTasks: string;
+        appKnowledge: string;
         crossoverHint: string;
     };
 }
