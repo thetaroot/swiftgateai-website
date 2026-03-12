@@ -52,23 +52,31 @@ const sfDisplay = '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-ser
 // ── Sub-Components ──
 
 const Connector = ({ height = 28 }: { height?: number }) => (
-  <div
-    style={{
-      width: '2px',
-      height: `${height}px`,
-      background: 'linear-gradient(to bottom, rgba(211,152,88,0.5), rgba(211,152,88,0.08))',
-      flexShrink: 0,
-    }}
-  />
+  <div className="flex flex-col items-center" style={{ height: `${height}px`, position: 'relative' }}>
+    <motion.div
+      initial={{ scaleY: 0 }}
+      whileInView={{ scaleY: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        width: '2px',
+        height: '100%',
+        background: 'linear-gradient(to bottom, rgba(211,152,88,0.5), rgba(211,152,88,0.08))',
+        transformOrigin: 'top',
+      }}
+    />
+  </div>
 );
 
 const FeatureBadge = ({ icon: Icon, label }: { icon: React.ElementType; label: string }) => (
-  <div
+  <motion.div
     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
     style={{
       background: 'rgba(211,152,88,0.06)',
       border: '1px solid rgba(211,152,88,0.12)',
     }}
+    whileHover={{ scale: 1.05, borderColor: 'rgba(211,152,88,0.3)' }}
+    transition={{ duration: 0.2 }}
   >
     <Icon size={11} color="#D39858" strokeWidth={2.5} />
     <span
@@ -82,7 +90,7 @@ const FeatureBadge = ({ icon: Icon, label }: { icon: React.ElementType; label: s
     >
       {label}
     </span>
-  </div>
+  </motion.div>
 );
 
 // ── Main Component ──
@@ -96,7 +104,7 @@ function ArchitectureSection() {
       <div id="architecture-anchor" style={{ position: 'absolute', top: '-80px' }} />
 
       <div
-        className={`relative mx-auto ${isMobile ? 'px-5 py-20' : 'px-6 py-28 md:py-36'}`}
+        className={`relative mx-auto ${isMobile ? 'px-5 py-16' : 'px-6 py-20 md:py-28'}`}
         style={{ maxWidth: '860px' }}
       >
         {/* Subtle glow */}
@@ -108,7 +116,7 @@ function ArchitectureSection() {
         />
 
         {/* ── Header ── */}
-        <div className="text-center mb-16 relative z-10">
+        <div className="text-center mb-14 relative z-10">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -174,9 +182,16 @@ function ArchitectureSection() {
             transition={{ ...smoothSpring, delay: 0.2 }}
             className="flex items-center justify-center gap-4 flex-wrap"
           >
-            {TRIGGERS.map((trigger) => (
-              <div key={trigger.label} className="flex flex-col items-center gap-1.5">
-                <div
+            {TRIGGERS.map((trigger, idx) => (
+              <motion.div
+                key={trigger.label}
+                className="flex flex-col items-center gap-1.5"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ ...smoothSpring, delay: 0.2 + idx * 0.08 }}
+              >
+                <motion.div
                   style={{
                     width: isMobile ? '38px' : '42px',
                     height: isMobile ? '38px' : '42px',
@@ -187,13 +202,19 @@ function ArchitectureSection() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
+                  whileHover={{
+                    scale: 1.12,
+                    borderColor: 'rgba(211,152,88,0.3)',
+                    background: 'rgba(211,152,88,0.08)',
+                  }}
+                  transition={{ duration: 0.2 }}
                 >
                   <trigger.icon
                     size={isMobile ? 16 : 18}
                     color="rgba(255,255,255,0.5)"
                     strokeWidth={1.8}
                   />
-                </div>
+                </motion.div>
                 <span
                   style={{
                     fontSize: '10px',
@@ -205,7 +226,7 @@ function ArchitectureSection() {
                 >
                   {trigger.label}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
@@ -213,8 +234,8 @@ function ArchitectureSection() {
 
           {/* TIER 2: Guardrails */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true }}
             transition={{ ...smoothSpring, delay: 0.25 }}
             className={`flex items-center justify-center ${isMobile ? 'gap-2' : 'gap-3'} w-full`}
@@ -270,8 +291,12 @@ function ArchitectureSection() {
               overflow: 'hidden',
             }}
           >
-            {/* Golden accent line at top */}
-            <div
+            {/* Animated golden accent line at top */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -288,7 +313,7 @@ function ArchitectureSection() {
               className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center justify-center gap-3`}
             >
               {/* Planner */}
-              <div
+              <motion.div
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -299,6 +324,11 @@ function ArchitectureSection() {
                   textAlign: 'center',
                   width: isMobile ? '100%' : undefined,
                 }}
+                whileHover={{
+                  borderColor: 'rgba(255,255,255,0.15)',
+                  background: 'rgba(255,255,255,0.05)',
+                }}
+                transition={{ duration: 0.2 }}
               >
                 <GitBranch
                   size={20}
@@ -320,13 +350,17 @@ function ArchitectureSection() {
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
                   DAG + ReAct
                 </div>
-              </div>
+              </motion.div>
 
               {/* Connector */}
               {isMobile ? (
                 <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.3)' }} />
               ) : (
-                <div
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.5 }}
                   style={{
                     width: '20px',
                     height: '2px',
@@ -336,8 +370,8 @@ function ArchitectureSection() {
                 />
               )}
 
-              {/* Orchestrator (accent node) */}
-              <div
+              {/* Orchestrator (accent node) — pulsing glow */}
+              <motion.div
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -346,8 +380,23 @@ function ArchitectureSection() {
                   borderRadius: '16px',
                   padding: isMobile ? '14px 12px' : '16px 16px',
                   textAlign: 'center',
-                  boxShadow: '0 0 30px rgba(211,152,88,0.08)',
                   width: isMobile ? '100%' : undefined,
+                }}
+                animate={{
+                  boxShadow: [
+                    '0 0 20px rgba(211,152,88,0.06)',
+                    '0 0 35px rgba(211,152,88,0.12)',
+                    '0 0 20px rgba(211,152,88,0.06)',
+                  ],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                whileHover={{
+                  borderColor: 'rgba(211,152,88,0.4)',
+                  background: 'rgba(211,152,88,0.12)',
                 }}
               >
                 <Brain
@@ -370,13 +419,17 @@ function ArchitectureSection() {
                 <div style={{ fontSize: '11px', color: 'rgba(211,152,88,0.6)', marginTop: '2px' }}>
                   Coordinator
                 </div>
-              </div>
+              </motion.div>
 
               {/* Connector */}
               {isMobile ? (
                 <div style={{ width: '2px', height: '12px', background: 'rgba(211,152,88,0.3)' }} />
               ) : (
-                <div
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.5 }}
                   style={{
                     width: '20px',
                     height: '2px',
@@ -387,7 +440,7 @@ function ArchitectureSection() {
               )}
 
               {/* Critic */}
-              <div
+              <motion.div
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -398,6 +451,11 @@ function ArchitectureSection() {
                   textAlign: 'center',
                   width: isMobile ? '100%' : undefined,
                 }}
+                whileHover={{
+                  borderColor: 'rgba(255,255,255,0.15)',
+                  background: 'rgba(255,255,255,0.05)',
+                }}
+                transition={{ duration: 0.2 }}
               >
                 <ShieldCheck
                   size={20}
@@ -419,12 +477,23 @@ function ArchitectureSection() {
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
                   Quality Gate
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Feedback loop indicator */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <RefreshCw size={12} color="rgba(211,152,88,0.5)" strokeWidth={2} />
+            <motion.div
+              className="flex items-center justify-center gap-2 mt-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              >
+                <RefreshCw size={12} color="rgba(211,152,88,0.5)" strokeWidth={2} />
+              </motion.div>
               <span
                 style={{
                   fontSize: '11px',
@@ -435,10 +504,10 @@ function ArchitectureSection() {
               >
                 Feedback & Replanning Loop
               </span>
-            </div>
+            </motion.div>
 
             {/* Routing Controller */}
-            <div
+            <motion.div
               className="mt-4"
               style={{
                 background: 'rgba(211,152,88,0.05)',
@@ -446,6 +515,11 @@ function ArchitectureSection() {
                 borderRadius: '12px',
                 padding: isMobile ? '10px 14px' : '11px 20px',
               }}
+              whileHover={{
+                borderColor: 'rgba(211,152,88,0.25)',
+                background: 'rgba(211,152,88,0.08)',
+              }}
+              transition={{ duration: 0.2 }}
             >
               <div
                 className={`flex ${isMobile ? 'flex-col gap-2' : 'items-center justify-center gap-5'}`}
@@ -477,7 +551,7 @@ function ArchitectureSection() {
                   </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Feature badges: orchestration */}
@@ -495,24 +569,29 @@ function ArchitectureSection() {
           <Connector />
 
           {/* TIER 4: Agent Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ ...smoothSpring, delay: 0.4 }}
+          <div
             className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 md:grid-cols-6'} gap-3 w-full`}
             style={{ maxWidth: '680px' }}
           >
-            {AGENTS.map((agent) => (
-              <div
+            {AGENTS.map((agent, idx) => (
+              <motion.div
                 key={agent.name}
-                className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
+                initial={{ opacity: 0, y: 25, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ ...smoothSpring, delay: 0.35 + idx * 0.07 }}
+                className="group relative overflow-hidden"
                 style={{
                   ...glassCard,
                   borderColor: `${agent.color}15`,
                   borderRadius: '16px',
                   padding: isMobile ? '16px 10px' : '18px 12px',
                   textAlign: 'center',
+                }}
+                whileHover={{
+                  y: -4,
+                  borderColor: `${agent.color}40`,
+                  transition: { duration: 0.2 },
                 }}
               >
                 {/* Colored accent at top */}
@@ -528,7 +607,7 @@ function ArchitectureSection() {
                   }}
                 />
 
-                <div
+                <motion.div
                   style={{
                     width: isMobile ? '36px' : '40px',
                     height: isMobile ? '36px' : '40px',
@@ -540,13 +619,15 @@ function ArchitectureSection() {
                     justifyContent: 'center',
                     margin: '0 auto 8px',
                   }}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <agent.icon
                     size={isMobile ? 17 : 19}
                     color={agent.color}
                     strokeWidth={1.8}
                   />
-                </div>
+                </motion.div>
 
                 <div
                   style={{
@@ -571,9 +652,9 @@ function ArchitectureSection() {
                 >
                   {agent.tools}
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </motion.div>
+          </div>
 
           {/* Feature badges: agents */}
           <motion.div
@@ -599,12 +680,17 @@ function ArchitectureSection() {
             style={{ maxWidth: '520px' }}
           >
             {/* Observability */}
-            <div
+            <motion.div
               style={{
                 ...glassCard,
                 borderRadius: '14px',
                 padding: '14px 16px',
               }}
+              whileHover={{
+                borderColor: 'rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.05)',
+              }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-1.5">
                 <Eye size={14} color="rgba(255,255,255,0.5)" strokeWidth={2} />
@@ -628,15 +714,20 @@ function ArchitectureSection() {
               >
                 {t.architecture.observabilityDesc}
               </span>
-            </div>
+            </motion.div>
 
             {/* Human-in-the-Loop */}
-            <div
+            <motion.div
               style={{
                 ...glassCard,
                 borderRadius: '14px',
                 padding: '14px 16px',
               }}
+              whileHover={{
+                borderColor: 'rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.05)',
+              }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-1.5">
                 <UserCheck size={14} color="rgba(255,255,255,0.5)" strokeWidth={2} />
@@ -660,7 +751,7 @@ function ArchitectureSection() {
               >
                 {t.architecture.humanDesc}
               </span>
-            </div>
+            </motion.div>
           </motion.div>
 
         </div>

@@ -220,6 +220,7 @@ function WhatIDoSection() {
             {/* Removed old disjointed SVG connector */}
 
             {/* "KI als Mitarbeiter" Title */}
+            <div id="ai-employee-anchor" style={{ scrollMarginTop: '80px' }} />
             <div className="w-full flex justify-center mt-12 lg:mt-24 mb-12 lg:mb-24 relative z-10">
               <motion.h3
                 initial={{ opacity: 0, y: 20 }}
@@ -242,7 +243,7 @@ function WhatIDoSection() {
           </div>
 
           {/* TIMELINE GRID SECTION */}
-          <div className="relative w-full pt-8 pb-20 px-4 md:px-0">
+          <div className="relative w-full pt-8 pb-8 px-4 md:px-0">
             {/* Desktop 3-Column Grid */}
             {!isMobile && (
               <div className="grid grid-cols-[1fr_80px_1fr] w-full max-w-[1200px] mx-auto gap-0">
@@ -367,7 +368,7 @@ function WhatIDoSection() {
         </div>
 
         {/* Spacer for text overflow */}
-        <div className={isMobile ? 'h-8' : 'h-16 md:h-24'} style={{ background: '#0A0A0A' }} />
+        <div className={isMobile ? 'h-4' : 'h-6 md:h-8'} style={{ background: '#0A0A0A' }} />
 
         {/* Architecture Diagram Section */}
         <ArchitectureSection />

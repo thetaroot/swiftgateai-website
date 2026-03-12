@@ -24,7 +24,7 @@ export default function Home() {
   const chatSectionRef = useRef<HTMLElement>(null);
 
   const handleScrollTo = (id: string) => {
-    const targetId = id === 'services' ? 'services-anchor' : id === 'portfolio' ? 'portfolio-anchor' : id === 'architecture' ? 'architecture-anchor' : id;
+    const targetId = id === 'services' ? 'services-anchor' : id === 'portfolio' ? 'portfolio-anchor' : id === 'architecture' ? 'architecture-anchor' : id === 'ai-employee' ? 'ai-employee-anchor' : id;
     const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -125,6 +125,7 @@ export default function Home() {
                   transition={{ duration: 0.4, delay: 0.3 }}
                 >
                   {[
+                    { key: 'ai-employee', label: t.common.aiEmployee },
                     { key: 'architecture', label: t.common.architecture },
                     { key: 'services', label: t.common.services },
                     { key: 'portfolio', label: t.common.portfolio, disabled: false },

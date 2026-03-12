@@ -5,6 +5,7 @@ export const en: Dictionary = {
         services: 'SERVICES',
         portfolio: 'PORTFOLIO',
         contact: 'CONTACT',
+        aiEmployee: 'AI EMPLOYEE',
         architecture: 'ARCHITECTURE',
         imprint: 'Legal Notice',
         privacy: 'Privacy Policy',

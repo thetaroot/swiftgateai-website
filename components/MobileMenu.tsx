@@ -37,6 +37,7 @@ function MobileMenu({ isInDarkSection, onScrollTo }: MobileMenuProps) {
     }, []);
 
     const navItems = [
+        { key: 'ai-employee', label: t.common.aiEmployee },
         { key: 'architecture', label: t.common.architecture },
         { key: 'services', label: t.common.services },
         { key: 'portfolio', label: t.common.portfolio },

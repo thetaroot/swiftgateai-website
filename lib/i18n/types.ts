@@ -3,6 +3,7 @@ export interface Dictionary {
         services: string;
         portfolio: string;
         contact: string;
+        aiEmployee: string;
         architecture: string;
         imprint: string;
         privacy: string;

@@ -5,6 +5,7 @@ export const de: Dictionary = {
         services: 'SERVICES',
         portfolio: 'PORTFOLIO',
         contact: 'KONTAKT',
+        aiEmployee: 'KI MITARBEITER',
         architecture: 'ARCHITEKTUR',
         imprint: 'Impressum',
         privacy: 'Datenschutz',
