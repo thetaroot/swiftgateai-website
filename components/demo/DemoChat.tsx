@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Mail, Calendar, CheckSquare, Users, Brain, Send } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { scenarios, keywordPatterns, crossoverPatterns, type DemoStep, type SharedContext } from './scenarios';
+import { getScenarios, getKeywordPatterns, getCrossoverPatterns, type DemoStep, type SharedContext } from './scenarios';
 import type { DemoTheme } from './theme';
 
 interface ChatMessage {
@@ -69,6 +69,11 @@ export default function DemoChat({ onActivity, onScenarioStart, onScenarioComple
   const scrollRef = useRef<HTMLDivElement>(null);
   const { t, language } = useTranslation();
 
+  const currentLang = useMemo(() => language === 'EN' ? 'EN' : 'DE', [language]);
+  const scenarios = useMemo(() => getScenarios(currentLang), [currentLang]);
+  const keywordPatterns = useMemo(() => getKeywordPatterns(currentLang), [currentLang]);
+  const crossoverPatterns = useMemo(() => getCrossoverPatterns(currentLang), [currentLang]);
+
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, []);
@@ -120,7 +125,7 @@ export default function DemoChat({ onActivity, onScenarioStart, onScenarioComple
     const scenario = scenarios[scenarioId];
     if (!scenario) return;
     await playSteps(scenario.steps, true, scenarioId);
-  }, [playSteps]);
+  }, [playSteps, scenarios]);
 
   const sendMessage = useCallback(async () => {
     const trimmed = input.trim();
@@ -184,7 +189,7 @@ export default function DemoChat({ onActivity, onScenarioStart, onScenarioComple
       setIsTyping(false);
       setMessages(prev => [...prev, { role: 'assistant', content: t.ai.fallback }]);
     }
-  }, [input, isPlaying, messages, language, t, onActivity, onScenarioStart, onScenarioComplete, sharedContext, playSteps]);
+  }, [input, isPlaying, messages, language, t, onActivity, onScenarioStart, onScenarioComplete, sharedContext, playSteps, crossoverPatterns, keywordPatterns]);
 
   const scenarioButtons = [
     { id: 'inbox', icon: Mail, label: t.demo.scenarioEmail },

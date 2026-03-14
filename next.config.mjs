@@ -3,6 +3,17 @@ const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
 
+  // Redirects
+  async redirects() {
+    return [
+      {
+        source: '/demo',
+        destination: '/demo/ai-employee',
+        permanent: true,
+      },
+    ];
+  },
+
   // Image Optimization
   images: {
     formats: ['image/avif', 'image/webp'],

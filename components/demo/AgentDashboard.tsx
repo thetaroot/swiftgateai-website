@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Brain, Mail, Calendar, CheckSquare, Search, Settings } from 'lucide-react';
-import { logEntryPool } from './scenarios';
+import { getLogEntryPool } from './scenarios';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { DemoTheme } from './theme';
 
 interface AgentDashboardProps {
@@ -35,6 +36,8 @@ interface LogEntry {
 }
 
 export default function AgentDashboard({ theme }: AgentDashboardProps) {
+    const { language } = useTranslation();
+    const logEntryPool = getLogEntryPool(language === 'EN' ? 'EN' : 'DE');
     const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
     const entryCounter = useRef(0);
     const poolIndex = useRef(0);
