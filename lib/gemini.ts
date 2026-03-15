@@ -65,7 +65,7 @@ let currentKeyIndex = 0;
 
 // ── API Client ──
 
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
+const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 const TIMEOUT_MS = 25_000;
 const MAX_RETRIES = 3;
 
