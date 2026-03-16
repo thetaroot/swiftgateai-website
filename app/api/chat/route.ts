@@ -23,10 +23,29 @@ interface ChatMessage {
     content: string;
 }
 
+interface LeadContext {
+    project_need: string | null;
+    company: string | null;
+    urgency: string | null;
+}
+
 interface ChatRequestBody {
     message: string;
     history: ChatMessage[];
     language: 'DE' | 'EN';
+    context?: LeadContext | null;
+}
+
+interface VPSResponse {
+    reply: string;
+    lead_score?: number;
+    extracted?: {
+        project_need: string | null;
+        company: string | null;
+        urgency: string | null;
+    };
+    suggest_ticket?: boolean;
+    phase?: string;
 }
 
 function isValidBody(body: unknown): body is ChatRequestBody {
@@ -39,14 +58,15 @@ function isValidBody(body: unknown): body is ChatRequestBody {
 }
 
 /**
- * Try VPS backend first (has RAG + key rotation).
- * Returns the reply string on success, or null on any failure.
+ * Try VPS backend first (has RAG + key rotation + sales funnel).
+ * Returns the full structured response on success, or null on failure.
  */
 async function callVPS(
     message: string,
     history: ChatMessage[],
     language: string,
-): Promise<string | null> {
+    context: LeadContext | null,
+): Promise<VPSResponse | null> {
     if (!MOLTBOT_API_URL || !MOLTBOT_PUBLIC_CHAT_TOKEN) return null;
 
     const controller = new AbortController();
@@ -60,7 +80,7 @@ async function callVPS(
                 'X-API-Key': MOLTBOT_PUBLIC_CHAT_TOKEN,
             },
             signal: controller.signal,
-            body: JSON.stringify({ message, history, language }),
+            body: JSON.stringify({ message, history, language, context }),
         });
 
         clearTimeout(timeout);
@@ -71,7 +91,17 @@ async function callVPS(
         }
 
         const data = await res.json();
-        return data.reply || null;
+        // VPS returns structured response with reply + metadata
+        if (data && typeof data.reply === 'string') {
+            return {
+                reply: data.reply,
+                lead_score: typeof data.lead_score === 'number' ? data.lead_score : 0,
+                extracted: data.extracted || { project_need: null, company: null, urgency: null },
+                suggest_ticket: Boolean(data.suggest_ticket),
+                phase: data.phase || 'discovery',
+            };
+        }
+        return null;
     } catch (error) {
         clearTimeout(timeout);
         console.warn('[Chat API] VPS call failed, falling back to Gemini:', error instanceof Error ? error.message : error);
@@ -130,7 +160,19 @@ export async function POST(request: Request) {
             );
         }
 
-        const { message, history, language } = body;
+        const { message, history, language, context } = body;
+
+        // Sanitize context fields (prevent prompt injection via leadContext)
+        let cleanContext: LeadContext | null = null;
+        if (context && typeof context === 'object') {
+            const c = context as unknown as Record<string, unknown>;
+            const VALID_URGENCY = new Set(['low', 'medium', 'high']);
+            cleanContext = {
+                project_need: typeof c.project_need === 'string' ? c.project_need.slice(0, 120).replace(/[<>\[\]{}]/g, '') : null,
+                company: typeof c.company === 'string' ? c.company.slice(0, 80).replace(/[<>\[\]{}]/g, '') : null,
+                urgency: typeof c.urgency === 'string' && VALID_URGENCY.has(c.urgency) ? c.urgency : null,
+            };
+        }
 
         // Layer 3: Input sanitizer
         const sanitized = sanitizeInput(message);
@@ -148,17 +190,14 @@ export async function POST(request: Request) {
             );
         }
 
-        // === Primary: VPS backend (has RAG + key rotation) ===
-        const vpsReply = await callVPS(sanitized.cleaned, history, language);
-        if (vpsReply) {
-            const reply = validateOutput(vpsReply);
-            return NextResponse.json(
-                { reply },
-                { status: 200, headers: rateLimitHeaders }
-            );
+        // === Primary: VPS backend (has RAG + sales funnel) ===
+        const vpsResponse = await callVPS(sanitized.cleaned, history, language, cleanContext);
+        if (vpsResponse) {
+            vpsResponse.reply = validateOutput(vpsResponse.reply);
+            return NextResponse.json(vpsResponse, { status: 200, headers: rateLimitHeaders });
         }
 
-        // === Fallback: Direct Gemini call ===
+        // === Fallback: Direct Gemini call (basic Q&A only, no sales features) ===
         const trimmedHistory = history.slice(-10);
         const sanitizedHistory: GeminiContent[] = [];
         for (const msg of trimmedHistory) {
@@ -189,8 +228,15 @@ export async function POST(request: Request) {
         const rawReply = await callGemini(CHAT_SYSTEM_PROMPT, contents);
         const reply = validateOutput(rawReply);
 
+        // Fallback returns basic format with default metadata
         return NextResponse.json(
-            { reply },
+            {
+                reply,
+                lead_score: 0,
+                extracted: { project_need: null, company: null, urgency: null },
+                suggest_ticket: false,
+                phase: 'discovery',
+            },
             { status: 200, headers: rateLimitHeaders }
         );
     } catch (error: unknown) {

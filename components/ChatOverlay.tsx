@@ -8,6 +8,7 @@ import { useBackgroundContext, ChatMessage } from '@/context/BackgroundContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import TicketForm from '@/components/chat/TicketForm';
 
 const quickSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
 
@@ -16,6 +17,7 @@ interface InternalMessage {
   content: string;
   status: 'thinking' | 'typing' | 'complete';
   displayContent?: string;
+  showTicketForm?: boolean;
 }
 
 // ─── AI TYPING COMPONENT ───
@@ -133,7 +135,12 @@ function ChatOverlay() {
   const { t, language } = useTranslation();
   const isMobile = useMobile();
   const prefersReducedMotion = useReducedMotion();
-  const { chatMessages, setChatMessages, isChatOpen, setIsChatOpen } = useBackgroundContext();
+  const {
+    chatMessages, setChatMessages, isChatOpen, setIsChatOpen,
+    leadContext, setLeadContext, leadScore, setLeadScore,
+    setShowTicketForm, ticketSubmitted,
+    lastAISummary, setLastAISummary,
+  } = useBackgroundContext();
 
   const [internalMessages, setInternalMessages] = useState<InternalMessage[]>([]);
   const [message, setMessage] = useState('');
@@ -145,6 +152,8 @@ function ChatOverlay() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  // Track which chatMessage indices should show the ticket form (survives sync effect)
+  const ticketFormIndicesRef = useRef<Set<number>>(new Set());
 
   useEffect(() => { setMounted(true); return () => setMounted(false); }, []);
 
@@ -169,8 +178,9 @@ function ChatOverlay() {
     if (curLen > prevLen) {
       if (lastMsg.role === 'user') {
         // User sent a message → show all + thinking dots
-        const synced: InternalMessage[] = chatMessages.map(m => ({
+        const synced: InternalMessage[] = chatMessages.map((m, i) => ({
           role: m.role, content: m.content, status: 'complete' as const,
+          showTicketForm: ticketFormIndicesRef.current.has(i),
         }));
         synced.push({ role: 'model', content: '', status: 'thinking' });
         setInternalMessages(synced);
@@ -180,13 +190,15 @@ function ChatOverlay() {
           role: m.role,
           content: m.content,
           status: i === curLen - 1 ? 'typing' as const : 'complete' as const,
+          showTicketForm: ticketFormIndicesRef.current.has(i),
         }));
         setInternalMessages(synced);
       }
     } else if (prevLen === 0 && curLen > 0) {
       // Overlay just opened with existing messages
-      setInternalMessages(chatMessages.map(m => ({
+      setInternalMessages(chatMessages.map((m, i) => ({
         role: m.role, content: m.content, status: 'complete' as const,
+        showTicketForm: ticketFormIndicesRef.current.has(i),
       })));
     }
   }, [chatMessages, isChatOpen]);
@@ -281,19 +293,42 @@ function ChatOverlay() {
           message: trimmed,
           history: history.slice(0, -1),
           language,
+          context: leadContext,
         }),
       });
 
       let reply: string;
+      let shouldSuggestTicket = false;
       if (response.status === 429) {
         reply = t.ai.rateLimit;
       } else if (!response.ok) {
         reply = t.ai.error;
       } else {
-        const data: unknown = await response.json();
-        reply = typeof data === 'object' && data !== null && 'reply' in data
-          ? String((data as Record<string, unknown>).reply)
-          : t.ai.fallback;
+        const data = await response.json() as Record<string, unknown>;
+        reply = typeof data.reply === 'string' ? data.reply : t.ai.fallback;
+
+        // Update lead state from expanded response
+        if (typeof data.lead_score === 'number') setLeadScore(data.lead_score);
+        if (data.extracted && typeof data.extracted === 'object') {
+          const ext = data.extracted as Record<string, unknown>;
+          setLeadContext(prev => ({
+            project_need: typeof ext.project_need === 'string' ? ext.project_need : prev.project_need,
+            company: typeof ext.company === 'string' ? ext.company : prev.company,
+            urgency: (ext.urgency === 'low' || ext.urgency === 'medium' || ext.urgency === 'high') ? ext.urgency : prev.urgency,
+          }));
+        }
+        if (data.suggest_ticket && !ticketSubmitted) {
+          shouldSuggestTicket = true;
+          setLastAISummary(reply);
+          setShowTicketForm(true);
+        }
+      }
+
+      // Mark the ticket form index BEFORE setChatMessages triggers the sync effect
+      if (shouldSuggestTicket) {
+        // The new model message will be at the end of chatMessages after the update
+        const nextIndex = chatMessages.length + 1; // +1 for the user msg already added
+        ticketFormIndicesRef.current.add(nextIndex);
       }
 
       setChatMessages(prev => {
@@ -308,7 +343,7 @@ function ChatOverlay() {
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, chatMessages, setChatMessages, language, t.ai]);
+  }, [message, isLoading, chatMessages, setChatMessages, language, t.ai, leadContext, setLeadContext, setLeadScore, ticketSubmitted, setLastAISummary, setShowTicketForm]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (isMobile) return;
@@ -380,25 +415,36 @@ function ChatOverlay() {
               {msg.status === 'thinking' ? (
                 <ThinkingDots />
               ) : (
-                <p style={{
-                  fontSize: '15px',
-                  lineHeight: '1.65',
-                  color: '#1d1d1f',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
-                  fontWeight: 400,
-                  margin: 0,
-                }}>
-                  {msg.status === 'typing' ? (
-                    <AITypingText
-                      content={msg.content}
-                      onComplete={() => handleTypingComplete(index)}
-                      speed={isMobile ? { min: 20, max: 30 } : { min: 15, max: 25 }}
-                      reducedMotion={prefersReducedMotion}
-                    />
-                  ) : (
-                    msg.content
+                <>
+                  <p style={{
+                    fontSize: '15px',
+                    lineHeight: '1.65',
+                    color: '#1d1d1f',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+                    fontWeight: 400,
+                    margin: 0,
+                  }}>
+                    {msg.status === 'typing' ? (
+                      <AITypingText
+                        content={msg.content}
+                        onComplete={() => handleTypingComplete(index)}
+                        speed={isMobile ? { min: 20, max: 30 } : { min: 15, max: 25 }}
+                        reducedMotion={prefersReducedMotion}
+                      />
+                    ) : (
+                      msg.content
+                    )}
+                  </p>
+                  {msg.showTicketForm && msg.status === 'complete' && !ticketSubmitted && (
+                    <div style={{ marginTop: '12px' }}>
+                      <TicketForm
+                        summary={lastAISummary}
+                        leadScore={leadScore}
+                        leadData={leadContext as unknown as Record<string, unknown>}
+                      />
+                    </div>
                   )}
-                </p>
+                </>
               )}
             </div>
           </motion.div>

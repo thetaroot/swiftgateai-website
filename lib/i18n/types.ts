@@ -145,6 +145,31 @@ export interface Dictionary {
         mailError: string;
         mailNoHistory: string;
     };
+    ticket: {
+        formTitle: string;
+        formSubtitle: string;
+        nameLabel: string;
+        namePlaceholder: string;
+        emailLabel: string;
+        emailPlaceholder: string;
+        submitButton: string;
+        submitting: string;
+        successTitle: string;
+        successMessage: string;
+        privacyNote: string;
+        errorMessage: string;
+    };
+    followUp: {
+        title: string;
+        nextButton: string;
+        generateButton: string;
+        q1: string;
+        q2: string;
+        q3: string;
+        q3optSoon: string;
+        q3optQuarter: string;
+        q3optExploring: string;
+    };
     architecture: {
         title: string;
         subtitle: string;

@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 import { useSettings } from '@/context/SettingsContext';
+import ContactFollowUp from '@/components/ContactFollowUp';
 
 const smoothSpring = {
     type: "spring" as const,
@@ -23,6 +24,7 @@ function ContactSection() {
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [clipboardNotice, setClipboardNotice] = useState(false);
+    const [showFollowUp, setShowFollowUp] = useState(false);
 
     // Obfuscated email parts
     const user = 'hello';
@@ -219,17 +221,10 @@ function ContactSection() {
                         viewport={{ once: true }}
                         transition={{ ...smoothSpring, delay: 0.5 }}
                         className={`relative flex-1 ${isMobile ? 'w-full' : 'min-w-[280px] max-w-[400px]'} h-auto p-1 rounded-3xl text-left`}
-                        onClick={handleAISummary}
-                        disabled={!hasEnoughHistory || isGenerating}
-                        whileHover={hasEnoughHistory && !isGenerating ? { scale: 1.02 } : {}}
-                        whileTap={hasEnoughHistory && !isGenerating ? { scale: 0.98 } : {}}
-                        style={{
-                            ...((!hasEnoughHistory) ? {
-                                opacity: 0.3,
-                                filter: 'grayscale(70%)',
-                                cursor: 'default',
-                            } : {}),
-                        }}
+                        onClick={hasEnoughHistory ? handleAISummary : () => setShowFollowUp(true)}
+                        disabled={isGenerating}
+                        whileHover={!isGenerating ? { scale: 1.02 } : {}}
+                        whileTap={!isGenerating ? { scale: 0.98 } : {}}
                     >
                         <div
                             className="group relative h-auto rounded-3xl"
@@ -306,6 +301,12 @@ function ContactSection() {
                 </AnimatePresence>
 
             </div>
+
+            <ContactFollowUp
+                isOpen={showFollowUp}
+                onClose={() => setShowFollowUp(false)}
+                email={email}
+            />
         </section>
     );
 }
