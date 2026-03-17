@@ -1,0 +1,165 @@
+{
+  "name": "Portfolio: Email Analysis & Response Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "email-analysis",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-email",
+      "name": "Webhook: Incoming Email",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body;\n\nif (!input.body || input.body.trim().length < 5) {\n  return [{ json: { error: true, message: 'Email body is required' } }];\n}\n\n// Strip HTML tags if present\nlet plainText = input.body\n  .replace(/<[^>]*>/g, ' ')\n  .replace(/&nbsp;/g, ' ')\n  .replace(/&amp;/g, '&')\n  .replace(/&lt;/g, '<')\n  .replace(/&gt;/g, '>')\n  .replace(/\\s+/g, ' ')\n  .trim()\n  .substring(0, 3000);\n\nreturn [{\n  json: {\n    from: input.from || 'unknown@email.com',\n    subject: (input.subject || 'No Subject').trim(),\n    body: plainText,\n    timestamp: input.timestamp || new Date().toISOString(),\n    word_count: plainText.split(/\\s+/).length\n  }\n}];"
+      },
+      "id": "preprocess-email",
+      "name": "Preprocess Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Analyze the sentiment of this email. Reply ONLY with valid JSON.\\n\\nFrom: ' + $json.from + '\\nSubject: ' + $json.subject + '\\nBody: ' + $json.body.substring(0, 1500) + '\\n\\nProvide JSON:\\n{\\n  \"sentiment\": \"positive|neutral|negative|angry\",\\n  \"score\": -1.0 to 1.0,\\n  \"indicators\": [\"list of emotional indicators found\"],\\n  \"tone\": \"formal|informal|urgent|friendly|hostile\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "sentiment-analysis",
+      "name": "Ollama: Sentiment Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Classify this email and assess urgency. Reply ONLY with valid JSON.\\n\\nFrom: ' + $node['Preprocess Email'].json.from + '\\nSubject: ' + $node['Preprocess Email'].json.subject + '\\nBody: ' + $node['Preprocess Email'].json.body.substring(0, 1500) + '\\n\\nProvide JSON:\\n{\\n  \"type\": \"inquiry|complaint|order|feedback|info|spam|meeting_request\",\\n  \"urgency\": \"immediate|today|this_week|low\",\\n  \"topic\": \"brief topic description\",\\n  \"requires_response\": true/false,\\n  \"department\": \"sales|support|billing|management|hr|general\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "email-classification",
+      "name": "Ollama: Email Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 520]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Extract key information from this email. Reply ONLY with valid JSON.\\n\\nFrom: ' + $node['Preprocess Email'].json.from + '\\nSubject: ' + $node['Preprocess Email'].json.subject + '\\nBody: ' + $node['Preprocess Email'].json.body.substring(0, 1500) + '\\n\\nProvide JSON:\\n{\\n  \"sender_intent\": \"what does the sender want in one sentence\",\\n  \"action_items\": [\"list of actions needed\"],\\n  \"entities\": {\\n    \"names\": [\"any names mentioned\"],\\n    \"dates\": [\"any dates mentioned\"],\\n    \"amounts\": [\"any monetary amounts\"],\\n    \"products\": [\"any products or services mentioned\"],\\n    \"reference_numbers\": [\"any order/ticket/reference numbers\"]\\n  },\\n  \"key_questions\": [\"questions the sender is asking\"]\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "info-extraction",
+      "name": "Ollama: Extract Information",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 740]
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $node['Preprocess Email'].json;\nconst sentimentRaw = ($node['Ollama: Sentiment Analysis'].json.response || '').trim();\nconst classRaw = ($node['Ollama: Email Classification'].json.response || '').trim();\nconst extractRaw = ($node['Ollama: Extract Information'].json.response || '').trim();\n\nfunction safeParseJSON(raw, fallback) {\n  try {\n    const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);\n    return jsonMatch ? JSON.parse(jsonMatch[0]) : fallback;\n  } catch(e) {\n    return fallback;\n  }\n}\n\nconst sentiment = safeParseJSON(sentimentRaw, { sentiment: 'neutral', score: 0, indicators: [], tone: 'formal' });\nconst classification = safeParseJSON(classRaw, { type: 'inquiry', urgency: 'today', topic: 'general', requires_response: true, department: 'general' });\nconst extraction = safeParseJSON(extractRaw, { sender_intent: 'unclear', action_items: [], entities: {}, key_questions: [] });\n\n// Determine escalation\nconst needsEscalation = \n  (sentiment.sentiment === 'angry' || sentiment.score < -0.5) ||\n  classification.urgency === 'immediate' ||\n  classification.type === 'complaint';\n\nconst priorityScore = (\n  (classification.urgency === 'immediate' ? 40 : classification.urgency === 'today' ? 25 : classification.urgency === 'this_week' ? 10 : 0) +\n  (sentiment.sentiment === 'angry' ? 30 : sentiment.sentiment === 'negative' ? 15 : 0) +\n  (classification.type === 'complaint' ? 20 : classification.type === 'order' ? 15 : 0) +\n  ((extraction.action_items || []).length * 5)\n);\n\nreturn [{\n  json: {\n    email: email,\n    sentiment: sentiment,\n    classification: classification,\n    extraction: extraction,\n    priority: {\n      score: Math.min(100, priorityScore),\n      level: priorityScore >= 60 ? 'critical' : priorityScore >= 35 ? 'high' : priorityScore >= 15 ? 'medium' : 'low',\n      needs_escalation: needsEscalation,\n      escalation_reason: needsEscalation ? [\n        sentiment.sentiment === 'angry' ? 'Angry sentiment detected' : null,\n        sentiment.score < -0.5 ? 'Very negative sentiment score' : null,\n        classification.urgency === 'immediate' ? 'Immediate urgency' : null,\n        classification.type === 'complaint' ? 'Complaint email' : null\n      ].filter(Boolean) : []\n    }\n  }\n}];"
+      },
+      "id": "compile-analysis",
+      "name": "Compile Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 520]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Draft a professional email response based on this analysis.\\n\\nOriginal email from: ' + $json.email.from + '\\nSubject: ' + $json.email.subject + '\\nOriginal message: ' + $json.email.body.substring(0, 1000) + '\\n\\nAnalysis:\\n- Sentiment: ' + $json.sentiment.sentiment + ' (score: ' + $json.sentiment.score + ')\\n- Type: ' + $json.classification.type + '\\n- Intent: ' + $json.extraction.sender_intent + '\\n- Questions asked: ' + JSON.stringify($json.extraction.key_questions) + '\\n- Action items: ' + JSON.stringify($json.extraction.action_items) + '\\n\\nRules for the response:\\n- Write in the same language as the original email\\n- Be professional, empathetic, and solution-oriented\\n- Address ALL questions and concerns raised\\n- If the sentiment is negative, acknowledge their frustration first\\n- Include clear next steps\\n- Keep it under 200 words\\n- Sign off with \"Mit freundlichen Grüßen\" for German, \"Best regards\" for English\\n- Do not include a sender name (it will be added later)', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "draft-response",
+      "name": "Ollama: Draft Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 520]
+    },
+    {
+      "parameters": {
+        "jsCode": "const analysis = $node['Compile Analysis'].json;\nconst draftResponse = ($node['Ollama: Draft Response'].json.response || '').trim();\n\nreturn [{\n  json: {\n    success: true,\n    email_analysis: {\n      from: analysis.email.from,\n      subject: analysis.email.subject,\n      received: analysis.email.timestamp,\n      word_count: analysis.email.word_count\n    },\n    sentiment: analysis.sentiment,\n    classification: analysis.classification,\n    extracted_info: analysis.extraction,\n    priority: analysis.priority,\n    draft_response: {\n      subject: 'Re: ' + analysis.email.subject,\n      body: draftResponse,\n      review_required: analysis.priority.needs_escalation || analysis.priority.level === 'critical'\n    },\n    recommended_workflow: {\n      send_immediately: !analysis.priority.needs_escalation && analysis.classification.type !== 'complaint',\n      review_by: analysis.classification.department,\n      follow_up_needed: (analysis.extraction.action_items || []).length > 0,\n      action_items: analysis.extraction.action_items\n    },\n    processing: {\n      model: 'qwen2.5:1.5b',\n      pipeline: 'sentiment → classification → extraction → response',\n      gdpr_compliant: true,\n      data_residency: 'on-premise'\n    },\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "final-output",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1380, 520]
+    }
+  ],
+  "connections": {
+    "Webhook: Incoming Email": {
+      "main": [
+        [{ "node": "Preprocess Email", "type": "main", "index": 0 }]
+      ]
+    },
+    "Preprocess Email": {
+      "main": [
+        [
+          { "node": "Ollama: Sentiment Analysis", "type": "main", "index": 0 },
+          { "node": "Ollama: Email Classification", "type": "main", "index": 0 },
+          { "node": "Ollama: Extract Information", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Ollama: Sentiment Analysis": {
+      "main": [
+        [{ "node": "Compile Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Email Classification": {
+      "main": [
+        [{ "node": "Compile Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Extract Information": {
+      "main": [
+        [{ "node": "Compile Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Compile Analysis": {
+      "main": [
+        [{ "node": "Ollama: Draft Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Draft Response": {
+      "main": [
+        [{ "node": "Format Final Output", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "email" },
+    { "name": "automation" }
+  ]
+}

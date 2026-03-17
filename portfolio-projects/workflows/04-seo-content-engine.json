@@ -1,0 +1,117 @@
+{
+  "name": "Portfolio: SEO Content Generation Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "content-engine",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-content",
+      "name": "Webhook: Content Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body;\n\nif (!input.keyword || input.keyword.trim().length < 2) {\n  return [{ json: { error: true, message: 'keyword is required (min 2 chars)' } }];\n}\n\nconst validTones = ['professional', 'casual', 'technical', 'persuasive'];\nconst validLanguages = ['de', 'en'];\n\nreturn [{\n  json: {\n    keyword: input.keyword.trim(),\n    language: validLanguages.includes(input.language) ? input.language : 'de',\n    tone: validTones.includes(input.tone) ? input.tone : 'professional',\n    word_count: Math.min(Math.max(input.word_count || 800, 300), 2000),\n    industry: input.industry || 'general',\n    target_audience: input.target_audience || 'business professionals'\n  }\n}];"
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Create an SEO-optimized article structure for the keyword: \"' + $json.keyword + '\"\\nLanguage: ' + ($json.language === 'de' ? 'German' : 'English') + '\\nIndustry: ' + $json.industry + '\\nTarget audience: ' + $json.target_audience + '\\n\\nReply ONLY with valid JSON:\\n{\\n  \"title\": \"SEO title (max 60 chars)\",\\n  \"meta_description\": \"Meta description (max 155 chars)\",\\n  \"h1\": \"Main heading\",\\n  \"sections\": [\\n    { \"h2\": \"Section heading\", \"key_points\": [\"point1\", \"point2\"] }\\n  ],\\n  \"target_keywords\": [\"primary keyword\", \"secondary keyword 1\", \"secondary keyword 2\"],\\n  \"search_intent\": \"informational|transactional|navigational\"\\n}\\n\\nCreate 4-6 sections. Make headings compelling and keyword-rich.', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "seo-structure",
+      "name": "Ollama: SEO Structure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $node['Validate Input'].json;\nconst structRaw = ($node['Ollama: SEO Structure'].json.response || '').trim();\n\nlet structure = {};\ntry {\n  const jsonMatch = structRaw.match(/\\{[\\s\\S]*\\}/);\n  structure = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  structure = {\n    title: input.keyword + ' - Complete Guide',\n    meta_description: 'Everything you need to know about ' + input.keyword,\n    h1: input.keyword,\n    sections: [\n      { h2: 'Introduction', key_points: ['Overview'] },\n      { h2: 'Key Benefits', key_points: ['Benefit 1', 'Benefit 2'] },\n      { h2: 'How It Works', key_points: ['Step 1', 'Step 2'] },\n      { h2: 'Conclusion', key_points: ['Summary'] }\n    ],\n    target_keywords: [input.keyword],\n    search_intent: 'informational'\n  };\n}\n\nconst sections = structure.sections || [];\nconst sectionOutline = sections.map((s, i) => `Section ${i+1}: ${s.h2}\\nKey points: ${(s.key_points || []).join(', ')}`).join('\\n\\n');\n\nreturn [{\n  json: {\n    input: input,\n    structure: structure,\n    section_outline: sectionOutline\n  }\n}];"
+      },
+      "id": "parse-structure",
+      "name": "Parse SEO Structure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Write a complete SEO-optimized blog article.\\n\\nKeyword: ' + $json.input.keyword + '\\nLanguage: ' + ($json.input.language === 'de' ? 'German' : 'English') + '\\nTone: ' + $json.input.tone + '\\nTarget word count: ' + $json.input.word_count + '\\nTarget audience: ' + $json.input.target_audience + '\\n\\nArticle structure to follow:\\n' + $json.section_outline + '\\n\\nTarget keywords to naturally include: ' + JSON.stringify($json.structure.target_keywords) + '\\n\\nRules:\\n- Write in Markdown format\\n- Start with an engaging introduction (no heading for intro)\\n- Use ## for section headings\\n- Include bullet points and numbered lists where appropriate\\n- End with a strong conclusion and call-to-action\\n- Naturally integrate keywords (dont force them)\\n- Write for humans first, search engines second\\n- Be specific and provide actionable value', stream: false }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "write-article",
+      "name": "Ollama: Write Article",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $node['Parse SEO Structure'].json.input;\nconst structure = $node['Parse SEO Structure'].json.structure;\nconst article = ($node['Ollama: Write Article'].json.response || '').trim();\n\n// Calculate metrics\nconst wordCount = article.split(/\\s+/).length;\nconst keywords = structure.target_keywords || [input.keyword];\nconst keywordOccurrences = {};\nkeywords.forEach(kw => {\n  const regex = new RegExp(kw.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'), 'gi');\n  const matches = article.match(regex);\n  keywordOccurrences[kw] = matches ? matches.length : 0;\n});\n\nconst totalKeywordCount = Object.values(keywordOccurrences).reduce((a, b) => a + b, 0);\nconst keywordDensity = wordCount > 0 ? ((totalKeywordCount / wordCount) * 100).toFixed(2) : 0;\n\n// Simple readability estimate\nconst sentences = article.split(/[.!?]+/).filter(s => s.trim().length > 0);\nconst avgWordsPerSentence = wordCount / Math.max(sentences.length, 1);\nlet readabilityScore = 100;\nif (avgWordsPerSentence > 25) readabilityScore -= 20;\nif (avgWordsPerSentence > 30) readabilityScore -= 20;\nif (wordCount < input.word_count * 0.5) readabilityScore -= 15;\nreadabilityScore = Math.max(0, Math.min(100, readabilityScore));\n\n// Convert markdown to basic HTML\nlet html = article\n  .replace(/^### (.*$)/gm, '<h3>$1</h3>')\n  .replace(/^## (.*$)/gm, '<h2>$1</h2>')\n  .replace(/^# (.*$)/gm, '<h1>$1</h1>')\n  .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')\n  .replace(/\\*(.*?)\\*/g, '<em>$1</em>')\n  .replace(/^- (.*$)/gm, '<li>$1</li>')\n  .replace(/\\n/g, '<br>');\n\nreturn [{\n  json: {\n    success: true,\n    seo: {\n      title: structure.title,\n      meta_description: structure.meta_description,\n      target_keywords: structure.target_keywords,\n      search_intent: structure.search_intent\n    },\n    content: {\n      markdown: article,\n      html: html,\n      heading: structure.h1\n    },\n    metrics: {\n      word_count: wordCount,\n      target_word_count: input.word_count,\n      keyword_density: keywordDensity + '%',\n      keyword_occurrences: keywordOccurrences,\n      avg_words_per_sentence: Math.round(avgWordsPerSentence),\n      sentence_count: sentences.length,\n      readability_score: readabilityScore + '/100',\n      sections_count: (article.match(/^##/gm) || []).length\n    },\n    config: {\n      language: input.language,\n      tone: input.tone,\n      industry: input.industry\n    },\n    model: 'qwen2.5:1.5b',\n    gdpr_compliant: true,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "format-output",
+      "name": "Format & Analyze Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Content Request": {
+      "main": [
+        [{ "node": "Validate Input", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [{ "node": "Ollama: SEO Structure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: SEO Structure": {
+      "main": [
+        [{ "node": "Parse SEO Structure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse SEO Structure": {
+      "main": [
+        [{ "node": "Ollama: Write Article", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Write Article": {
+      "main": [
+        [{ "node": "Format & Analyze Output", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "content" },
+    { "name": "seo" }
+  ]
+}

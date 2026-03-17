@@ -1,0 +1,110 @@
+{
+  "name": "Portfolio: CRM Data Enrichment & Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "crm-enrich",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-enrich",
+      "name": "Webhook: Enrich Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body;\n\n// Accept either a single contact or batch\nconst contacts = input.contacts || [{\n  name: input.name || 'Unknown',\n  email: input.email || '',\n  company: input.company || '',\n  notes: input.notes || '',\n  phone: input.phone || '',\n  position: input.position || '',\n  tags: input.tags || []\n}];\n\n// Validate\nconst validContacts = contacts.filter(c => c.email || c.name !== 'Unknown');\n\nif (validContacts.length === 0) {\n  return [{ json: { error: true, message: 'At least one contact with name or email is required' } }];\n}\n\nreturn [{\n  json: {\n    contacts: validContacts,\n    batch_size: validContacts.length,\n    enrich_mode: input.enrich_mode || 'full'\n  }\n}];"
+      },
+      "id": "validate-contacts",
+      "name": "Validate Contacts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst contacts = data.contacts;\nconst results = [];\n\n// We'll process contacts and prepare them for AI analysis\nfor (const contact of contacts) {\n  const emailDomain = contact.email ? contact.email.split('@')[1] || '' : '';\n  \n  // Calculate initial completeness\n  const fields = ['name', 'email', 'company', 'phone', 'position', 'notes'];\n  const filled = fields.filter(f => contact[f] && contact[f].toString().trim().length > 0);\n  const completeness = Math.round((filled.length / fields.length) * 100);\n  \n  results.push({\n    ...contact,\n    email_domain: emailDomain,\n    initial_completeness: completeness,\n    missing_fields: fields.filter(f => !contact[f] || contact[f].toString().trim().length === 0)\n  });\n}\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "id": "prepare-contacts",
+      "name": "Prepare Contact Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Analyze this business contact and enrich the data. Reply ONLY with valid JSON.\\n\\nContact data:\\nName: ' + $json.name + '\\nEmail: ' + ($json.email || 'N/A') + '\\nEmail domain: ' + ($json.email_domain || 'N/A') + '\\nCompany: ' + ($json.company || 'N/A') + '\\nPosition: ' + ($json.position || 'N/A') + '\\nNotes: ' + ($json.notes || 'N/A') + '\\nExisting tags: ' + JSON.stringify($json.tags || []) + '\\n\\nProvide enriched JSON:\\n{\\n  \"inferred_industry\": \"tech|finance|healthcare|retail|manufacturing|consulting|education|media|other\",\\n  \"inferred_company_size\": \"startup|small|medium|large|enterprise|unknown\",\\n  \"inferred_role_level\": \"c-level|vp|director|manager|individual|unknown\",\\n  \"inferred_department\": \"engineering|marketing|sales|hr|finance|operations|executive|unknown\",\\n  \"language_preference\": \"de|en\",\\n  \"suggested_tags\": [\"tag1\", \"tag2\"],\\n  \"engagement_potential\": \"high|medium|low\",\\n  \"enrichment_notes\": \"brief reasoning for inferences\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "ai-enrich",
+      "name": "Ollama: Enrich Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const contact = $node['Prepare Contact Data'].json;\nconst enrichRaw = ($node['Ollama: Enrich Contact'].json.response || '').trim();\n\nlet enrichment = {};\ntry {\n  const jsonMatch = enrichRaw.match(/\\{[\\s\\S]*\\}/);\n  enrichment = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  enrichment = {\n    inferred_industry: 'unknown',\n    inferred_company_size: 'unknown',\n    inferred_role_level: 'unknown',\n    inferred_department: 'unknown',\n    language_preference: 'de',\n    suggested_tags: [],\n    engagement_potential: 'medium',\n    enrichment_notes: 'Parsing failed'\n  };\n}\n\n// Calculate customer value score\nlet score = 20; // base\n\n// Role level scoring\nconst roleScores = { 'c-level': 30, 'vp': 25, 'director': 20, 'manager': 15, 'individual': 8, 'unknown': 10 };\nscore += roleScores[enrichment.inferred_role_level] || 10;\n\n// Company size scoring\nconst sizeScores = { enterprise: 25, large: 20, medium: 15, small: 10, startup: 8, unknown: 8 };\nscore += sizeScores[enrichment.inferred_company_size] || 8;\n\n// Engagement potential\nconst engagementScores = { high: 15, medium: 10, low: 3 };\nscore += engagementScores[enrichment.engagement_potential] || 5;\n\n// Data completeness bonus\nscore += Math.round(contact.initial_completeness / 10);\n\nscore = Math.min(100, Math.max(0, score));\n\nlet tier = 'bronze';\nif (score >= 75) tier = 'gold';\nelse if (score >= 50) tier = 'silver';\n\n// Calculate new completeness\nconst allFields = ['name', 'email', 'company', 'phone', 'position', 'notes',\n  'industry', 'company_size', 'role_level', 'department', 'language'];\nconst enrichedFields = [\n  contact.name, contact.email, contact.company, contact.phone, contact.position, contact.notes,\n  enrichment.inferred_industry, enrichment.inferred_company_size,\n  enrichment.inferred_role_level, enrichment.inferred_department,\n  enrichment.language_preference\n].filter(v => v && v !== 'unknown' && v !== 'N/A');\nconst newCompleteness = Math.round((enrichedFields.length / allFields.length) * 100);\n\nreturn [{\n  json: {\n    original: {\n      name: contact.name,\n      email: contact.email,\n      company: contact.company,\n      initial_completeness: contact.initial_completeness + '%'\n    },\n    enrichment: enrichment,\n    scoring: {\n      value_score: score,\n      tier: tier,\n      breakdown: {\n        base: 20,\n        role_level: roleScores[enrichment.inferred_role_level] || 10,\n        company_size: sizeScores[enrichment.inferred_company_size] || 8,\n        engagement: engagementScores[enrichment.engagement_potential] || 5,\n        completeness_bonus: Math.round(contact.initial_completeness / 10)\n      }\n    },\n    quality: {\n      completeness_before: contact.initial_completeness + '%',\n      completeness_after: newCompleteness + '%',\n      fields_enriched: allFields.length - contact.missing_fields.length,\n      previously_missing: contact.missing_fields\n    }\n  }\n}];"
+      },
+      "id": "score-contact",
+      "name": "Score & Compile Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst enrichedContacts = items.map(item => item.json);\n\nconst totalBefore = enrichedContacts.reduce((sum, c) => sum + parseInt(c.quality.completeness_before), 0) / enrichedContacts.length;\nconst totalAfter = enrichedContacts.reduce((sum, c) => sum + parseInt(c.quality.completeness_after), 0) / enrichedContacts.length;\nconst avgScore = enrichedContacts.reduce((sum, c) => sum + c.scoring.value_score, 0) / enrichedContacts.length;\n\nconst tierCounts = { gold: 0, silver: 0, bronze: 0 };\nenrichedContacts.forEach(c => tierCounts[c.scoring.tier]++);\n\nreturn [{\n  json: {\n    success: true,\n    summary: {\n      total_contacts: enrichedContacts.length,\n      avg_completeness_before: Math.round(totalBefore) + '%',\n      avg_completeness_after: Math.round(totalAfter) + '%',\n      completeness_improvement: '+' + Math.round(totalAfter - totalBefore) + '%',\n      avg_value_score: Math.round(avgScore),\n      tier_distribution: tierCounts\n    },\n    contacts: enrichedContacts,\n    model: 'qwen2.5:1.5b',\n    gdpr_compliant: true,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "generate-report",
+      "name": "Generate Summary Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Enrich Request": {
+      "main": [
+        [{ "node": "Validate Contacts", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validate Contacts": {
+      "main": [
+        [{ "node": "Prepare Contact Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prepare Contact Data": {
+      "main": [
+        [{ "node": "Ollama: Enrich Contact", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Enrich Contact": {
+      "main": [
+        [{ "node": "Score & Compile Results", "type": "main", "index": 0 }]
+      ]
+    },
+    "Score & Compile Results": {
+      "main": [
+        [{ "node": "Generate Summary Report", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "crm" },
+    { "name": "data-enrichment" }
+  ]
+}

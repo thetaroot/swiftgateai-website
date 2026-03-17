@@ -1,0 +1,117 @@
+{
+  "name": "Portfolio: Lead Qualification & CRM Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-qualification",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-lead",
+      "name": "Webhook: New Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json.body;\n\nconst errors = [];\nif (!lead.name) errors.push('name is required');\nif (!lead.email) errors.push('email is required');\nif (!lead.message) errors.push('message is required');\n\nif (errors.length > 0) {\n  return [{ json: { error: true, errors: errors } }];\n}\n\nreturn [{\n  json: {\n    name: lead.name.trim(),\n    email: lead.email.trim().toLowerCase(),\n    company: (lead.company || 'Unknown').trim(),\n    message: lead.message.trim(),\n    source: lead.source || 'website',\n    phone: lead.phone || null,\n    received_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "validate-lead",
+      "name": "Validate & Clean Lead Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Analyze this B2B lead and provide a structured assessment. Reply ONLY with valid JSON, no other text.\\n\\nLead data:\\nName: ' + $json.name + '\\nCompany: ' + $json.company + '\\nEmail: ' + $json.email + '\\nMessage: ' + $json.message + '\\nSource: ' + $json.source + '\\n\\nProvide JSON with these exact fields:\\n{\\n  \"industry\": \"estimated industry\",\\n  \"company_size\": \"startup|small|medium|large|enterprise\",\\n  \"intent\": \"high|medium|low\",\\n  \"budget_indicator\": \"high|medium|low|unknown\",\\n  \"urgency\": \"immediate|short_term|long_term\",\\n  \"needs\": [\"list of identified needs\"],\\n  \"summary\": \"one sentence summary of what they want\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "ai-lead-analysis",
+      "name": "Ollama: Lead Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $node['Validate & Clean Lead Data'].json;\nconst aiRaw = ($node['Ollama: Lead Analysis'].json.response || '').trim();\n\nlet analysis = {};\ntry {\n  const jsonMatch = aiRaw.match(/\\{[\\s\\S]*\\}/);\n  analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  analysis = { industry: 'unknown', company_size: 'unknown', intent: 'medium', budget_indicator: 'unknown', urgency: 'short_term', needs: [], summary: aiRaw };\n}\n\n// Scoring algorithm\nlet score = 30; // base\n\n// Intent scoring (0-25)\nconst intentScores = { high: 25, medium: 15, low: 5 };\nscore += intentScores[analysis.intent] || 10;\n\n// Company size scoring (0-20)\nconst sizeScores = { enterprise: 20, large: 16, medium: 12, small: 8, startup: 5 };\nscore += sizeScores[analysis.company_size] || 8;\n\n// Budget indicator (0-15)\nconst budgetScores = { high: 15, medium: 10, low: 3, unknown: 5 };\nscore += budgetScores[analysis.budget_indicator] || 5;\n\n// Urgency bonus (0-10)\nconst urgencyScores = { immediate: 10, short_term: 6, long_term: 2 };\nscore += urgencyScores[analysis.urgency] || 3;\n\n// Source bonus\nconst sourceBonus = { referral: 10, linkedin: 5, website: 3, event: 7 };\nscore += sourceBonus[lead.source] || 0;\n\nscore = Math.min(100, Math.max(0, score));\n\nlet priority = 'cold';\nif (score >= 80) priority = 'hot';\nelse if (score >= 40) priority = 'warm';\n\nreturn [{\n  json: {\n    lead: lead,\n    analysis: analysis,\n    scoring: {\n      score: score,\n      priority: priority,\n      breakdown: {\n        intent: intentScores[analysis.intent] || 10,\n        company_size: sizeScores[analysis.company_size] || 8,\n        budget: budgetScores[analysis.budget_indicator] || 5,\n        urgency: urgencyScores[analysis.urgency] || 3,\n        source: sourceBonus[lead.source] || 0,\n        base: 30\n      }\n    }\n  }\n}];"
+      },
+      "id": "lead-scoring",
+      "name": "Calculate Lead Score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Write a short, professional first-response email for this lead. The tone should be warm but business-oriented. Write in German if the lead message is in German, otherwise in English.\\n\\nLead name: ' + $json.lead.name + '\\nCompany: ' + $json.lead.company + '\\nTheir message: ' + $json.lead.message + '\\nIdentified needs: ' + JSON.stringify($json.analysis.needs) + '\\nPriority: ' + $json.scoring.priority + '\\n\\nKeep it under 150 words. Include a clear next step (e.g., schedule a call).', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "generate-response",
+      "name": "Ollama: Draft First Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $node['Calculate Lead Score'].json;\nconst draftResponse = ($node['Ollama: Draft First Response'].json.response || '').trim();\n\nreturn [{\n  json: {\n    success: true,\n    lead: {\n      name: data.lead.name,\n      email: data.lead.email,\n      company: data.lead.company,\n      source: data.lead.source\n    },\n    analysis: data.analysis,\n    scoring: data.scoring,\n    draft_response: draftResponse,\n    recommended_action: data.scoring.priority === 'hot' \n      ? 'IMMEDIATE: Contact within 1 hour' \n      : data.scoring.priority === 'warm'\n        ? 'FOLLOW-UP: Contact within 24 hours'\n        : 'NURTURE: Add to email sequence',\n    crm_status: 'ready_for_import',\n    model: 'qwen2.5:1.5b',\n    gdpr_compliant: true,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "final-output",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: New Lead": {
+      "main": [
+        [{ "node": "Validate & Clean Lead Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validate & Clean Lead Data": {
+      "main": [
+        [{ "node": "Ollama: Lead Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Lead Analysis": {
+      "main": [
+        [{ "node": "Calculate Lead Score", "type": "main", "index": 0 }]
+      ]
+    },
+    "Calculate Lead Score": {
+      "main": [
+        [{ "node": "Ollama: Draft First Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Draft First Response": {
+      "main": [
+        [{ "node": "Format Final Output", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "crm" },
+    { "name": "lead-scoring" }
+  ]
+}

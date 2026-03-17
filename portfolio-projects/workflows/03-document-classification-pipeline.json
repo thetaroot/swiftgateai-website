@@ -1,0 +1,139 @@
+{
+  "name": "Portfolio: Document Classification & Data Extraction",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "document-classify",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-doc",
+      "name": "Webhook: Document Input",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body;\n\nif (!input.document_text || input.document_text.trim().length < 10) {\n  return [{ json: { error: true, message: 'document_text is required (min 10 chars)' } }];\n}\n\nconst text = input.document_text.trim()\n  .replace(/\\s+/g, ' ')\n  .substring(0, 3000);\n\nreturn [{\n  json: {\n    document_text: text,\n    source: input.source || 'unknown',\n    sender: input.sender || 'unknown',\n    char_count: text.length,\n    received_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "preprocess",
+      "name": "Text Preprocessing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Classify this document into exactly ONE type. Reply ONLY with valid JSON.\\n\\nDocument text:\\n' + $json.document_text.substring(0, 1500) + '\\n\\nClassify as JSON:\\n{\\n  \"type\": \"claim|cancellation|invoice|contract_change|correspondence\",\\n  \"confidence\": 0.0 to 1.0,\\n  \"language\": \"de|en\",\\n  \"brief_summary\": \"one sentence summary\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "classify-doc",
+      "name": "Ollama: Classify Document",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const docText = $node['Text Preprocessing'].json.document_text;\nconst classRaw = ($node['Ollama: Classify Document'].json.response || '').trim();\n\nlet classification = {};\ntry {\n  const jsonMatch = classRaw.match(/\\{[\\s\\S]*\\}/);\n  classification = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  classification = { type: 'correspondence', confidence: 0.5, language: 'de', brief_summary: 'Could not parse classification' };\n}\n\nconst validTypes = ['claim', 'cancellation', 'invoice', 'contract_change', 'correspondence'];\nif (!validTypes.includes(classification.type)) {\n  classification.type = 'correspondence';\n}\n\n// Build extraction prompt based on document type\nconst extractionSchemas = {\n  claim: 'Extract: { \"claimant_name\": \"\", \"claim_date\": \"\", \"claim_type\": \"property|vehicle|health|liability|other\", \"estimated_amount\": \"\", \"contract_number\": \"\", \"description\": \"\" }',\n  cancellation: 'Extract: { \"customer_name\": \"\", \"contract_number\": \"\", \"cancellation_date\": \"\", \"effective_date\": \"\", \"reason\": \"\" }',\n  invoice: 'Extract: { \"invoice_number\": \"\", \"sender\": \"\", \"amount\": \"\", \"currency\": \"\", \"due_date\": \"\", \"line_items\": \"\" }',\n  contract_change: 'Extract: { \"customer_name\": \"\", \"contract_number\": \"\", \"requested_changes\": \"\", \"effective_date\": \"\" }',\n  correspondence: 'Extract: { \"sender_name\": \"\", \"subject\": \"\", \"intent\": \"\", \"requires_response\": true/false }'\n};\n\nreturn [{\n  json: {\n    document_text: docText,\n    classification: classification,\n    extraction_schema: extractionSchemas[classification.type]\n  }\n}];"
+      },
+      "id": "build-extraction",
+      "name": "Build Extraction Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Extract key data from this document. Reply ONLY with valid JSON.\\n\\nDocument type: ' + $json.classification.type + '\\n\\nDocument text:\\n' + $json.document_text.substring(0, 2000) + '\\n\\n' + $json.extraction_schema + '\\n\\nFill in all fields. Use null for fields you cannot determine.', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "extract-data",
+      "name": "Ollama: Extract Key Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Assess the urgency of this document. Reply ONLY with valid JSON.\\n\\nDocument type: ' + $node['Build Extraction Prompt'].json.classification.type + '\\nSummary: ' + $node['Build Extraction Prompt'].json.classification.brief_summary + '\\nDocument excerpt: ' + $node['Build Extraction Prompt'].json.document_text.substring(0, 500) + '\\n\\nProvide JSON:\\n{\\n  \"priority\": \"critical|high|medium|low\",\\n  \"reasoning\": \"brief explanation\",\\n  \"deadline_detected\": true/false,\\n  \"deadline_date\": \"date or null\",\\n  \"recommended_action\": \"what should happen next\"\\n}', stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "assess-urgency",
+      "name": "Ollama: Urgency Assessment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const preprocessing = $node['Text Preprocessing'].json;\nconst classification = $node['Build Extraction Prompt'].json.classification;\nconst extractRaw = ($node['Ollama: Extract Key Data'].json.response || '').trim();\nconst urgencyRaw = ($node['Ollama: Urgency Assessment'].json.response || '').trim();\n\nlet extractedData = {};\ntry {\n  const jsonMatch = extractRaw.match(/\\{[\\s\\S]*\\}/);\n  extractedData = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  extractedData = { parse_error: true, raw: extractRaw.substring(0, 200) };\n}\n\nlet urgency = {};\ntry {\n  const jsonMatch = urgencyRaw.match(/\\{[\\s\\S]*\\}/);\n  urgency = jsonMatch ? JSON.parse(jsonMatch[0]) : {};\n} catch(e) {\n  urgency = { priority: 'medium', reasoning: 'Could not assess', deadline_detected: false };\n}\n\nconst departmentRouting = {\n  claim: 'claims_department',\n  cancellation: 'retention_team',\n  invoice: 'finance',\n  contract_change: 'contract_management',\n  correspondence: 'general_inbox'\n};\n\n// Calculate completeness\nconst fields = Object.values(extractedData);\nconst filledFields = fields.filter(v => v !== null && v !== '' && v !== undefined);\nconst completeness = fields.length > 0 ? Math.round((filledFields.length / fields.length) * 100) : 0;\n\nreturn [{\n  json: {\n    success: true,\n    document: {\n      source: preprocessing.source,\n      sender: preprocessing.sender,\n      char_count: preprocessing.char_count,\n      received_at: preprocessing.received_at\n    },\n    classification: {\n      type: classification.type,\n      confidence: classification.confidence,\n      language: classification.language,\n      summary: classification.brief_summary\n    },\n    extracted_data: extractedData,\n    urgency: urgency,\n    routing: {\n      department: departmentRouting[classification.type] || 'general_inbox',\n      auto_processable: classification.confidence > 0.85 && completeness > 70\n    },\n    quality: {\n      extraction_completeness: completeness + '%',\n      fields_extracted: filledFields.length,\n      fields_total: fields.length\n    },\n    model: 'qwen2.5:1.5b',\n    gdpr_compliant: true,\n    processing_pipeline: 'local',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "final-output",
+      "name": "Assemble Final Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1540, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Document Input": {
+      "main": [
+        [{ "node": "Text Preprocessing", "type": "main", "index": 0 }]
+      ]
+    },
+    "Text Preprocessing": {
+      "main": [
+        [{ "node": "Ollama: Classify Document", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Classify Document": {
+      "main": [
+        [{ "node": "Build Extraction Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Extraction Prompt": {
+      "main": [
+        [{ "node": "Ollama: Extract Key Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Extract Key Data": {
+      "main": [
+        [{ "node": "Ollama: Urgency Assessment", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Urgency Assessment": {
+      "main": [
+        [{ "node": "Assemble Final Result", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "document-ai" },
+    { "name": "automation" }
+  ]
+}

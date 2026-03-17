@@ -1,0 +1,109 @@
+{
+  "name": "Portfolio: AI Customer Support Chatbot (DE/EN)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "customer-support",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Customer Support",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Detect the language of the following message. Reply with ONLY \"de\" or \"en\", nothing else.\\n\\nMessage: ' + $json.body.message, stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "language-detection",
+      "name": "Ollama: Language Detection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'Classify the following customer message into exactly ONE category. Reply with ONLY the category name, nothing else.\\nCategories: support, sales, billing, general\\n\\nMessage: ' + $node['Webhook: Customer Support'].json.body.message, stream: false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "category-classification",
+      "name": "Ollama: Category Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'qwen2.5:1.5b', prompt: 'You are a helpful and professional customer support assistant for a German technology company. Respond in ' + ($node['Ollama: Language Detection'].json.response || '').trim().toLowerCase().includes('de') ? 'German' : 'English' + '.\\n\\nCustomer message: ' + $node['Webhook: Customer Support'].json.body.message + '\\n\\nProvide a helpful, concise, and professional response. If you cannot fully resolve the issue, acknowledge it and let the customer know a specialist will follow up.', stream: false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "response-generation",
+      "name": "Ollama: Generate Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhookData = $node['Webhook: Customer Support'].json.body;\nconst langRaw = ($node['Ollama: Language Detection'].json.response || '').trim().toLowerCase();\nconst catRaw = ($node['Ollama: Category Classification'].json.response || '').trim().toLowerCase();\nconst response = ($node['Ollama: Generate Response'].json.response || '').trim();\n\nconst language = langRaw.includes('de') ? 'de' : 'en';\n\nconst validCategories = ['support', 'sales', 'billing', 'general'];\nconst category = validCategories.find(c => catRaw.includes(c)) || 'general';\n\nconst needsEscalation = ['billing'].includes(category) || \n  (webhookData.message && webhookData.message.length > 500);\n\nreturn [{\n  json: {\n    success: true,\n    session_id: webhookData.session_id || 'anonymous',\n    response: response,\n    metadata: {\n      language: language,\n      category: category,\n      escalated: needsEscalation,\n      model: 'qwen2.5:1.5b',\n      processing: 'local-llm',\n      gdpr_compliant: true\n    },\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "response-formatter",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Customer Support": {
+      "main": [
+        [{ "node": "Ollama: Language Detection", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Language Detection": {
+      "main": [
+        [{ "node": "Ollama: Category Classification", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Category Classification": {
+      "main": [
+        [{ "node": "Ollama: Generate Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ollama: Generate Response": {
+      "main": [
+        [{ "node": "Format Response", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "portfolio" },
+    { "name": "chatbot" },
+    { "name": "ai" }
+  ]
+}
