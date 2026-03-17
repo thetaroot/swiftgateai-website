@@ -11,6 +11,7 @@ interface BackgroundColors {
 export interface ChatMessage {
   role: 'user' | 'model';
   content: string;
+  showTicketForm?: boolean;
 }
 
 export interface LeadContext {

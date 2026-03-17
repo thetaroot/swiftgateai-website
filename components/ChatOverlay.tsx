@@ -152,8 +152,6 @@ function ChatOverlay() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
-  // Track which chatMessage indices should show the ticket form (survives sync effect)
-  const ticketFormIndicesRef = useRef<Set<number>>(new Set());
 
   useEffect(() => { setMounted(true); return () => setMounted(false); }, []);
 
@@ -178,9 +176,9 @@ function ChatOverlay() {
     if (curLen > prevLen) {
       if (lastMsg.role === 'user') {
         // User sent a message → show all + thinking dots
-        const synced: InternalMessage[] = chatMessages.map((m, i) => ({
+        const synced: InternalMessage[] = chatMessages.map((m) => ({
           role: m.role, content: m.content, status: 'complete' as const,
-          showTicketForm: ticketFormIndicesRef.current.has(i),
+          showTicketForm: m.showTicketForm || false,
         }));
         synced.push({ role: 'model', content: '', status: 'thinking' });
         setInternalMessages(synced);
@@ -190,15 +188,15 @@ function ChatOverlay() {
           role: m.role,
           content: m.content,
           status: i === curLen - 1 ? 'typing' as const : 'complete' as const,
-          showTicketForm: ticketFormIndicesRef.current.has(i),
+          showTicketForm: m.showTicketForm || false,
         }));
         setInternalMessages(synced);
       }
     } else if (prevLen === 0 && curLen > 0) {
       // Overlay just opened with existing messages
-      setInternalMessages(chatMessages.map((m, i) => ({
+      setInternalMessages(chatMessages.map((m) => ({
         role: m.role, content: m.content, status: 'complete' as const,
-        showTicketForm: ticketFormIndicesRef.current.has(i),
+        showTicketForm: m.showTicketForm || false,
       })));
     }
   }, [chatMessages, isChatOpen]);
@@ -286,6 +284,9 @@ function ChatOverlay() {
     try {
       const history = [...chatMessages, userMsg].slice(-20).map(m => ({ role: m.role, content: m.content }));
 
+      // Check if a ticket was already suggested in a previous message
+      const alreadySuggested = chatMessages.some(m => m.showTicketForm) || ticketSubmitted;
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -293,7 +294,10 @@ function ChatOverlay() {
           message: trimmed,
           history: history.slice(0, -1),
           language: 'AUTO',
-          context: leadContext,
+          context: {
+            ...leadContext,
+            ...(alreadySuggested ? { ticket_already_suggested: true } : {}),
+          },
         }),
       });
 
@@ -317,22 +321,16 @@ function ChatOverlay() {
             urgency: (ext.urgency === 'low' || ext.urgency === 'medium' || ext.urgency === 'high') ? ext.urgency : prev.urgency,
           }));
         }
-        if (data.suggest_ticket && !ticketSubmitted) {
+        if (data.suggest_ticket && !ticketSubmitted && !alreadySuggested) {
           shouldSuggestTicket = true;
           setLastAISummary(reply);
           setShowTicketForm(true);
         }
       }
 
-      // Mark the ticket form index BEFORE setChatMessages triggers the sync effect
-      if (shouldSuggestTicket) {
-        // The new model message will be at the end of chatMessages after the update
-        const nextIndex = chatMessages.length + 1; // +1 for the user msg already added
-        ticketFormIndicesRef.current.add(nextIndex);
-      }
-
+      // Embed showTicketForm directly on the ChatMessage — no index tracking needed
       setChatMessages(prev => {
-        const updated = [...prev, { role: 'model' as const, content: reply }];
+        const updated = [...prev, { role: 'model' as const, content: reply, showTicketForm: shouldSuggestTicket }];
         return updated.length > 20 ? updated.slice(-20) : updated;
       });
     } catch {
@@ -343,7 +341,7 @@ function ChatOverlay() {
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, chatMessages, setChatMessages, language, t.ai, leadContext, setLeadContext, setLeadScore, ticketSubmitted, setLastAISummary, setShowTicketForm]);
+  }, [message, isLoading, chatMessages, setChatMessages, t.ai, leadContext, setLeadContext, setLeadScore, ticketSubmitted, setLastAISummary, setShowTicketForm]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (isMobile) return;
