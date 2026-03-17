@@ -28,6 +28,7 @@ interface LeadContext {
     company: string | null;
     urgency: string | null;
     ticket_already_suggested?: boolean;
+    ticket_submitted?: boolean;
 }
 
 interface ChatRequestBody {
@@ -173,6 +174,7 @@ export async function POST(request: Request) {
                 company: typeof c.company === 'string' ? c.company.slice(0, 80).replace(/[<>\[\]{}]/g, '') : null,
                 urgency: typeof c.urgency === 'string' && VALID_URGENCY.has(c.urgency) ? c.urgency : null,
                 ticket_already_suggested: c.ticket_already_suggested === true ? true : undefined,
+                ticket_submitted: c.ticket_submitted === true ? true : undefined,
             };
         }
 

@@ -18,7 +18,7 @@ interface TicketFormProps {
 function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
   const { t, language } = useTranslation();
   const isMobile = useMobile();
-  const { chatMessages, setTicketSubmitted, setShowTicketForm } = useBackgroundContext();
+  const { chatMessages, setTicketSubmitted } = useBackgroundContext();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -51,7 +51,6 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
       if (response.ok) {
         setSubmitted(true);
         setTicketSubmitted(true);
-        setShowTicketForm(false);
       } else {
         setError(true);
       }
@@ -60,9 +59,9 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [name, email, summary, leadScore, leadData, chatMessages, language, isValid, isSubmitting, setTicketSubmitted, setShowTicketForm]);
+  }, [name, email, summary, leadScore, leadData, chatMessages, language, isValid, isSubmitting, setTicketSubmitted]);
 
-  // Success state
+  // Success state — stays visible permanently
   if (submitted) {
     return (
       <motion.div
@@ -73,7 +72,7 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
         style={{
           background: 'rgba(255, 255, 255, 0.5)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(211, 152, 88, 0.3)',
+          border: '1px solid rgba(74, 222, 128, 0.3)',
         }}
       >
         <div className="flex items-center gap-3 mb-2">
@@ -93,8 +92,20 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
           opacity: 0.7,
           lineHeight: 1.5,
           fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+          margin: 0,
         }}>
           {t.ticket.successMessage}
+        </p>
+        <p style={{
+          fontSize: '13px',
+          color: '#1d1d1f',
+          opacity: 0.45,
+          lineHeight: 1.4,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+          marginTop: '8px',
+          marginBottom: 0,
+        }}>
+          {t.ticket.successContinue}
         </p>
       </motion.div>
     );

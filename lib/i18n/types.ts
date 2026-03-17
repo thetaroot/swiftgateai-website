@@ -156,6 +156,7 @@ export interface Dictionary {
         submitting: string;
         successTitle: string;
         successMessage: string;
+        successContinue: string;
         privacyNote: string;
         errorMessage: string;
     };

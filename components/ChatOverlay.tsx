@@ -297,6 +297,7 @@ function ChatOverlay() {
           context: {
             ...leadContext,
             ...(alreadySuggested ? { ticket_already_suggested: true } : {}),
+            ...(ticketSubmitted ? { ticket_submitted: true } : {}),
           },
         }),
       });
@@ -433,7 +434,7 @@ function ChatOverlay() {
                       msg.content
                     )}
                   </p>
-                  {msg.showTicketForm && msg.status === 'complete' && !ticketSubmitted && (
+                  {msg.showTicketForm && msg.status === 'complete' && (
                     <div style={{ marginTop: '12px' }}>
                       <TicketForm
                         summary={lastAISummary}
