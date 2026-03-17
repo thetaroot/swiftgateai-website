@@ -306,6 +306,7 @@ function ContactSection() {
                 isOpen={showFollowUp}
                 onClose={() => setShowFollowUp(false)}
                 email={email}
+                chatMessages={chatMessages}
             />
         </section>
     );

@@ -94,6 +94,7 @@ export interface Dictionary {
         exitHint: string;
         suggestions: string[];
         mobileSuggestions: string[];
+        resumeChat: string;
         overlayTitle: string;
         demo: {
             role: 'user' | 'assistant';
@@ -162,11 +163,15 @@ export interface Dictionary {
     };
     followUp: {
         title: string;
+        titleWithContext: string;
         nextButton: string;
         generateButton: string;
         q1: string;
+        q1Hint: string;
         q2: string;
+        q2Hint: string;
         q3: string;
+        q3Hint: string;
         q3optSoon: string;
         q3optQuarter: string;
         q3optExploring: string;

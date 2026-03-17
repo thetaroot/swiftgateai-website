@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, memo, useCallback } from 'react';
+import { useState, memo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -9,13 +9,81 @@ import { useSettings } from '@/context/SettingsContext';
 
 const quickSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
 
+interface ChatMessage {
+  role: 'user' | 'model';
+  content: string;
+}
+
 interface ContactFollowUpProps {
   isOpen: boolean;
   onClose: () => void;
   email: string;
+  chatMessages?: ChatMessage[];
 }
 
-function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
+/** Extract a rough project description from chat history user messages. */
+function _extractProjectNeed(messages: ChatMessage[]): string {
+  const userMessages = messages
+    .filter(m => m.role === 'user')
+    .map(m => m.content.trim())
+    .filter(m => m.length > 10);
+  if (userMessages.length === 0) return '';
+  // Use the longest user message as the best signal
+  return userMessages.reduce((a, b) => a.length >= b.length ? a : b, '');
+}
+
+/** Build a natural first-person paragraph summary from form answers. */
+function _buildNaturalSummary(answers: string[], language: string): string {
+  const [need, company, urgency] = answers;
+  if (language === 'EN') {
+    let summary = need ? `I'm looking into: ${need}` : '';
+    if (company) summary += summary ? `. This is for ${company}` : `This is for ${company}`;
+    if (urgency === 'soon') summary += summary ? '. Timeline: within the next few weeks' : 'Timeline: within the next few weeks';
+    else if (urgency === 'quarter') summary += summary ? '. No rush — next quarter' : 'Timeline: next quarter';
+    else if (urgency === 'exploring') summary += summary ? '. Just exploring for now' : 'Just exploring options for now';
+    return summary || 'Interested in learning more about your services.';
+  }
+  let summary = need ? `Ich interessiere mich fuer: ${need}` : '';
+  if (company) summary += summary ? `. Das ist fuer ${company}` : `Das ist fuer ${company}`;
+  if (urgency === 'soon') summary += summary ? '. Zeitrahmen: in den naechsten Wochen' : 'Zeitrahmen: in den naechsten Wochen';
+  else if (urgency === 'quarter') summary += summary ? '. In Ruhe — naechstes Quartal' : 'Zeitrahmen: naechstes Quartal';
+  else if (urgency === 'exploring') summary += summary ? '. Erstmal nur informieren' : 'Moechte mich erstmal informieren';
+  return summary || 'Ich moechte mehr ueber Ihre Leistungen erfahren.';
+}
+
+/** Build enrichment message combining chat history + follow-up answers. */
+function _buildEnrichmentMessage(
+  chatMessages: ChatMessage[],
+  answers: string[],
+  language: string,
+): { role: 'user'; content: string } {
+  const hasChatHistory = chatMessages.length >= 2;
+  if (hasChatHistory) {
+    // Summarize the enrichment data as a final user message
+    const parts: string[] = [];
+    if (answers[1]) parts.push(language === 'EN' ? `Company: ${answers[1]}` : `Firma: ${answers[1]}`);
+    if (answers[2]) {
+      const urgencyMap: Record<string, string> = language === 'EN'
+        ? { soon: 'Soon (weeks)', quarter: 'Next quarter', exploring: 'Just exploring' }
+        : { soon: 'Bald (Wochen)', quarter: 'Naechstes Quartal', exploring: 'Nur informieren' };
+      parts.push(language === 'EN' ? `Timeline: ${urgencyMap[answers[2]] || answers[2]}` : `Zeitrahmen: ${urgencyMap[answers[2]] || answers[2]}`);
+    }
+    const enrichment = parts.length > 0 ? parts.join('. ') : '';
+    const content = language === 'EN'
+      ? `Please write a professional email summarizing our conversation. Additional context: ${enrichment || 'none'}.`
+      : `Bitte verfasse eine professionelle E-Mail basierend auf unserem Gespraech. Zusaetzliche Infos: ${enrichment || 'keine'}.`;
+    return { role: 'user', content };
+  }
+
+  // No chat history: build a natural first-person paragraph
+  const summary = _buildNaturalSummary(answers, language);
+  const content = language === 'EN'
+    ? `Please write a professional email based on the following: ${summary}`
+    : `Bitte verfasse eine professionelle E-Mail basierend auf Folgendem: ${summary}`;
+  return { role: 'user', content };
+}
+
+function ContactFollowUp({ isOpen, onClose, email, chatMessages = [] }: ContactFollowUpProps) {
   const { t } = useTranslation();
   const { language } = useSettings();
   const isMobile = useMobile();
@@ -24,7 +92,21 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
   const [answers, setAnswers] = useState<string[]>(['', '', '']);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const hasContext = chatMessages.length >= 2;
   const totalSteps = 3;
+
+  // Pre-fill step 0 from chat context when opening with history
+  useEffect(() => {
+    if (isOpen && hasContext) {
+      const extracted = _extractProjectNeed(chatMessages);
+      if (extracted) {
+        setAnswers(prev => {
+          if (prev[0] === '') return [extracted, prev[1], prev[2]];
+          return prev;
+        });
+      }
+    }
+  }, [isOpen, hasContext, chatMessages]);
 
   const handleTextChange = useCallback((value: string) => {
     setAnswers(prev => {
@@ -53,23 +135,17 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
     setIsGenerating(true);
 
     try {
-      // Build synthetic chat history from answers (language-aware labels)
-      const lblCompany = language === 'EN' ? 'Company' : 'Unternehmen';
-      const lblUrgency = language === 'EN' ? 'Urgency' : 'Dringlichkeit';
-      const lblNA = language === 'EN' ? 'Not specified' : 'Nicht angegeben';
-      const syntheticHistory = [
-        { role: 'user' as const, content: answers[0] || '' },
-        { role: 'model' as const, content: '.' },
-        { role: 'user' as const, content: `${lblCompany}: ${answers[1] || lblNA}` },
-        { role: 'model' as const, content: '.' },
-        { role: 'user' as const, content: `${lblUrgency}: ${answers[2] || lblNA}` },
-      ];
+      // Build history for the mail-draft API
+      const enrichment = _buildEnrichmentMessage(chatMessages, answers, language);
+      const history = hasContext
+        ? [...chatMessages, enrichment]
+        : [enrichment];
 
       const response = await fetch('/api/mail-draft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          history: syntheticHistory,
+          history,
           language,
         }),
       });
@@ -108,7 +184,7 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
     } finally {
       setIsGenerating(false);
     }
-  }, [answers, email, language, isGenerating, onClose]);
+  }, [answers, email, language, isGenerating, onClose, chatMessages, hasContext]);
 
   const handleClose = useCallback(() => {
     setStep(0);
@@ -123,6 +199,15 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
     { value: 'quarter', label: t.followUp.q3optQuarter },
     { value: 'exploring', label: t.followUp.q3optExploring },
   ];
+
+  const hintStyle: React.CSSProperties = {
+    fontSize: '12px',
+    color: 'rgba(0, 0, 0, 0.35)',
+    fontStyle: 'italic',
+    marginTop: '8px',
+    lineHeight: 1.4,
+    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+  };
 
   return (
     <AnimatePresence>
@@ -170,7 +255,7 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
                   fontWeight: 700,
                   color: '#1d1d1f',
                 }}>
-                  {t.followUp.title}
+                  {hasContext ? t.followUp.titleWithContext : t.followUp.title}
                 </h3>
                 <motion.button
                   onClick={handleClose}
@@ -232,6 +317,7 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
                         }}
                         autoFocus
                       />
+                      <p style={hintStyle}>{t.followUp.q1Hint}</p>
                     </motion.div>
                   )}
 
@@ -271,6 +357,7 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
                         }}
                         autoFocus
                       />
+                      <p style={hintStyle}>{t.followUp.q2Hint}</p>
                     </motion.div>
                   )}
 
@@ -322,6 +409,7 @@ function ContactFollowUp({ isOpen, onClose, email }: ContactFollowUpProps) {
                           </motion.button>
                         ))}
                       </div>
+                      <p style={hintStyle}>{t.followUp.q3Hint}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

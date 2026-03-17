@@ -155,11 +155,28 @@ export async function POST(request: Request) {
         }
 
         if (!subject || !mailBody) {
-            // Fallback if Gemini didn't return valid JSON
-            subject = language === 'EN' ? 'Project Inquiry via SwiftGate AI' : 'Projektanfrage über SwiftGate AI';
-            mailBody = language === 'EN'
-                ? 'Hello,\n\nI visited your website and would like to discuss a potential project.\n\nBest regards'
-                : 'Guten Tag,\n\nIch habe Ihre Website besucht und würde gerne ein mögliches Projekt besprechen.\n\nMit freundlichen Grüßen';
+            // Fallback: build email from chat context instead of generic text
+            subject = language === 'EN' ? 'Project Inquiry via SwiftGate AI' : 'Projektanfrage via SwiftGate AI';
+            const userMessages = history
+                .filter(m => m.role === 'user')
+                .map(m => m.content)
+                .join(' ');
+            const summary = userMessages.slice(0, 300).trim();
+            if (summary.length > 20) {
+                const greeting = language === 'EN' ? 'Hello' : 'Hallo';
+                const intro = language === 'EN'
+                    ? "I'm reaching out because I'm interested in your services."
+                    : 'ich melde mich, weil ich mich fuer Ihre Services interessiere.';
+                const context = language === 'EN'
+                    ? `Here is what I'm looking for: ${summary}`
+                    : `Hier ist, worum es mir geht: ${summary}`;
+                const closing = language === 'EN' ? 'Best regards' : 'Beste Gruesse';
+                mailBody = `${greeting},\n\n${intro}\n\n${context}\n\n${closing}`;
+            } else {
+                mailBody = language === 'EN'
+                    ? 'Hello,\n\nI visited your website and would like to discuss a potential project.\n\nBest regards'
+                    : 'Hallo,\n\nIch habe Ihre Website besucht und wuerde gerne ein moegliches Projekt besprechen.\n\nBeste Gruesse';
+            }
         }
 
         return NextResponse.json(

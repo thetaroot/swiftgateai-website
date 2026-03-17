@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useSettings } from '@/context/SettingsContext';
 import { useMobile } from '@/hooks/useMobile';
 import { useTypewriter } from '@/hooks/useTypewriter';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -13,7 +12,6 @@ const quickSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 function ChatInput() {
   const { t } = useTranslation();
-  const { language } = useSettings();
   const isMobile = useMobile();
   const prefersReducedMotion = useReducedMotion();
   const { chatMessages, setChatMessages, setIsChatOpen } = useBackgroundContext();
@@ -66,7 +64,7 @@ function ChatInput() {
         body: JSON.stringify({
           message: trimmed,
           history: history.slice(0, -1),
-          language,
+          language: 'AUTO',
         }),
       });
 
@@ -95,7 +93,7 @@ function ChatInput() {
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, chatMessages, setChatMessages, setIsChatOpen, language, t.ai]);
+  }, [message, isLoading, chatMessages, setChatMessages, setIsChatOpen, t.ai]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (isMobile) return;
@@ -106,11 +104,51 @@ function ChatInput() {
   }, [handleSend, isMobile]);
 
   const hasText = message.trim().length > 0;
+  const hasHistory = chatMessages.length > 0;
+
+  const resumeButton = (
+    <AnimatePresence>
+      {hasHistory && (
+        <motion.button
+          key="resume"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 8 }}
+          transition={quickSpring}
+          onClick={() => setIsChatOpen(true)}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-2 mx-auto cursor-pointer"
+          style={{
+            marginBottom: '12px',
+            padding: '8px 20px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.45) 100%)',
+            backdropFilter: 'blur(30px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 2px 8px rgba(52, 21, 15, 0.08)',
+            border: 'none',
+            outline: 'none',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: 'rgba(52, 21, 15, 0.7)',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(211, 152, 88, 0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          {t.chat.resumeChat}
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
 
   // ─── MOBILE DESIGN ───
   if (isMobile) {
     return (
       <div className="w-full" style={{ zIndex: 50 }}>
+        {resumeButton}
         <div
           className="relative rounded-[20px] overflow-hidden flex items-center"
           style={{
@@ -208,9 +246,10 @@ function ChatInput() {
   // ─── DESKTOP DESIGN ───
   return (
     <div
-      className="w-full flex justify-center pointer-events-auto"
+      className="w-full flex flex-col items-center pointer-events-auto"
       style={{ zIndex: 50 }}
     >
+      {resumeButton}
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

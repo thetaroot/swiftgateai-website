@@ -18,12 +18,12 @@ interface TicketFormProps {
 function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
   const { t, language } = useTranslation();
   const isMobile = useMobile();
-  const { chatMessages, setTicketSubmitted } = useBackgroundContext();
+  const { chatMessages, ticketSubmitted, setTicketSubmitted } = useBackgroundContext();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(ticketSubmitted);
   const [error, setError] = useState(false);
 
   const isValid = name.trim().length > 0 && email.includes('@') && email.includes('.');

@@ -72,7 +72,8 @@ const MAX_RETRIES = 3;
 export async function callGemini(
     systemPrompt: string,
     contents: GeminiContent[],
-    safetySettings?: SafetySetting[]
+    safetySettings?: SafetySetting[],
+    maxOutputTokens = 1024
 ): Promise<string> {
     if (API_KEYS.length === 0) {
         throw new Error('GEMINI_API_KEY not configured');
@@ -98,7 +99,7 @@ export async function callGemini(
                     safetySettings: safetySettings ?? DEFAULT_SAFETY_SETTINGS,
                     generationConfig: {
                         temperature: 0.3,
-                        maxOutputTokens: 300,
+                        maxOutputTokens: maxOutputTokens,
                         topP: 0.8,
                     },
                 }),
