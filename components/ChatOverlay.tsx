@@ -292,7 +292,7 @@ function ChatOverlay() {
         body: JSON.stringify({
           message: trimmed,
           history: history.slice(0, -1),
-          language,
+          language: 'AUTO',
           context: leadContext,
         }),
       });

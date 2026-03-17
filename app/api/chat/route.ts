@@ -32,7 +32,7 @@ interface LeadContext {
 interface ChatRequestBody {
     message: string;
     history: ChatMessage[];
-    language: 'DE' | 'EN';
+    language: 'DE' | 'EN' | 'AUTO';
     context?: LeadContext | null;
 }
 
@@ -53,7 +53,7 @@ function isValidBody(body: unknown): body is ChatRequestBody {
     const obj = body as Record<string, unknown>;
     if (typeof obj.message !== 'string') return false;
     if (!Array.isArray(obj.history)) return false;
-    if (obj.language !== 'DE' && obj.language !== 'EN') return false;
+    if (obj.language !== 'DE' && obj.language !== 'EN' && obj.language !== 'AUTO') return false;
     return true;
 }
 
