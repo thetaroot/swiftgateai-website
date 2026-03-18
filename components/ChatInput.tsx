@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useBackgroundContext } from '@/context/BackgroundContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
@@ -21,7 +21,9 @@ function ChatInput() {
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const typewriterEnabled = !isFocused && message.length === 0;
+  const hasHistory = chatMessages.length > 0;
+
+  const typewriterEnabled = !isFocused && message.length === 0 && !hasHistory;
   const { displayText, cursorVisible } = useTypewriter({
     texts: isMobile ? t.chat.mobileSuggestions : t.chat.suggestions,
     typingSpeed: 50,
@@ -104,58 +106,60 @@ function ChatInput() {
   }, [handleSend, isMobile]);
 
   const hasText = message.trim().length > 0;
-  const hasHistory = chatMessages.length > 0;
 
-  const resumeButton = (
-    <AnimatePresence>
-      {hasHistory && (
+  // ─── RESUME MODE: Show only "back to chat" button ───
+  if (hasHistory) {
+    return (
+      <div
+        className={`w-full flex ${isMobile ? '' : 'justify-center'} pointer-events-auto`}
+        style={{ zIndex: 50 }}
+      >
         <motion.button
-          key="resume"
-          initial={{ opacity: 0, y: 8 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 8 }}
           transition={quickSpring}
           onClick={() => setIsChatOpen(true)}
-          whileHover={{ scale: 1.03 }}
+          whileHover={prefersReducedMotion ? {} : { scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 mx-auto cursor-pointer"
+          className={`flex items-center gap-3 cursor-pointer ${isMobile ? 'w-full justify-center' : ''}`}
           style={{
-            marginBottom: '12px',
-            padding: '8px 20px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.45) 100%)',
-            backdropFilter: 'blur(30px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 2px 8px rgba(52, 21, 15, 0.08)',
+            padding: isMobile ? '14px 24px' : '14px 28px',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%)',
+            backdropFilter: 'blur(40px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+            boxShadow: '0 0 0 1px rgba(52, 21, 15, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 4px 16px rgba(52, 21, 15, 0.1), 0 8px 32px rgba(52, 21, 15, 0.08)',
             border: 'none',
             outline: 'none',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
-            fontSize: '13px',
+            fontSize: '15px',
             fontWeight: 500,
-            color: 'rgba(52, 21, 15, 0.7)',
+            color: 'rgba(52, 21, 15, 0.75)',
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(211, 152, 88, 0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D39858" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
           {t.chat.resumeChat}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(52, 21, 15, 0.3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </motion.button>
-      )}
-    </AnimatePresence>
-  );
+      </div>
+    );
+  }
 
-  // ─── MOBILE DESIGN ───
+  // ─── MOBILE DESIGN (no history) ───
   if (isMobile) {
     return (
       <div className="w-full" style={{ zIndex: 50 }}>
-        {resumeButton}
         <div
           className="relative rounded-[20px] overflow-hidden flex items-center"
           style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.55) 100%)',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.65) 100%)',
             backdropFilter: 'blur(40px) saturate(180%)',
             WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 4px 16px rgba(52, 21, 15, 0.1)',
+            boxShadow: '0 0 0 1px rgba(52, 21, 15, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 4px 16px rgba(52, 21, 15, 0.12)',
             minHeight: '56px',
             padding: '8px 14px 8px 18px',
           }}
@@ -166,7 +170,7 @@ function ChatInput() {
               <div
                 className="absolute inset-0 flex items-center pointer-events-none"
                 style={{
-                  color: 'rgba(52, 21, 15, 0.35)',
+                  color: 'rgba(52, 21, 15, 0.45)',
                   fontSize: '16px',
                   lineHeight: '1.6',
                   fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif',
@@ -243,13 +247,12 @@ function ChatInput() {
     );
   }
 
-  // ─── DESKTOP DESIGN ───
+  // ─── DESKTOP DESIGN (no history) ───
   return (
     <div
-      className="w-full flex flex-col items-center pointer-events-auto"
+      className="w-full flex justify-center pointer-events-auto"
       style={{ zIndex: 50 }}
     >
-      {resumeButton}
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -275,10 +278,10 @@ function ChatInput() {
           <div
             className="relative rounded-[20px] overflow-hidden flex items-center"
             style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.55) 100%)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.65) 100%)',
               backdropFilter: 'blur(40px) saturate(180%)',
               WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-              boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 0 0 1px rgba(52, 21, 15, 0.03), 0 4px 8px rgba(52, 21, 15, 0.04), 0 8px 16px rgba(52, 21, 15, 0.06), 0 16px 32px rgba(52, 21, 15, 0.08), 0 32px 64px rgba(52, 21, 15, 0.12)',
+              boxShadow: '0 0 0 1px rgba(52, 21, 15, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 4px 8px rgba(52, 21, 15, 0.06), 0 8px 16px rgba(52, 21, 15, 0.08), 0 16px 32px rgba(52, 21, 15, 0.1), 0 32px 64px rgba(52, 21, 15, 0.12)',
               minHeight: '64px',
               padding: '10px 14px 10px 20px',
             }}
@@ -291,7 +294,7 @@ function ChatInput() {
                 <div
                   className="absolute inset-0 flex items-center pointer-events-none"
                   style={{
-                    color: 'rgba(52, 21, 15, 0.35)',
+                    color: 'rgba(52, 21, 15, 0.45)',
                     fontSize: '15px',
                     lineHeight: '1.6',
                     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif',

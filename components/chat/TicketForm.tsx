@@ -1,13 +1,55 @@
 'use client';
 
-import { useState, memo, useCallback } from 'react';
+import { useState, memo, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMobile } from '@/hooks/useMobile';
 import { useBackgroundContext } from '@/context/BackgroundContext';
+import { de } from '@/lib/i18n/de';
+import { en } from '@/lib/i18n/en';
 
 const quickSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
+
+/** Detect whether the chat conversation is in German based on the last model message. */
+function detectChatLanguage(messages: { role: string; content: string }[]): 'DE' | 'EN' {
+  // Find the last model (AI) message
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role === 'model') {
+      const text = messages[i].content.toLowerCase();
+      const deSignals = [
+        'ich', 'wir', 'sie', 'ihr', 'und', 'oder', 'aber', 'kann', 'koennen',
+        'gerne', 'fragen', 'unser', 'ihre', 'projekt', 'automatisierung',
+        'melden', 'anfrage', 'team', 'losung', 'kontakt', 'unternehmen',
+        'willkommen', 'herzlich', 'helfen', 'beraten', 'sprechen',
+        'thema', 'interesse', 'moechten', 'beschaeftigt', 'vorhaben',
+      ];
+      const words = new Set(text.replace(/[^a-zäöüß\s]/g, ' ').split(/\s+/));
+      let deCount = 0;
+      for (const w of deSignals) {
+        if (words.has(w)) deCount++;
+      }
+      // If 3+ German signal words, it's German
+      if (deCount >= 3) return 'DE';
+      return 'EN';
+    }
+  }
+  // Fallback: check last user message
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role === 'user') {
+      const text = messages[i].content.toLowerCase();
+      const deSignals = ['ich', 'wir', 'und', 'hallo', 'wie', 'kann', 'mein', 'unsere'];
+      const words = new Set(text.replace(/[^a-zäöüß\s]/g, ' ').split(/\s+/));
+      let deCount = 0;
+      for (const w of deSignals) {
+        if (words.has(w)) deCount++;
+      }
+      if (deCount >= 2) return 'DE';
+      return 'EN';
+    }
+  }
+  return 'DE';
+}
 
 interface TicketFormProps {
   summary: string;
@@ -16,9 +58,18 @@ interface TicketFormProps {
 }
 
 function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
-  const { t, language } = useTranslation();
+  const { language: settingsLanguage } = useTranslation();
   const isMobile = useMobile();
   const { chatMessages, ticketSubmitted, setTicketSubmitted } = useBackgroundContext();
+
+  // Detect chat language from messages, falling back to settings
+  const chatLang = useMemo(() => {
+    if (chatMessages.length === 0) return settingsLanguage;
+    return detectChatLanguage(chatMessages);
+  }, [chatMessages, settingsLanguage]);
+
+  // Use the chat-detected language for ticket form translations
+  const t = chatLang === 'EN' ? en : de;
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -44,7 +95,7 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
           lead_score: leadScore,
           lead_data: leadData,
           chat_history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
-          language,
+          language: chatLang,
         }),
       });
 
@@ -59,7 +110,7 @@ function TicketForm({ summary, leadScore, leadData }: TicketFormProps) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [name, email, summary, leadScore, leadData, chatMessages, language, isValid, isSubmitting, setTicketSubmitted]);
+  }, [name, email, summary, leadScore, leadData, chatMessages, chatLang, isValid, isSubmitting, setTicketSubmitted]);
 
   // Success state — stays visible permanently
   if (submitted) {

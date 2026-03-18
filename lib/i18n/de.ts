@@ -213,7 +213,7 @@ export const de: Dictionary = {
         },
         aiBtn: {
             title: 'Smart Briefing',
-            desc: 'Erstellt automatisch eine professionelle Projektanfrage aus unserem Chat.',
+            desc: 'Erstellt automatisch eine professionelle Projektanfrage — aus unserem Chat oder von Grund auf.',
             cta: 'Jetzt generieren',
         },
     },

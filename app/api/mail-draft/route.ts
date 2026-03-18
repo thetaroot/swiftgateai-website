@@ -83,7 +83,7 @@ export async function POST(request: Request) {
 
         const { history, language } = body;
 
-        if (history.length < 2) {
+        if (history.length < 1) {
             return NextResponse.json(
                 { error: 'Insufficient conversation history' },
                 { status: 400, headers: rateLimitHeaders }
