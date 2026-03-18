@@ -147,6 +147,8 @@ function ChatOverlay() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const [ticketCtaAccepted, setTicketCtaAccepted] = useState(false);
+  const [ticketCtaDismissed, setTicketCtaDismissed] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -434,13 +436,65 @@ function ChatOverlay() {
                       msg.content
                     )}
                   </p>
-                  {msg.showTicketForm && msg.status === 'complete' && (
+                  {msg.showTicketForm && msg.status === 'complete' && !ticketCtaDismissed && (
                     <div style={{ marginTop: '12px' }}>
-                      <TicketForm
-                        summary={lastAISummary}
-                        leadScore={leadScore}
-                        leadData={leadContext as unknown as Record<string, unknown>}
-                      />
+                      <AnimatePresence mode="wait">
+                        {ticketCtaAccepted || ticketSubmitted ? (
+                          <TicketForm
+                            key="ticket-form"
+                            summary={lastAISummary}
+                            leadScore={leadScore}
+                            leadData={leadContext as unknown as Record<string, unknown>}
+                          />
+                        ) : (
+                          <motion.div
+                            key="ticket-cta"
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={quickSpring}
+                            className="flex gap-2"
+                          >
+                            <motion.button
+                              onClick={() => { setTicketCtaAccepted(true); setShowTicketForm(true); }}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              style={{
+                                background: 'linear-gradient(135deg, #34150F 0%, #52241A 50%, #34150F 100%)',
+                                color: '#FDFCFA',
+                                border: 'none',
+                                borderRadius: '12px',
+                                padding: '10px 18px',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+                                boxShadow: '0 4px 12px rgba(52, 21, 15, 0.25)',
+                              }}
+                            >
+                              {t.ticket.ctaButton}
+                            </motion.button>
+                            <motion.button
+                              onClick={() => setTicketCtaDismissed(true)}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              style={{
+                                background: 'rgba(52, 21, 15, 0.06)',
+                                color: 'rgba(52, 21, 15, 0.5)',
+                                border: 'none',
+                                borderRadius: '12px',
+                                padding: '10px 18px',
+                                fontSize: '13px',
+                                fontWeight: 500,
+                                cursor: 'pointer',
+                                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Space Grotesk", sans-serif',
+                              }}
+                            >
+                              {t.ticket.ctaDismiss}
+                            </motion.button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   )}
                 </>

@@ -147,6 +147,8 @@ export interface Dictionary {
         mailNoHistory: string;
     };
     ticket: {
+        ctaButton: string;
+        ctaDismiss: string;
         formTitle: string;
         formSubtitle: string;
         nameLabel: string;

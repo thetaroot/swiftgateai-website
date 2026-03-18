@@ -249,6 +249,8 @@ export const en: Dictionary = {
         mailNoHistory: 'Please have a conversation in the chat first.',
     },
     ticket: {
+        ctaButton: 'Yes, get in touch',
+        ctaDismiss: 'Not right now',
         formTitle: 'Create Direct Inquiry',
         formSubtitle: 'Based on our conversation, I will create a personalized inquiry for you.',
         nameLabel: 'Name',

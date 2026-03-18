@@ -249,6 +249,8 @@ export const de: Dictionary = {
         mailNoHistory: 'Bitte führen Sie zuerst ein Gespräch im Chat.',
     },
     ticket: {
+        ctaButton: 'Ja, Kontakt aufnehmen',
+        ctaDismiss: 'Erstmal nicht',
         formTitle: 'Direkte Anfrage erstellen',
         formSubtitle: 'Basierend auf unserem Gespräch erstelle ich eine persönliche Anfrage für Sie.',
         nameLabel: 'Name',
